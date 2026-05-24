@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-05-24T14:00:00+09:00",
+    "last_updated": "2026-05-24T22:40:00+09:00",
     "schema_version": "2.0"
   },
   "games_config": {
@@ -21,7 +21,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "전반 5/20 니콜 픽업 및 마신 임무 개방: 공월의 노래 9막 「멸망 속에서 피어난 지혜」, 10막 「천 갈래 길과 소멸하는 인과」",
-      "custom_img": "",
+      "custom_img": "genshin_6.6_banner.webp",
       "link": ""
     },
     {
@@ -34,7 +34,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "후반 6/9 로엔 픽업 및 로엔 전설 임무——교활한 토끼의 장·제1막 「기사의 이름」",
-      "custom_img": "",
+      "custom_img": "genshin_6.6_banner.webp",
       "link": ""
     },
     {
@@ -47,7 +47,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "전반 4/22 은랑 LV.999 픽업 및 개척 임무 개방: 「이상 낙원」 - 「그리하여, 웃음소리는 멈추지 않으리」",
-      "custom_img": "",
+      "custom_img": "starrail_4.2_banner.webp",
       "link": ""
     },
     {
@@ -60,7 +60,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "후반 5/13 에바네시아 픽업",
-      "custom_img": "",
+      "custom_img": "starrail_4.2_banner.webp",
       "link": ""
     },
     {
@@ -73,7 +73,7 @@
       "time": "19:30",
       "is_fixed": true,
       "detail": "공식 방송 5/22 19:30 진행 예정",
-      "custom_img": "",
+      "custom_img": "starrail_4.3_stream.jpg",
       "link": "https://www.youtube.com/live/Q2ZxjPxeibw"
     },
     {
@@ -86,7 +86,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "전반 5/6 프로미아 픽업 및 파에톤의 기록 개방: 시즌 2 에필로그 「뉴: 에리두의 일몰(하)」",
-      "custom_img": "",
+      "custom_img": "zzz_2.8_banner.webp",
       "link": ""
     },
     {
@@ -99,7 +99,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "후반 5/27 스타라이트·빌리 픽업",
-      "custom_img": "",
+      "custom_img": "zzz_2.8_banner.webp",
       "link": ""
     },
     {
@@ -112,7 +112,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "전반 4/30 히유키 픽업 및 조수 임무 개방: 제3장 · 에필로그 「방울에 맺힌 소원」, 제3장 · 제5막 「어젯밤의 뭇별들」",
-      "custom_img": "",
+      "custom_img": "wuthering_3.3_banner.webp",
       "link": ""
     },
     {
@@ -125,7 +125,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "후반 5/21 데니아 픽업 및 조수 임무 개방: 제3장 · 에필로그 「녹아내린 밤하늘 아래」",
-      "custom_img": "",
+      "custom_img": "wuthering_3.3_banner.webp",
       "link": ""
     },
     {
@@ -138,7 +138,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "전반 4/17 장방이 픽업 및 메인 임무 개방: 「2장 프로세스 6 - 같은 방향을 바라보며」까지 개방",
-      "custom_img": "",
+      "custom_img": "endfield_1.2_banner.webp",
       "link": ""
     },
     {
@@ -151,7 +151,7 @@
       "time": "",
       "is_fixed": true,
       "detail": "후반 5/14 특수 헤드헌팅(4중 복각 픽업) 및 1.2 버전 장방이 단독 픽업에 후반 특수 픽업 추가",
-      "custom_img": "",
+      "custom_img": "endfield_1.2_banner.webp",
       "link": ""
     },
     {
@@ -164,7 +164,7 @@
       "time": "20:30",
       "is_fixed": true,
       "detail": "공식 방송 5월 22일 20:30(KST)",
-      "custom_img": "",
+      "custom_img": "endfield_1.3_stream.jpg",
       "link": ""
     }
   ]
