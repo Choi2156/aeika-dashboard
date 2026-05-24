@@ -1,0 +1,10 @@
+{
+  "hints": [
+    {
+      "game": "원신",
+      "trigger_version": "6.7",
+      "next_version_number": "7.0",
+      "note": "대형 마일스톤 버전 점프 (6.8이 아닌 7.0으로 직행)"
+    }
+  ]
+}

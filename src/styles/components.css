@@ -1,0 +1,1441 @@
+/* ============================================================
+   components.css — Shared Component Styles
+   Subculture Game Schedule Dashboard
+   Dark Glassmorphism Premium Aesthetic
+   ============================================================ */
+
+/* ----- CSS Custom Properties ----- */
+:root {
+  --modal-overlay-bg: rgba(0, 0, 0, 0.80);
+  --modal-body-bg: #1e293b;
+  --modal-body-border: #475569;
+  --modal-body-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                       0 0 40px rgba(99, 102, 241, 0.08);
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-modal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 라이트 모드 팝업 및 공용 컴포넌트 변수 (소프트 그레이 & 로우 라이팅 섀도우) */
+[data-theme="light"] {
+  --modal-overlay-bg: rgba(15, 23, 42, 0.4);
+  --modal-body-bg: #ffffff;
+  --modal-body-border: #cbd5e1;
+  --modal-body-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05),
+                       0 0 20px rgba(79, 70, 229, 0.03);
+  --slate-50: #0f172a;
+  --slate-100: #1e293b;
+  --slate-200: #334155;
+  --slate-300: #475569;
+  --slate-400: #64748b;
+  --slate-500: #94a3b8;
+  --slate-600: #cbd5e1;
+  --slate-700: #e2e8f0;
+  --slate-800: #f1f5f9;
+  --slate-900: #f8fafc;
+  --slate-950: #ffffff;
+  --indigo-500: #4f46e5;
+  --indigo-600: #6366f1;
+  --indigo-700: #3730a3;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+}
+
+
+/* =============================================================
+   MODAL OVERLAY (Shared)
+   ============================================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity var(--transition-modal);
+}
+
+.modal-overlay.modal-visible {
+  opacity: 1;
+}
+
+
+/* =============================================================
+   MODAL BODY (Shared)
+   ============================================================= */
+
+.modal-body {
+  background: var(--modal-body-bg);
+  border: 1px solid var(--modal-body-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--modal-body-shadow);
+  width: 100%;
+  position: relative;
+  transform: scale(0.95);
+  transition: transform var(--transition-modal);
+  overflow: hidden;
+}
+
+.modal-overlay.modal-visible .modal-body {
+  transform: scale(1);
+}
+
+
+/* ----- Detail Modal Body ----- */
+.modal-body--detail {
+  max-width: 28rem;
+}
+
+/* ----- Guide Modal Body ----- */
+.modal-body--guide {
+  max-width: 32rem;
+}
+
+
+/* =============================================================
+   MODAL HEADER
+   ============================================================= */
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 0 1.25rem;
+  gap: 0.75rem;
+}
+
+.modal-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.modal-header-top-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.modal-header-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+
+/* =============================================================
+   CLOSE BUTTON
+   ============================================================= */
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--slate-400);
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-base), background var(--transition-base);
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .modal-close-btn:hover {
+  color: var(--text-primary);
+  background: rgba(15, 23, 42, 0.06);
+}
+
+
+/* =============================================================
+   BADGES
+   ============================================================= */
+
+/* Game badge — small pill with dynamic bg (inline style) */
+.badge-game {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+/* Version badge */
+.badge-version {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--slate-300);
+  background: var(--slate-700);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* Status badge: 확정 */
+.badge-status--confirmed {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--indigo-600);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* Status badge: 예상 */
+.badge-status--predicted {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--slate-300);
+  background: transparent;
+  border: 1px solid var(--slate-600);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* Type badge (event type display) */
+.badge-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--slate-400);
+  background: rgba(100, 116, 139, 0.15);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+
+/* =============================================================
+   IMAGE VIEWER
+   ============================================================= */
+
+.modal-image-wrapper {
+  padding: 1rem 1.25rem;
+}
+
+.modal-image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  border: 1px solid var(--slate-600);
+  background: var(--slate-900);
+  display: block;
+}
+
+
+/* =============================================================
+   DETAIL TEXT BLOCK
+   ============================================================= */
+
+.modal-detail-block {
+  margin: 0 1.25rem;
+  padding: 0.85rem 1rem;
+  background: var(--slate-950);
+  border: 1px solid var(--slate-800);
+  border-radius: 0.5rem;
+  color: var(--slate-300);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+
+/* =============================================================
+   METADATA BLOCK
+   ============================================================= */
+
+.modal-metadata {
+  margin: 0.75rem 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--slate-900);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(71, 85, 105, 0.4);
+}
+
+[data-theme="light"] .modal-metadata {
+  border-color: var(--border-primary);
+}
+
+[data-theme="light"] .modal-metadata-value {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .modal-detail-block {
+  color: var(--text-secondary);
+  border-color: var(--border-primary);
+}
+
+.modal-metadata-row {
+  display: flex;
+  align-items: baseline;
+  padding: 0.25rem 0;
+  gap: 0.75rem;
+}
+
+.modal-metadata-key {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--slate-500);
+  white-space: nowrap;
+  min-width: 5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.modal-metadata-value {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  font-size: 0.78rem;
+  color: var(--slate-200);
+}
+
+
+/* =============================================================
+   LINK BUTTON
+   ============================================================= */
+
+.modal-link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: calc(100% - 2.5rem);
+  margin: 0.75rem 1.25rem 1.25rem 1.25rem;
+  padding: 0.7rem 1rem;
+  background: var(--indigo-600);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition-base), filter var(--transition-base);
+}
+
+.modal-link-btn:hover {
+  background: var(--indigo-500);
+  filter: brightness(1.15);
+}
+
+.modal-link-btn:active {
+  filter: brightness(0.95);
+}
+
+
+/* =============================================================
+   GUIDE MODAL — Content Area
+   ============================================================= */
+
+.guide-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0.75rem 1.25rem 1rem 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-600) transparent;
+}
+
+.guide-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.guide-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.guide-content::-webkit-scrollbar-thumb {
+  background: var(--slate-600);
+  border-radius: 9999px;
+}
+
+.guide-content::-webkit-scrollbar-thumb:hover {
+  background: var(--slate-500);
+}
+
+
+/* =============================================================
+   GUIDE MODAL — Header
+   ============================================================= */
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+}
+
+.guide-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.guide-header-title .guide-title-icon {
+  color: var(--indigo-500);
+  flex-shrink: 0;
+}
+
+
+/* =============================================================
+   GUIDE MODAL — Sections
+   ============================================================= */
+
+.guide-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.guide-section-heading {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.guide-section-text {
+  font-size: 0.78rem;
+  color: var(--slate-400);
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.guide-bullet-list {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.guide-bullet-list li {
+  font-size: 0.78rem;
+  color: var(--slate-400);
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+
+/* =============================================================
+   GUIDE MODAL — Confirm Button
+   ============================================================= */
+
+.guide-confirm-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% - 2.5rem);
+  margin: 1rem 1.25rem 1.25rem 1.25rem;
+  padding: 0.7rem 1rem;
+  background: var(--indigo-600);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background var(--transition-base), filter var(--transition-base);
+}
+
+.guide-confirm-btn:hover {
+  background: var(--indigo-500);
+  filter: brightness(1.15);
+}
+
+.guide-confirm-btn:active {
+  filter: brightness(0.95);
+}
+
+
+/* =============================================================
+   MODAL PADDING UTILITY (bottom spacer when no link)
+   ============================================================= */
+
+.modal-bottom-spacer {
+  height: 1.25rem;
+}
+
+
+/* =============================================================
+   RESPONSIVE
+   ============================================================= */
+
+@media (max-width: 480px) {
+  .modal-body--detail {
+    max-width: 100%;
+    border-radius: 0.5rem;
+  }
+
+  .modal-body--guide {
+    max-width: 100%;
+    border-radius: 0.5rem;
+  }
+
+  .modal-header {
+    padding: 1rem 1rem 0 1rem;
+  }
+
+  .modal-image-wrapper {
+    padding: 0.75rem 1rem;
+  }
+
+  .modal-detail-block {
+    margin: 0 1rem;
+  }
+
+  .modal-metadata {
+    margin: 0.75rem 1rem;
+  }
+
+  .modal-link-btn {
+    width: calc(100% - 2rem);
+    margin: 0.75rem 1rem 1rem 1rem;
+  }
+
+  .guide-header {
+    padding: 1rem 1rem 0.75rem 1rem;
+  }
+
+  .guide-content {
+    padding: 0.75rem 1rem 1rem 1rem;
+  }
+
+  .guide-confirm-btn {
+    width: calc(100% - 2rem);
+    margin: 1rem 1rem 1rem 1rem;
+  }
+}
+
+/* =============================================================
+   GAME FILTER BAR (Sticky Control Tower Row)
+   ============================================================= */
+
+.game-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  
+  /* 스크롤 시 상단 고정 (헤더 타이틀은 올라가고 필터바만 상단 고정) */
+  position: sticky;
+  top: 12px; /* 상단 여백 유지 */
+  z-index: 100;
+  
+  transition: top 0.2s ease;
+}
+
+.game-filter-bar__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0; /* overflow 방지 */
+  position: relative;
+  z-index: 5;
+}
+
+.game-filter-bar__right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.75rem;
+  position: relative;
+  z-index: 10; /* 왼쪽 영역 오버플로우 시 클릭 방해 차단 z-index 확보 */
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .game-filter-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .game-filter-bar__left {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .game-filter-bar__right {
+    justify-content: flex-end;
+    border-top: none;
+    padding-top: 0;
+  }
+}
+
+.game-filter-bar__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.game-filter-bar__control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: 0.35rem 0.6rem; /* 단위 오류 수정하여 글씨 삐져나옴 완벽 해결 */
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-lg);
+}
+
+.game-filter-bar__control-btn:hover {
+  background: var(--border-secondary);
+  color: #fff;
+}
+
+[data-theme="light"] .game-filter-bar__control-btn:hover {
+  background: var(--accent-indigo);
+  color: #ffffff;
+  border-color: var(--accent-indigo);
+}
+
+.game-filter-bar__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.game-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-secondary);
+  box-shadow: var(--shadow-lg);
+}
+
+.game-filter-btn--active {
+  background: rgba(42, 48, 76, 0.85);
+  color: var(--text-primary);
+  border-color: var(--filter-color);
+  box-shadow: 0 0 10px rgba(129, 140, 248, 0.05);
+}
+
+[data-theme="light"] .game-filter-btn--active {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.game-filter-btn--inactive {
+  background: transparent;
+  color: var(--text-dim);
+  border-color: var(--border-primary);
+  opacity: 0.5;
+}
+
+.game-filter-btn:hover {
+  opacity: 1;
+  border-color: var(--filter-color);
+}
+
+.game-filter-btn__indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--filter-color);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.game-filter-btn--active .game-filter-btn__indicator {
+  box-shadow: 0 0 6px var(--filter-color);
+}
+
+.game-filter-bar__meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.game-filter-bar__view-switcher {
+  display: flex;
+  align-items: center;
+}
+
+.game-filter-bar__guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: 0.375rem 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-lg);
+  flex-shrink: 0;
+}
+
+.game-filter-bar__guide-btn:hover {
+  background: var(--border-secondary);
+  color: #fff;
+}
+
+[data-theme="light"] .game-filter-bar__guide-btn:hover {
+  background: var(--accent-indigo);
+  color: #ffffff;
+  border-color: var(--accent-indigo);
+}
+
+.game-filter-bar__guide-btn svg {
+  width: 13px;
+  height: 13px;
+  color: var(--accent-indigo-light);
+}
+
+
+/* =============================================================
+   LIVE BANNER BOARD — 실시간 오늘의 라이브 소식 배너 (슬라이더 슬라이딩 & 콤팩트 버전)
+   ============================================================= */
+
+.live-banner-board {
+  position: relative;
+  height: 124px; /* 높이 124px 명시적 고정으로 오차 범위 원천 차단 */
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-primary);
+  margin-bottom: 1.5rem;
+  overflow: hidden; /* 슬라이딩 트랙 외곽 탈출 차단 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-xl);
+  user-select: none;
+  background: var(--bg-card, #22273d); /* 기본 배경색 통일 */
+  cursor: pointer;
+}
+
+.live-banner-board:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.04);
+}
+
+/* 가로 롤링 슬라이딩 트랙 레일 */
+.live-banner-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* 개별 슬라이드 페이지 (슬라이더 깨짐 및 찌그러짐 원천 완치) */
+.live-banner-slide {
+  height: 100%;
+  flex: 0 0 100% !important; /* ★ 중요: 부모 대비 100% 단일 폭을 완벽 보장 */
+  width: 100% !important; /* Specificity 충돌 완치 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.85rem 2.5rem; /* 세로 콤팩트 패딩 */
+  position: relative;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg-card, #22273d); /* 기본 카드 배경색 */
+}
+
+.live-banner-slide:hover {
+  filter: brightness(1.05);
+}
+
+.live-banner-board__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3; /* 보더 광채를 이미지와 마스크 위에 얹음 */
+  transition: all var(--transition-normal);
+  border-radius: inherit;
+  border: 1px solid transparent;
+}
+
+.live-banner-slide:hover .live-banner-board__glow {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ★ 우측 이미지 레이어 (가시성 증가 및 넷플릭스 페이딩) */
+.live-banner-slide__img-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 42%; /* 우측 폭을 42%로 소폭 축소하여 이미지 공간 최소화 */
+  z-index: 1;
+  overflow: hidden;
+}
+
+.live-banner-slide__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%; /* 윗부분을 15% 가량 미세하게 자르고 얼굴 앵커가 골든 영역에 머물도록 피팅 */
+  display: block;
+  transition: transform var(--transition-slow);
+}
+
+.live-banner-slide:hover .live-banner-slide__img {
+  transform: scale(1.03); /* 호버 시 스케일 줌 */
+}
+
+/* ★ 이미지 페이드아웃 마스크 레이어 (안개 그라데이션) */
+.live-banner-slide__img-mask {
+  position: absolute;
+  inset: 0;
+  /* 우측 끝 이미지 영역부터 시작해 카드의 배경색으로 자연스럽고 정교하게 스며드는 그라데이션 마스크 */
+  background: linear-gradient(
+    to right, 
+    var(--bg-card) 0%, 
+    rgba(var(--bg-card-rgb), 0.85) 35%, 
+    rgba(var(--bg-card-rgb), 0.2) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 좌측 텍스트 콘텐츠 정보판 (가독성 100% 확보 및 텍스트 겹침 가로폭 제어) */
+.live-banner-board__content {
+  position: relative;
+  z-index: 5; /* 이미지보다 높은 레이어 */
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 65%; /* 텍스트 공간을 65%로 넓혀 줄바꿈을 줄이고 세로 여백 대폭 보장 */
+}
+
+.live-banner-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.live-banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
+}
+
+.live-banner-badge svg {
+  flex-shrink: 0;
+}
+
+.live-banner-game-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border: 1px solid;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.live-banner-title {
+  font-size: 1.05rem; /* 크기 콤팩트 */
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+  text-shadow: var(--banner-text-shadow);
+}
+
+.live-banner-detail {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 95%;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 축소 높이에 맞게 한 줄로 강제 요약 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: var(--banner-text-shadow-sub);
+  opacity: 0.9;
+}
+
+/* 수동 이동 네비게이션 버튼 (슬라이더 오버레이 형태) */
+.live-banner-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6; /* 텍스트 위에 얹음 */
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  color: #ffffff;
+  width: 26px; /* 크기 콤팩트 축소 */
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.live-banner-nav:hover {
+  background: var(--banner-theme-color);
+  color: #020617;
+  border-color: var(--banner-theme-color);
+  box-shadow: 0 0 8px var(--banner-theme-color);
+}
+
+.live-banner-nav--prev {
+  left: 10px;
+}
+
+.live-banner-nav--next {
+  right: 10px;
+}
+
+.live-banner-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* 인디케이터 점 */
+.live-banner-indicators {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6; /* 텍스트 위에 얹음 */
+  display: flex;
+  gap: 5px;
+}
+
+.live-banner-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-banner-dot--active {
+  transform: scale(1.2);
+}
+
+/* 웰컴 폴백 배너 스타일 (비수기 디폴트 배너) */
+.live-banner-board--welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0.85rem 2rem; /* 세로 콤팩트화 */
+  border-style: dashed;
+  cursor: default;
+}
+
+.live-banner-board--welcome .live-banner-board__glow {
+  box-shadow: inset 0 0 40px rgba(99, 102, 241, 0.03);
+}
+
+.live-banner-board--welcome:hover {
+  transform: none;
+  box-shadow: var(--shadow-xl);
+}
+
+.welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  margin-bottom: 0.2rem;
+}
+
+.welcome-title {
+  font-size: 0.95rem; /* 축소 */
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.welcome-subtitle {
+  font-size: 0.72rem; /* 축소 */
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 90%;
+  word-break: keep-all;
+}
+
+/* 라이브 배너 모바일 최적화 */
+@media (max-width: 768px) {
+  .live-banner-board {
+    min-height: auto;
+  }
+  
+  .live-banner-slide {
+    padding: 0.85rem 1.5rem 1rem 1.5rem;
+  }
+
+  .live-banner-nav {
+    display: none;
+  }
+
+  .live-banner-title {
+    font-size: 0.9rem;
+  }
+
+  .live-banner-detail {
+    font-size: 0.68rem;
+    max-width: 100%;
+    -webkit-line-clamp: 1;
+  }
+  
+  /* 모바일 가로폭 감소 대응해 이미지 영역 모바일 숨김 또는 넓이 축소 */
+  .live-banner-slide__img-container {
+    width: 35%; /* 모바일에서는 텍스트 영역 확보를 위해 축소 */
+  }
+  
+  .live-banner-board__content {
+    max-width: 75%;
+  }
+}
+
+/* =============================================================
+   DASHBOARD INFO BAR (오늘 날짜 & 최근 업데이트 날짜 알림 바)
+   ============================================================= */
+.dashboard-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg, 8px);
+  padding: 0.5rem 1.25rem;
+  margin-bottom: 0.85rem;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dashboard-info-bar__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary, #f1f5f9);
+}
+
+.info-bar-icon {
+  flex-shrink: 0;
+}
+
+.info-bar-icon--today {
+  color: var(--indigo-500, #818cf8);
+}
+
+.info-bar-icon--updated {
+  color: #10b981; /* 에메랄드 그린 */
+}
+
+.info-bar-label {
+  color: var(--text-secondary, #94a3b8);
+  font-weight: 500;
+}
+
+.info-bar-value {
+  font-family: var(--font-mono, monospace);
+  letter-spacing: -0.01em;
+}
+
+/* 모바일 분기 대응 */
+@media (max-width: 480px) {
+  .dashboard-info-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.65rem 1rem;
+    gap: 0.4rem;
+  }
+}
+
+/* =============================================================
+   DASHBOARD FOOTER (다크 글라스모피즘 명품 저작권 & 면책 푸터)
+   ============================================================= */
+.dashboard-footer {
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-primary);
+  padding: 3rem 1.5rem 2.5rem 1.5rem;
+  margin-top: 4rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--text-secondary);
+}
+
+.footer-content {
+  max-width: var(--content-max-width, 1200px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.footer-brand__logo {
+  font-family: var(--font-sans, inherit);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.footer-brand__sub {
+  font-size: 0.72rem;
+  color: var(--slate-400);
+}
+
+.footer-contact {
+  display: flex;
+  align-items: center;
+}
+
+.footer-email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--radius-md, 6px);
+  padding: 0.4rem 0.75rem;
+  text-decoration: none;
+  transition: all var(--transition-base, 200ms);
+}
+
+.footer-email-link:hover {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .footer-email-link:hover {
+  background: var(--accent-indigo);
+  border-color: var(--accent-indigo);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(79, 70, 229, 0.2);
+}
+
+.footer-divider {
+  border: none;
+  height: 1px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+  margin: 0;
+}
+
+[data-theme="light"] .footer-divider {
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0) 100%);
+}
+
+.footer-disclaimers {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.disclaimer-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.disclaimer-title {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.disclaimer-title svg {
+  color: var(--indigo-500);
+}
+
+.disclaimer-text {
+  font-size: 0.7rem;
+  line-height: 1.65;
+  color: var(--slate-400);
+  word-break: keep-all;
+}
+
+.disclaimer-text strong {
+  color: var(--text-primary);
+}
+
+.license-link {
+  color: var(--indigo-500);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--transition-base);
+}
+
+.license-link:hover {
+  color: #818cf8;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.copyright-line {
+  font-size: 0.68rem;
+  color: var(--slate-500);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.heart-icon {
+  color: #ef4444;
+  animation: pulse-heart 1.5s infinite;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-link-icon {
+  color: var(--slate-500);
+  transition: color var(--transition-base), transform var(--transition-base);
+  display: flex;
+  align-items: center;
+}
+
+.footer-link-icon:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+@keyframes pulse-heart {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@media (max-width: 768px) {
+  .dashboard-footer {
+    padding: 2.5rem 1rem 2rem 1rem;
+    margin-top: 3rem;
+  }
+
+  .footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+/* =============================================================
+   이미지 저작권 꼬리표 오버레이 라벨 (Copyright watermark overlay on images)
+   ============================================================= */
+.image-copyright-label,
+.live-banner-copyright-label,
+.card-copyright-label {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  padding: 1.5px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  z-index: 10;
+  letter-spacing: 0.2px;
+  transition: color 0.2s ease, background 0.2s ease;
+  user-select: none;
+}
+
+/* 호버 시 꼬리표 시인성 업 (마이크로 효과) */
+.modal-image-wrapper:hover .image-copyright-label,
+.live-banner-slide__img-container:hover .live-banner-copyright-label,
+.recent-stream-card__thumb-wrapper:hover .card-copyright-label,
+.longform-video-card__thumb-wrapper:hover .card-copyright-label,
+.list-view__thumbnail-wrap:hover .card-copyright-label {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.75);
+}
+
+/* 라이브 배너 꼬리표 예외 세밀 조절 (넷플릭스 마스크보다 상단 배치) */
+.live-banner-copyright-label {
+  right: 12px;
+  bottom: 8px;
+  z-index: 5;
+}
+
+/* 모바일 목록 썸네일 내부 꼬리표 예외 세밀 조절 */
+.card-copyright-label--list {
+  right: 4px;
+  bottom: 4px;
+  font-size: 7.5px;
+  padding: 1px 3.5px;
+}
+
+
+
+
+
+

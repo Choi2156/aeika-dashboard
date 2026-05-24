@@ -1,0 +1,114 @@
+/* ═══════════════════════════════════════════════════════════════
+   CSS Custom Properties — 전체 테마 변수
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* 배경 (과한 어둠을 개선하고 부드러운 슬레이트 블루 다크 톤으로 변경) */
+  --bg-primary: #1a1e2e;
+  --bg-secondary: #22273d;
+  --bg-tertiary: #2a304c;
+  --bg-card: #22273d;
+  --bg-card-rgb: 34, 39, 61;
+  --bg-surface: rgba(34, 39, 61, 0.7);
+  --banner-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  --banner-text-shadow-sub: 0 1px 2px rgba(0, 0, 0, 0.85);
+
+  /* 텍스트 */
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  /* 보더 */
+  --border-primary: #2d3552;
+  --border-secondary: #3b456a;
+  --border-subtle: rgba(59, 69, 106, 0.6);
+
+  /* 액센트 (채도를 대폭 낮춘 고급 파스텔 톤) */
+  --accent-indigo: #818cf8;
+  --accent-indigo-light: #9da6fc;
+  --accent-indigo-dark: #5c62d6;
+  --accent-indigo-glow: rgba(129, 140, 248, 0.2);
+  --accent-indigo-subtle: rgba(129, 140, 248, 0.06);
+  --accent-rose: #f06a85;
+  --accent-amber: #e5b25d;
+
+  /* 배지 */
+  --badge-confirmed-bg: #6366f1;
+  --badge-confirmed-text: #ffffff;
+  --badge-predicted-bg: #3b456a;
+  --badge-predicted-text: #cbd5e1;
+  --badge-predicted-border: #4a5684;
+
+  /* 간격 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* 폰트 */
+  --font-sans: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* 전환 */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* 그림자 */
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-glow-indigo: 0 0 15px rgba(129, 140, 248, 0.18);
+}
+
+/* 게임별 테마 색상 변수 (눈이 편안한 파스텔 톤으로 톤다운) */
+[data-game="원신"] { --game-color: #67dbed; --game-color-dark: #0e7490; --game-text-on-bar: #0f172a; }
+[data-game="붕괴: 스타레일"] { --game-color: #9ca4f8; --game-color-dark: #4338ca; --game-text-on-bar: #0f172a; }
+[data-game="젠레스 존 제로"] { --game-color: #ebd66b; --game-color-dark: #a16207; --game-text-on-bar: #0f172a; }
+[data-game="명조"] { --game-color: #6fe0b6; --game-color-dark: #047857; --game-text-on-bar: #0f172a; }
+[data-game="명일방주: 엔드필드"] { --game-color: #fcae74; --game-color-dark: #c2410c; --game-text-on-bar: #0f172a; }
+
+/* 라이트 모드 (소프트 파스텔 글라스모피즘 미학 - 저사양 기기 최적화 가벼운 드롭 섀도우) */
+[data-theme="light"] {
+  /* 배경 */
+  --bg-primary: #f1f5f9;       /* 소프트 차가운 슬레이트 그레이 */
+  --bg-secondary: #ffffff;     /* 밀키 화이트 */
+  --bg-tertiary: #e2e8f0;      /* 소프트 테두리용 그레이 */
+  --bg-card: rgba(255, 255, 255, 0.85); /* 라이트 글라스모피즘 밀키 카드 */
+  --bg-card-rgb: 255, 255, 255;
+  --bg-surface: rgba(255, 255, 255, 0.65);
+  --banner-text-shadow: none;
+  --banner-text-shadow-sub: none;
+
+  /* 텍스트 */
+  --text-primary: #0f172a;     /* 진한 다크 블루 슬레이트 */
+  --text-secondary: #334155;   /* 미디엄 블루 슬레이트 */
+  --text-muted: #475569;       /* 중간 뮤티드 */
+  --text-dim: #64748b;
+
+  /* 보더 */
+  --border-primary: #cbd5e1;
+  --border-secondary: #cbd5e1;
+  --border-subtle: rgba(203, 213, 225, 0.5);
+
+  /* 액센트 */
+  --accent-indigo: #4f46e5;
+  --accent-indigo-light: #6366f1;
+  --accent-indigo-dark: #3730a3;
+  --accent-indigo-glow: rgba(79, 70, 229, 0.1);
+  --accent-indigo-subtle: rgba(79, 70, 229, 0.04);
+  --accent-rose: #db2777;
+  --accent-amber: #b45309;
+
+  /* 배지 */
+  --badge-confirmed-bg: #4f46e5;
+  --badge-confirmed-text: #ffffff;
+  --badge-predicted-bg: #cbd5e1;
+  --badge-predicted-text: #334155;
+  --badge-predicted-border: #94a3b8;
+
+  /* 그림자 */
+  --shadow-lg: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  --shadow-xl: 0 10px 15px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+  --shadow-glow-indigo: 0 0 10px rgba(79, 70, 229, 0.04);
+}

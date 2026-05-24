@@ -1,0 +1,635 @@
+/* ============================================================
+   ListView.css — Vertical Timeline List View
+   Dark glassmorphism premium aesthetic
+   ============================================================ */
+
+/* ── Container ────────────────────────────────────────────── */
+.list-view {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 24px 8px 64px;
+}
+
+/* ── Timeline connector (vertical line) ───────────────────── */
+.list-view__timeline {
+  position: relative;
+}
+
+.list-view__timeline::before {
+  content: '';
+  position: absolute;
+  left: 54px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(148, 163, 184, 0.25) 5%,
+    rgba(148, 163, 184, 0.25) 95%,
+    transparent 100%
+  );
+  z-index: 0;
+}
+
+/* ── Row (each event or TODAY marker) ─────────────────────── */
+.list-view__row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Left column: date + connector ────────────────────────── */
+.list-view__left {
+  flex-shrink: 0;
+  width: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 12px 0;
+}
+
+.list-view__date {
+  font-family: 'Inter', 'Noto Sans KR', monospace;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.list-view__date--duplicate {
+  visibility: hidden;
+}
+
+.list-view__time {
+  font-family: 'Inter', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* Dot on timeline */
+.list-view__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #334155;
+  border: 2px solid #475569;
+  margin-top: 8px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.list-view__row--today .list-view__dot {
+  background: #6366f1;
+  border-color: #818cf8;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+}
+
+/* ── Right column: event card ─────────────────────────────── */
+.list-view__right {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 0 6px 12px;
+}
+
+/* ── Event Card ───────────────────────────────────────────── */
+.list-view__card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.list-view__card:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.list-view__card:active {
+  transform: translateY(0);
+}
+
+/* Today's card glow */
+.list-view__card--today {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow:
+    0 0 16px rgba(99, 102, 241, 0.15),
+    inset 0 1px 0 rgba(99, 102, 241, 0.1);
+}
+
+.list-view__card--today:hover {
+  border-color: rgba(99, 102, 241, 0.7);
+  box-shadow:
+    0 0 24px rgba(99, 102, 241, 0.25),
+    0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Card header row ──────────────────────────────────────── */
+.list-view__card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+/* Game badge */
+.list-view__game-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.675rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Version number */
+.list-view__version {
+  font-family: 'Inter', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* 확정/예상 badges */
+.list-view__status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.list-view__status-badge--confirmed {
+  background: rgba(99, 102, 241, 0.8);
+  color: #e0e7ff;
+}
+
+.list-view__status-badge--predicted {
+  background: rgba(51, 65, 85, 0.6);
+  color: #94a3b8;
+  border: 1px solid rgba(71, 85, 105, 0.5);
+}
+
+/* TODAY badge on events */
+.list-view__today-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: #fff;
+  animation: listview-today-badge-scale 2s ease-in-out infinite;
+}
+
+@keyframes listview-today-badge-scale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* ── Card body ────────────────────────────────────────────── */
+.list-view__card-body {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.list-view__card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Title */
+.list-view__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+/* Detail text */
+.list-view__detail {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Thumbnail */
+.list-view__thumbnail-wrap {
+  flex-shrink: 0;
+  width: 96px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.list-view__thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.list-view__card:hover .list-view__thumbnail {
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   TODAY marker row (when today has no events)
+   ============================================================ */
+.list-view__today-marker {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  z-index: 2;
+  margin: 4px 0;
+}
+
+.list-view__today-marker-left {
+  flex-shrink: 0;
+  width: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-view__today-marker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+  animation: listview-pulse 2s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.list-view__today-marker-right {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0 0 12px;
+}
+
+.list-view__today-marker-card {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.8), rgba(15, 23, 42, 0.4));
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  border-radius: 12px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: listview-pulse-border 2.5s ease-in-out infinite;
+}
+
+[data-theme="light"] .list-view__today-marker-card {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(255, 255, 255, 0.95));
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.list-view__today-marker-label {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #818cf8, #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.list-view__today-marker-date {
+  font-family: 'Inter', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.list-view__today-marker-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(99, 102, 241, 0.4), transparent);
+}
+
+/* ── Pulse animations ─────────────────────────────────────── */
+@keyframes listview-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.7);
+  }
+}
+
+@keyframes listview-pulse-border {
+  0%, 100% {
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    border-color: rgba(99, 102, 241, 0.6);
+  }
+}
+
+/* ============================================================
+   Empty state
+   ============================================================ */
+.list-view__empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: #475569;
+}
+
+.list-view__empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.list-view__empty-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 640px) {
+  .list-view {
+    padding: 16px 4px 48px;
+  }
+
+  .list-view__left {
+    width: 80px;
+  }
+
+  .list-view__timeline::before {
+    left: 39px;
+  }
+
+  .list-view__date {
+    font-size: 0.75rem;
+  }
+
+  .list-view__card {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .list-view__thumbnail-wrap {
+    width: 72px;
+  }
+
+  .list-view__title {
+    font-size: 0.8rem;
+  }
+
+  .list-view__today-marker-left {
+    width: 80px;
+  }
+}
+
+@media (max-width: 380px) {
+  .list-view__left {
+    width: 64px;
+  }
+
+  .list-view__timeline::before {
+    left: 31px;
+  }
+
+  .list-view__thumbnail-wrap {
+    width: 60px;
+  }
+
+  .list-view__today-marker-left {
+    width: 64px;
+  }
+
+  .list-view__card-header {
+    gap: 4px;
+  }
+
+  .list-view__game-badge {
+    font-size: 0.6rem;
+    padding: 1px 6px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Stream Event Card (Eye-catching Golden Yellow theme)
+   ──────────────────────────────────────────────────────────── */
+.list-view__card--stream {
+  background: linear-gradient(135deg, rgba(38, 33, 15, 0.75), rgba(15, 23, 42, 0.7)) !important;
+  border-color: rgba(250, 204, 21, 0.5) !important;
+  box-shadow:
+    0 0 16px rgba(250, 204, 21, 0.08),
+    inset 0 1px 0 rgba(250, 204, 21, 0.12) !important;
+}
+
+.list-view__card--stream:hover {
+  background: linear-gradient(135deg, rgba(38, 33, 15, 0.9), rgba(15, 23, 42, 0.8)) !important;
+  border-color: rgba(250, 204, 21, 0.85) !important;
+  box-shadow:
+    0 0 24px rgba(250, 204, 21, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Today + Stream double highlight */
+.list-view__card--today.list-view__card--stream {
+  border-color: rgba(250, 204, 21, 0.75) !important;
+  box-shadow:
+    0 0 20px rgba(250, 204, 21, 0.22),
+    0 0 12px rgba(99, 102, 241, 0.15) !important;
+}
+
+.list-view__card--stream .list-view__title {
+  color: #fef08a !important;
+  text-shadow: 0 0 4px rgba(250, 204, 21, 0.15);
+}
+
+.list-view__card--stream .list-view__status-badge {
+  background: rgba(250, 204, 21, 0.15) !important;
+  color: #fef08a !important;
+  border: 1px solid rgba(250, 204, 21, 0.35) !important;
+}
+
+/* ============================================================
+   넷플릭스 스타일 가로 일러스트 배경 카드 개편 (ListView Netflix Skin)
+   ============================================================ */
+.list-view__card-bg-wrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 44%; /* 우측 44% 폭 점유 */
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.list-view__card-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%; /* 캐릭터 얼굴 15% 골든 앵글 피팅 */
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.list-view__card:hover .list-view__card-bg-img {
+  transform: scale(1.05); /* 카드 호버 시 배경 이미지 줌인 */
+}
+
+/* 이미지 왼쪽 경계를 배경색과 점차 융합시키는 수평 페이딩 마스크 */
+.list-view__card-bg-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    var(--bg-card) 0%,           /* 카드 배경 융합 */
+    rgba(var(--bg-card-rgb), 0.4) 60%,
+    transparent 100%
+  );
+  z-index: 2;
+}
+
+/* 방송용 노란 테마 카드 마스크 개별 피팅 */
+.list-view__card--stream .list-view__card-bg-mask {
+  background: linear-gradient(
+    to right,
+    #211b0d 0%,
+    rgba(33, 27, 13, 0.4) 60%,
+    transparent 100%
+  );
+}
+
+[data-theme="light"] .list-view__card--stream {
+  background: linear-gradient(135deg, rgba(254, 240, 138, 0.25), rgba(255, 255, 255, 0.9)) !important;
+  border-color: rgba(234, 179, 8, 0.3) !important;
+}
+
+[data-theme="light"] .list-view__card--stream .list-view__card-bg-mask {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.4) 60%,
+    transparent 100%
+  );
+}
+
+[data-theme="light"] .list-view__card--stream .list-view__title {
+  color: #713f12 !important;
+  text-shadow: none !important;
+}
+
+[data-theme="light"] .list-view__card--stream .list-view__status-badge {
+  background: rgba(234, 179, 8, 0.15) !important;
+  color: #854d0e !important;
+  border-color: rgba(234, 179, 8, 0.4) !important;
+}
+
+[data-theme="light"] .list-view__card--stream .list-view__time,
+[data-theme="light"] .list-view__card--stream .list-view__detail {
+  color: #854d0e !important;
+}
+
+/* 전면 텍스트 정보판 (가독 가로폭을 칼같이 제한해 겹침 원천 차단) */
+.list-view__card-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 66%; /* 우측 이미지 침범 완전 차단 */
+}
+
+.list-view__card-body-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 이미지 우측 하단 구석 미니 저작권 꼬리표 */
+.list-view__card-copyright {
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 7px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1px 3.5px;
+  border-radius: 2px;
+  z-index: 3;
+  pointer-events: none;
+  letter-spacing: 0.1px;
+  transition: color 0.2s ease, background 0.2s ease;
+  user-select: none;
+}
+
+.list-view__card:hover .list-view__card-copyright {
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* 모바일 뷰 최적화 반응형 튜닝 */
+@media (max-width: 640px) {
+  .list-view__card-bg-wrap {
+    width: 48%; /* 모바일에서는 일러스트 비중 소폭 상향 */
+  }
+
+  .list-view__card-content {
+    max-width: 62%; /* 글자 침범 방지를 위해 모바일 텍스트 가로폭 더 컴팩트화 */
+  }
+  
+  .list-view__title {
+    font-size: 0.78rem;
+    margin-bottom: 2px;
+  }
+  
+  .list-view__detail {
+    font-size: 0.68rem;
+    -webkit-line-clamp: 2; /* 모바일에서 2줄 Clamping 지원 */
+  }
+}
+
+

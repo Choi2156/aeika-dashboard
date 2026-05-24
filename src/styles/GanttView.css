@@ -1,0 +1,1415 @@
+/* ═══════════════════════════════════════════════════════════
+   GanttView.css — Subculture Game Schedule Dashboard
+   Premium Dark Glassmorphism Gantt Chart Styles
+   ═══════════════════════════════════════════════════════════ */
+
+/* ────────────────────────────────────────────
+   CSS Custom Properties
+   ──────────────────────────────────────────── */
+:root {
+  /* Surface & Background */
+  --gantt-bg: #111827;
+  --gantt-bg-surface: #1a2236;
+  --gantt-bg-elevated: #1e293b;
+  --gantt-bg-cell: rgba(17, 24, 39, 0.6);
+
+  /* Borders */
+  --gantt-border: #1e293b;
+  --gantt-border-subtle: rgba(30, 41, 59, 0.6);
+  --gantt-border-accent: #334155;
+
+  /* Text */
+  --gantt-text-primary: #e2e8f0;
+  --gantt-text-secondary: #94a3b8;
+  --gantt-text-muted: #64748b;
+  --gantt-text-dark: #0f172a;
+
+  /* Today highlight */
+  --gantt-today-bg: rgba(99, 102, 241, 0.12);
+  --gantt-today-border: #6366f1;
+  --gantt-today-header-bg: rgba(99, 102, 241, 0.25);
+  --gantt-today-line-color: #818cf8;
+
+  /* Hover crosshair */
+  --gantt-hover-bg: rgba(99, 102, 241, 0.06);
+  --gantt-hover-header-bg: rgba(99, 102, 241, 0.12);
+
+  /* Weekend */
+  --gantt-weekend-bg: rgba(30, 41, 59, 0.3);
+
+  /* Predicted bars */
+  --gantt-predicted-bg: #334155;
+  --gantt-predicted-border: #64748b;
+  --gantt-predicted-text: #cbd5e1;
+
+  /* LIVE badge */
+  --gantt-live-bg: #e11d48;
+  --gantt-live-glow: rgba(225, 29, 72, 0.4);
+
+  /* Scrollbar */
+  --gantt-scroll-track: #0f172a;
+  --gantt-scroll-thumb: #334155;
+  --gantt-scroll-thumb-hover: #475569;
+}
+
+/* 라이트 모드 간트 스타일링 (가볍고 화사한 HSL 배색) */
+[data-theme="light"] {
+  --gantt-bg: #f8fafc;
+  --gantt-bg-surface: #ffffff;
+  --gantt-bg-elevated: #f1f5f9;
+  --gantt-bg-cell: rgba(248, 250, 252, 0.85);
+  --gantt-border: #cbd5e1;
+  --gantt-border-subtle: rgba(203, 213, 225, 0.5);
+  --gantt-border-accent: #cbd5e1;
+  --gantt-text-primary: #0f172a;
+  --gantt-text-secondary: #334155;
+  --gantt-text-muted: #64748b;
+  --gantt-text-dark: #0f172a;
+  --gantt-today-bg: rgba(79, 70, 229, 0.07);
+  --gantt-today-border: #4f46e5;
+  --gantt-today-header-bg: rgba(79, 70, 229, 0.14);
+  --gantt-today-line-color: #6366f1;
+  --gantt-hover-bg: rgba(79, 70, 229, 0.04);
+  --gantt-hover-header-bg: rgba(79, 70, 229, 0.08);
+  --gantt-weekend-bg: rgba(226, 232, 240, 0.5);
+  --gantt-predicted-bg: #e2e8f0;
+  --gantt-predicted-border: #94a3b8;
+  --gantt-predicted-text: #334155;
+  --gantt-scroll-track: #f1f5f9;
+  --gantt-scroll-thumb: #cbd5e1;
+  --gantt-scroll-thumb-hover: #94a3b8;
+}
+
+/* ────────────────────────────────────────────
+   Scrollbar
+   ──────────────────────────────────────────── */
+.gantt-container::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+.gantt-container::-webkit-scrollbar-track {
+  background: var(--gantt-scroll-track);
+  border-radius: 4px;
+}
+
+.gantt-container::-webkit-scrollbar-thumb {
+  background: var(--gantt-scroll-thumb);
+  border-radius: 4px;
+  border: 1px solid var(--gantt-scroll-track);
+}
+
+.gantt-container::-webkit-scrollbar-thumb:hover {
+  background: var(--gantt-scroll-thumb-hover);
+}
+
+.gantt-container::-webkit-scrollbar-corner {
+  background: var(--gantt-scroll-track);
+}
+
+/* Firefox scrollbar */
+.gantt-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gantt-scroll-thumb) var(--gantt-scroll-track);
+}
+
+/* ────────────────────────────────────────────
+   Container & Grid
+   ──────────────────────────────────────────── */
+.gantt-container {
+  position: relative;
+  overflow: auto;
+  background: var(--gantt-bg);
+  border: 1px solid var(--gantt-border);
+  border-radius: 12px;
+  max-height: 80vh;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.gantt-grid {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: max-content;
+}
+
+/* ────────────────────────────────────────────
+   Header Row
+   ──────────────────────────────────────────── */
+.gantt-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  background: var(--gantt-bg-surface);
+  border-bottom: 1px solid var(--gantt-border-accent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Top-left intersect cell */
+.gantt-sticky-intersect {
+  position: sticky;
+  left: 0;
+  z-index: 50;
+  background: var(--gantt-bg-surface);
+  border-right: 1px solid var(--gantt-border-accent);
+  border-bottom: none;
+}
+
+.gantt-header-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.gantt-header-game-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gantt-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* Date header cells container */
+.gantt-header-dates {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.gantt-header-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  box-sizing: border-box;
+  border-right: 1px solid var(--gantt-border-subtle);
+  cursor: default;
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.gantt-header-cell:last-child {
+  border-right: none;
+}
+
+.gantt-header-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gantt-text-primary);
+  line-height: 1.3;
+}
+
+.gantt-header-day {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--gantt-text-muted);
+  line-height: 1.3;
+  margin-top: 1px;
+}
+
+/* Today header */
+.gantt-header-today {
+  background: var(--gantt-today-header-bg);
+  border-bottom: 2px solid var(--gantt-today-border);
+}
+
+.gantt-header-today .gantt-header-date {
+  color: #a5b4fc;
+  font-weight: 700;
+}
+
+[data-theme="light"] .gantt-header-today .gantt-header-date {
+  color: var(--accent-indigo) !important;
+}
+
+.gantt-header-today .gantt-header-day {
+  color: #818cf8;
+}
+
+[data-theme="light"] .gantt-header-today .gantt-header-day {
+  color: var(--accent-indigo-light) !important;
+}
+
+/* Weekend header */
+.gantt-header-weekend .gantt-header-date {
+  color: var(--gantt-text-muted);
+}
+
+/* Hovered header */
+.gantt-header-hovered {
+  background: var(--gantt-hover-header-bg);
+}
+
+/* ────────────────────────────────────────────
+   Body
+   ──────────────────────────────────────────── */
+.gantt-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ────────────────────────────────────────────
+   Row
+   ──────────────────────────────────────────── */
+.gantt-row {
+  display: flex;
+  position: relative;
+  border-bottom: 1px solid var(--gantt-border-subtle);
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gantt-row:last-child {
+  border-bottom: none;
+}
+
+.gantt-row:hover .gantt-row-game {
+  background: rgba(30, 41, 59, 0.95);
+}
+
+[data-theme="light"] .gantt-row:hover .gantt-row-game {
+  background: #e2e8f0;
+}
+
+/* ── Game name cell (left sticky column) ── */
+.gantt-row-game {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: var(--gantt-bg-elevated);
+  border-right: 1px solid var(--gantt-border-accent);
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.gantt-sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 40;
+}
+
+.gantt-row-game:hover {
+  background: rgba(51, 65, 85, 0.7);
+}
+
+[data-theme="light"] .gantt-row-game:hover {
+  background: #cbd5e1;
+}
+
+.gantt-row-game:active {
+  background: rgba(51, 65, 85, 0.9);
+}
+
+[data-theme="light"] .gantt-row-game:active {
+  background: #cbd5e1;
+}
+
+.gantt-game-indicator {
+  width: 4px;
+  height: 20px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  transition: height 0.2s ease;
+}
+
+.gantt-row-collapsed .gantt-game-indicator {
+  height: 12px;
+}
+
+.gantt-game-meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  align-items: flex-start;
+}
+
+.gantt-game-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gantt-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.gantt-game-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--gantt-text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 2px 6px;
+  text-decoration: none;
+  transition: all 150ms ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+[data-theme="light"] .gantt-game-link-btn {
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: var(--text-secondary);
+}
+
+.gantt-game-link-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #a5b4fc;
+}
+
+[data-theme="light"] .gantt-game-link-btn:hover {
+  background: var(--accent-indigo);
+  border-color: var(--accent-indigo);
+  color: #ffffff !important;
+}
+
+.gantt-game-link-btn svg {
+  flex-shrink: 0;
+}
+
+.gantt-chevron {
+  color: var(--gantt-text-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+/* ────────────────────────────────────────────
+   Row Cells (date columns grid)
+   ──────────────────────────────────────────── */
+.gantt-row-cells {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.gantt-cell {
+  height: 100%;
+  box-sizing: border-box;
+  border-right: 1px solid var(--gantt-border-subtle);
+  flex-shrink: 0;
+  transition: background-color 0.12s ease;
+}
+
+.gantt-cell:last-child {
+  border-right: none;
+}
+
+/* Today column */
+.gantt-cell-today {
+  background: var(--gantt-today-bg);
+}
+
+/* Weekend column */
+.gantt-cell-weekend {
+  background: var(--gantt-weekend-bg);
+}
+
+/* Hover crosshair column */
+.gantt-cell-hovered {
+  background: var(--gantt-hover-bg);
+  box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.05);
+}
+
+/* ────────────────────────────────────────────
+   Today Vertical Indicator Line
+   ──────────────────────────────────────────── */
+.gantt-today-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dashed var(--gantt-today-line-color);
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ────────────────────────────────────────────
+   Event Bars Layer
+   ──────────────────────────────────────────── */
+.gantt-bars-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+/* ── Full event bar (confirmed/predicted) ── */
+.gantt-bar {
+  position: absolute;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  cursor: pointer;
+  pointer-events: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    filter 0.15s ease,
+    box-shadow 0.15s ease;
+  z-index: 10;
+}
+
+.gantt-bar:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  z-index: 12;
+}
+
+.gantt-bar:active {
+  filter: brightness(1.25);
+}
+
+/* Confirmed bar */
+.gantt-bar-confirmed {
+  color: var(--gantt-text-dark);
+  font-weight: 700;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Predicted bar */
+.gantt-bar-predicted {
+  background: var(--gantt-predicted-bg);
+  border: 1.5px dashed var(--gantt-predicted-border);
+  color: var(--gantt-predicted-text);
+  font-weight: 500;
+}
+
+.gantt-bar-label {
+  font-size: 11px;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Collapsed bar (thin line) ── */
+.gantt-bar-collapsed {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2px;
+  border-radius: 1px;
+  border-width: 1px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 10;
+  transition: height 0.15s ease;
+}
+
+.gantt-bar-collapsed:hover {
+  height: 4px;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+}
+
+/* ── Stream marker (flag style) ── */
+.gantt-bar-stream {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 11;
+  white-space: nowrap;
+}
+
+.gantt-bar-stream:hover {
+  filter: brightness(1.2);
+}
+
+.gantt-bar-stream:hover .gantt-stream-flag {
+  box-shadow: 0 0 12px var(--gantt-live-glow);
+}
+
+.gantt-stream-flag {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.15s ease;
+}
+
+.gantt-live-icon {
+  flex-shrink: 0;
+}
+
+.gantt-live-badge {
+  letter-spacing: 0.5px;
+  animation: gantt-live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes gantt-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.gantt-stream-label {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ────────────────────────────────────────────
+   Row Collapsed State
+   ──────────────────────────────────────────── */
+.gantt-row-collapsed .gantt-game-name {
+  font-size: 11px;
+  color: var(--gantt-text-secondary);
+}
+
+.gantt-row-collapsed .gantt-cell {
+  opacity: 0.5;
+}
+
+/* ────────────────────────────────────────────
+   Responsive & Overflows
+   ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .gantt-container {
+    border-radius: 8px;
+    max-height: 70vh;
+  }
+
+  .gantt-game-name {
+    font-size: 11px;
+  }
+
+  .gantt-bar {
+    height: 26px;
+    padding: 0 6px;
+  }
+
+  .gantt-bar-label {
+    font-size: 10px;
+  }
+
+  .gantt-header-cell {
+    height: 44px;
+  }
+
+  .gantt-header-date {
+    font-size: 10px;
+  }
+
+  .gantt-header-day {
+    font-size: 9px;
+  }
+}
+
+/* ────────────────────────────────────────────
+   Print / Reduced Motion
+   ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .gantt-bar,
+  .gantt-bar-collapsed,
+  .gantt-row,
+  .gantt-cell,
+  .gantt-header-cell,
+  .gantt-game-indicator,
+  .gantt-chevron {
+    transition: none;
+  }
+
+  .gantt-live-badge {
+    animation: none;
+  }
+}
+
+@media print {
+  .gantt-container {
+    max-height: none;
+    overflow: visible;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+
+  .gantt-today-line {
+    border-left-color: #333;
+  }
+}
+
+/* ────────────────────────────────────────────
+   간트 차트 하단 영역: 최근 공식 방송(좌) & 추천 쇼츠(우) 2분할 레이아웃
+   ──────────────────────────────────────────── */
+.gantt-bottom-layout {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px dashed var(--border-secondary);
+  padding-top: 1.5rem;
+  align-items: flex-start;
+}
+
+.gantt-bottom-left {
+  flex: 2; /* 좌측 최근 공식 방송이 가로 폭을 더 넓게 점유 */
+  min-width: 0;
+}
+
+.gantt-bottom-right {
+  flex: 1; /* 우측 유튜브 쇼츠 위젯 영역 */
+  min-width: 300px;
+}
+
+/* 태블릿 및 모바일 환경에서 2분할 레이아웃을 상하 1열로 수직 자동 전환 (흘러내림) */
+@media (max-width: 1024px) {
+  .gantt-bottom-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2rem;
+  }
+
+  .gantt-bottom-right {
+    min-width: 100%;
+  }
+}
+
+/* 좌측 최근 공식 방송 타이틀 & 그리드 (기존 border-top 등 제거) */
+.recent-streams-section {
+  width: 100%;
+}
+
+.recent-streams-section__title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.recent-streams-section__title-icon {
+  color: var(--accent-indigo-light);
+  animation: stream-live-pulse 2s infinite;
+}
+
+@keyframes stream-live-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+/* 최근 방송 최대 2개이므로 가로 2열 그리드로 꽉 차게 렌더링 */
+.recent-streams-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .recent-streams-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 카드 기본 스타일 */
+.recent-stream-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
+}
+
+.recent-stream-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--theme-color);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 15px rgba(129, 140, 248, 0.04);
+}
+
+/* 썸네일 고품격 래퍼 및 호버 줌 효과 */
+.recent-stream-card__thumb-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.recent-stream-card__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.recent-stream-card:hover .recent-stream-card__thumb {
+  transform: scale(1.04);
+}
+
+.recent-stream-card__badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #020617;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.recent-stream-card__badge-icon {
+  flex-shrink: 0;
+}
+
+/* 콘텐츠 블록 */
+.recent-stream-card__content {
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.recent-stream-card__meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recent-stream-card__version {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--theme-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recent-stream-card__status {
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 1.5px 5.5px;
+  border-radius: 4px;
+}
+
+.recent-stream-card__status.status-confirmed {
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid var(--accent-indigo);
+  color: var(--accent-indigo-light);
+}
+
+.recent-stream-card__status.status-predicted {
+  background: rgba(100, 116, 139, 0.08);
+  border: 1px solid var(--text-dim);
+  color: var(--text-muted);
+}
+
+.recent-stream-card__title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+}
+
+.recent-stream-card__date {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.recent-stream-card__detail {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}
+
+
+/* =============================================================
+   우측 영역: 추천 유튜브 쇼츠 재생 스테이션 UI
+   ============================================================= */
+.recommended-shorts-section {
+  width: 100%;
+}
+
+.recommended-shorts-section__title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.recommended-shorts-section__title-icon {
+  color: #ff3333; /* 유튜브 고유의 쨍한 레드 */
+  filter: drop-shadow(0 0 4px rgba(255, 51, 51, 0.6));
+}
+
+.recommended-shorts-widget {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
+}
+
+/* 9:16 세로형 쇼츠 동영상 감상 최적화 스크린 */
+.shorts-player-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  max-width: 250px; /* PC 환경에서 지나치게 길어지는 현상 억제 */
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  background: #000000;
+  margin: 0 auto; /* 중앙 정렬 */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.shorts-player-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.shorts-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.shorts-info-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.shorts-info-desc {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+/* 세련된 유튜브 바로가기 버튼 */
+.shorts-subscribe-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.4) 0%, rgba(185, 28, 28, 0.5) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+}
+
+.shorts-subscribe-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.55) 0%, rgba(185, 28, 28, 0.65) 100%);
+  border-color: rgba(255, 120, 120, 0.95);
+  box-shadow: 0 6px 15px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.shorts-subscribe-btn:active {
+  transform: translateY(0);
+}
+
+/* =============================================================
+   추천 쇼츠 위젯 미니멀 슬라이더 레이아웃 (스마트폰 최적화형)
+   ============================================================= */
+.recommended-shorts-widget--minimal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
+}
+
+/* 화살표 + 플레이어 + 화살표 3단 가로 연계 */
+.shorts-slider-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* 터치 반응형 둥근 화살표 버튼 */
+.shorts-slider-arrow {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms);
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .shorts-slider-arrow {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.shorts-slider-arrow:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #a5b4fc;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
+  transform: scale(1.05);
+}
+
+.shorts-slider-arrow:active {
+  transform: scale(0.95);
+}
+
+/* 9:16 플레이어를 감싸는 가로폭 안전 제어 (쇼츠 밀착 고정) */
+.shorts-player-container {
+  width: 290px; /* 더욱 웅장하고 거대한 290px 가로폭으로 극대화 */
+  min-width: 290px;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  background: #000000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+  margin: 0;
+}
+
+/* 점형 페이지네이션 인디케이터 (대강의 쇼츠 개수 인지용) */
+.shorts-dot-indicators {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.shorts-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms);
+}
+
+[data-theme="light"] .shorts-dot {
+  border-color: var(--border-primary);
+  background: var(--border-subtle);
+}
+
+.shorts-dot:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.15);
+}
+
+.shorts-dot--active {
+  transform: scale(1.25);
+  background-color: var(--theme-color, #6366f1) !important;
+  border-color: var(--theme-color, #6366f1) !important;
+  box-shadow: 0 0 8px var(--theme-color, #6366f1);
+}
+
+/* 최하단 채널 바로가기 버튼 */
+.shorts-channel-direct-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.45) 0%, rgba(185, 28, 28, 0.55) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 290px; /* 플레이어 가로폭에 맞춰 290px로 일치화 */
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.shorts-channel-direct-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.6) 0%, rgba(185, 28, 28, 0.7) 100%);
+  border-color: rgba(255, 120, 120, 0.95);
+  box-shadow: 0 6px 15px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.shorts-channel-direct-btn:active {
+  transform: translateY(0);
+}
+
+/* =============================================================
+   유튜브 채널 추천 롱폼 영상 카드 섹션 (스토리 풀버전)
+   ============================================================= */
+.longform-videos-section {
+  width: 100%;
+  margin-top: 1.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.05);
+  padding-top: 1.5rem;
+}
+
+/* 다른 유형의 롱폼 영상 추가 배치 마진 */
+.longform-videos-section--other {
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.longform-videos-section__title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.longform-videos-section__title-icon {
+  color: #ff3333;
+  filter: drop-shadow(0 0 4px rgba(255, 51, 51, 0.5));
+}
+
+.longform-videos-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .longform-videos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.longform-video-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
+}
+
+.longform-video-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--theme-color);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 15px rgba(129, 140, 248, 0.04);
+}
+
+.longform-video-card__thumb-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.longform-video-card__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.longform-video-card:hover .longform-video-card__thumb {
+  transform: scale(1.04);
+}
+
+/* 우측 하단 영상 시간(Duration) 오버레이 배지 */
+.longform-video-card__duration-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 1.5px 5.5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.4);
+}
+
+.longform-video-card__game-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #020617;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.longform-video-card__content {
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.longform-video-card__title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+}
+
+.longform-video-card__desc {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+  word-break: keep-all;
+}
+
+/* 태블릿 및 모바일 가로폭 감소 대응 */
+@media (max-width: 640px) {
+  .shorts-slider-main {
+    gap: 0.5rem;
+  }
+
+  .shorts-slider-arrow {
+    width: 28px;
+    height: 28px;
+  }
+
+  .shorts-player-container {
+    width: 210px; /* 모바일에서 가로폭 슬림화 스케일 다운 */
+    min-width: 210px;
+  }
+
+  .shorts-channel-direct-btn {
+    max-width: 210px;
+  }
+}
+
+/* =============================================================
+   AI 게임 소식 정리 스타일 (다크 글라스모피즘 프리미엄 스킨)
+   ============================================================= */
+.ai-briefing-section {
+  width: 100%;
+  margin-top: 1.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-top: 1.25rem;
+  box-sizing: border-box;
+}
+
+.ai-briefing-section__title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.ai-briefing-section__title-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--gantt-text-muted, #64748b); /* 비활성화 상태이므로 슬레이트 그레이 펄스 */
+  box-shadow: 0 0 6px rgba(100, 116, 139, 0.4);
+  animation: pulse-slate 2.5s infinite;
+  display: inline-block;
+}
+
+.ai-briefing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.ai-briefing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg, 10px);
+  padding: 1.15rem;
+  transition: all var(--transition-normal, 250ms);
+  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
+}
+
+/* 흐릿한 추후 공개 예정 오버레이 효과 */
+.ai-briefing-card--upcoming {
+  filter: blur(0.6px) opacity(0.55);
+  cursor: default;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.ai-briefing-card--upcoming:hover {
+  filter: blur(0px) opacity(0.85);
+  border-color: rgba(99, 102, 241, 0.25);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.ai-briefing-card__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.ai-briefing-card__category {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #a5b4fc; /* 파스텔 인디고 */
+  background: rgba(99, 102, 241, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-briefing-card__game {
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 1.5px 6px;
+  border-radius: 4px;
+}
+
+.ai-briefing-card__title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.45rem 0;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.ai-briefing-card__summary {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #94a3b8);
+  margin: 0;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+@keyframes pulse-slate {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+@media (max-width: 640px) {
+  .ai-briefing-card {
+    padding: 1rem;
+  }
+}
+
+
+
+
+

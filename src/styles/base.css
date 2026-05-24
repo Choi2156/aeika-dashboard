@@ -1,0 +1,357 @@
+/* ═══════════════════════════════════════════════════════════════
+   Base Reset & Global Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+@import './variables.css';
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: #c7d2fe;
+}
+
+/* ─── 글로벌 스크롤바 ──────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-dim);
+  border-radius: 4px;
+  border: 2px solid var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-dim) var(--bg-primary);
+}
+
+/* ─── 유틸리티 ──────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── 앱 레이아웃 ──────────────────────────── */
+.app {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .app {
+    padding: 32px;
+  }
+}
+
+/* ─── 로딩 & 에러 ──────────────────────────── */
+.app-loading,
+.app-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-loading__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-primary);
+  border-top-color: var(--accent-indigo);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.app-loading__text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.app-error__text {
+  color: var(--accent-amber);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── 헤더 ──────────────────────────────────── */
+.header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; /* 세로 정렬 일치 */
+  }
+}
+
+.header__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header__title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+.header__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .header__subtitle {
+    font-size: 0.8125rem;
+  }
+}
+
+.header__warning {
+  color: var(--accent-amber);
+  font-weight: 700;
+  display: block;
+  margin-top: 2px;
+}
+
+@media (min-width: 768px) {
+  .header__warning {
+    display: inline;
+    margin-left: 6px;
+    margin-top: 0;
+  }
+}
+
+/* 유튜브 구독 홍보 섹션 스타일 */
+.header__youtube-promo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.1);
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: inset 0 0 15px rgba(239, 68, 68, 0.02);
+}
+
+.youtube-promo__text {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.youtube-promo__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffffff !important; /* 가시성 증가: 화이트 폰트로 뚜렷하게 */
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(185, 28, 28, 0.4) 100%); /* 입체적 붉은 그라데이션 */
+  border: 1px solid rgba(239, 68, 68, 0.6); /* 강력한 테두리 */
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 12px rgba(239, 68, 68, 0.3); /* 유튜브 레드 광채 효과 */
+  text-decoration: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.youtube-promo__btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.45) 0%, rgba(185, 28, 28, 0.55) 100%);
+  border-color: rgba(254, 150, 150, 0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(239, 68, 68, 0.55); /* 호버 시 네온 광채 폭발 */
+  transform: translateY(-2px) scale(1.02);
+}
+
+.youtube-promo__btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.youtube-promo__icon {
+  color: #ff3333; /* 눈에 띄게 더 밝은 유튜브 고유 레드 */
+  filter: drop-shadow(0 0 4px rgba(255, 51, 51, 0.8));
+  transition: all var(--transition-fast);
+}
+
+.youtube-promo__btn:hover .youtube-promo__icon {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(255, 51, 51, 1));
+}
+
+/* ─── 컨트롤 패널 ──────────────────────────── */
+.control-panel {
+  margin-bottom: 16px;
+  background: var(--bg-surface);
+  padding: 12px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-xl);
+}
+
+.control-panel__title {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control-panel__title svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent-indigo-light);
+}
+
+.control-panel__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-panel__meta {
+  display: none;
+  font-size: 0.625rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+@media (min-width: 768px) {
+  .control-panel__meta {
+    display: block;
+  }
+}
+
+/* ─── 뷰 전환 버튼 그룹 ──────────────────── */
+.view-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.view-switcher__btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.view-switcher__btn:hover {
+  color: var(--text-secondary);
+}
+
+.view-switcher__btn--active {
+  background: var(--accent-indigo) !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+.view-switcher__btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.view-switcher__label {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .view-switcher__label {
+    display: inline;
+  }
+}
+
+/* ─── 메인 뷰 컨테이너 ──────────────────── */
+.main-view {
+  width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
