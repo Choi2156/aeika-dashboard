@@ -332,6 +332,17 @@ export function getEventDuration(event, allEvents, gamesConfig) {
   }
 
   if (event.type === '전반업데이트') {
+    // 다음 버전의 확정 전반업데이트가 존재하면 그 시작일 전날까지를 기간으로 삼아 자동 단축/연장 대응!
+    const cleanVer = cleanVersion(event.version);
+    const nextVer = getNextVersion(cleanVer, gameHints);
+    const nextUpdate = allEvents.find(
+      e => e.game === event.game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer && e.is_fixed
+    );
+    if (nextUpdate) {
+      const startD = parseDate(event.date);
+      const nextStartD = parseDate(nextUpdate.date);
+      return Math.max(1, getDaysDiff(startD, nextStartD));
+    }
     return cycle;
   }
 

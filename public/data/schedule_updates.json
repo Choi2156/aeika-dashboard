@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "id": "starrail_4.3_update",
+    "game": "붕괴: 스타레일",
+    "version": "4.3",
+    "type": "전반업데이트",
+    "title": "4.3 버전 - 「산 자의 망천에 잠겨」",
+    "date": "2026-06-01",
+    "time": "",
+    "is_fixed": true,
+    "detail": "전반 6/1 '천야·블레이드' 출시 및 신규 개척 임무 「이상 낙원」 - 「산 자의 망천에 잠겨」 개방",
+    "custom_img": "starrail_4.3_banner.webp",
+    "link": ""
+  },
+  {
+    "id": "starrail_4.3_half",
+    "game": "붕괴: 스타레일",
+    "version": "4.3 후반",
+    "type": "후반업데이트",
+    "title": "4.3 버전 후반부 캐릭터 워프 전환",
+    "date": "2026-06-22",
+    "time": "",
+    "is_fixed": true,
+    "detail": "후반 6/22 '키레네' 및 '파이논' 복각 워프 개시",
+    "custom_img": "starrail_4.3_banner.webp",
+    "link": ""
+  }
+]
