@@ -347,14 +347,15 @@ export function getEventDuration(event, allEvents, gamesConfig) {
   }
 
   if (event.type === '후반업데이트') {
-    // 후반업데이트는 해당 버전의 전반업데이트 시작일 + cycle을 종료일로 삼아 기간 계산
+    // 후반업데이트는 해당 버전의 전반업데이트 '실제 렌더링 종료일'을 기준으로 연쇄 추적 계산하여 어긋남 오류 원천 소멸!
     const cleanVer = cleanVersion(event.version);
     const mainUpdate = allEvents.find(
       e => e.game === event.game && e.type === '전반업데이트' && cleanVersion(e.version) === cleanVer
     );
     if (mainUpdate) {
+      const mainDuration = getEventDuration(mainUpdate, allEvents, gamesConfig);
       const mainStart = parseDate(mainUpdate.date);
-      const mainEnd = addDays(mainStart, cycle);
+      const mainEnd = addDays(mainStart, mainDuration);
       const halfStart = parseDate(event.date);
       return Math.max(1, getDaysDiff(halfStart, mainEnd));
     }
