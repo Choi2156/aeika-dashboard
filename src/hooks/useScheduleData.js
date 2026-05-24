@@ -21,11 +21,12 @@ export function useScheduleData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [dataRes, hintsRes, recRes, briefRes] = await Promise.all([
+        const [dataRes, hintsRes, recRes, briefRes, updatesRes] = await Promise.all([
           fetch('./data/schedule_data.json?t=' + Date.now()),
           fetch('./data/schedule_hints.json?t=' + Date.now()),
           fetch('./data/recommended_videos.json?t=' + Date.now()),
           fetch('./data/briefing_data.json?t=' + Date.now()),
+          fetch('./data/schedule_updates.json?t=' + Date.now()),
         ]);
 
         if (!dataRes.ok) throw new Error('schedule_data.json 로드 실패');
@@ -50,8 +51,39 @@ export function useScheduleData() {
           briefingData = await briefRes.json();
         }
 
-        // 예측 엔진 가동: 확정 데이터 + 힌트 → 전체 이벤트 (예상 포함)
-        const allEvents = processEvents(scheduleData, hintsData, GAMES_CONFIG);
+        // 신규 스케줄 증분 업데이트 데이터 로드
+        let updatesData = [];
+        if (updatesRes.ok) {
+          try {
+            updatesData = await updatesRes.json();
+          } catch (e) {
+            console.error('Failed to parse schedule_updates.json:', e);
+          }
+        }
+
+        // ID 기반 중복 제거 및 실시간 대치 (Merge & Override by ID Map)
+        const baseEvents = scheduleData.events || [];
+        const updateEvents = Array.isArray(updatesData) ? updatesData : [];
+        const mergedMap = new Map();
+
+        // 1. 기존 누적 스케줄 데이터 주입
+        baseEvents.forEach(evt => {
+          if (evt && evt.id) {
+            mergedMap.set(evt.id, evt);
+          }
+        });
+
+        // 2. 신규 업데이트 데이터 주입 (기존 ID와 동일하면 자동으로 오버라이드 덮어써서 수정, 다르면 신규 추가)
+        updateEvents.forEach(evt => {
+          if (evt && evt.id) {
+            mergedMap.set(evt.id, evt);
+          }
+        });
+
+        const mergedEvents = Array.from(mergedMap.values());
+
+        // 예측 엔진 가동: 병합된 확정 데이터 + 힌트 → 전체 이벤트 (예상 포함)
+        const allEvents = processEvents({ ...scheduleData, events: mergedEvents }, hintsData, GAMES_CONFIG);
 
         setState({
           events: allEvents,
