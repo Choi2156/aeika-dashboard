@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { ChevronDown, ChevronRight, ChevronLeft, Radio, Globe, Youtube } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Radio, Globe, Youtube, MapPin } from 'lucide-react';
 import '../styles/GanttView.css';
 
 /* ────────────────────────────────────────────
@@ -233,11 +233,11 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     return map;
   }, [gameNames, eventsByGame]);
 
-  /* ── ★ 최근 진행된 공식 방송 필터링 (최근 순 정렬 및 최대 10개 추출로 확장) ── */
+  /* ── ★ 최근 진행된 공식 방송 및 오프라인 행사 필터링 (최근 순 정렬 및 최대 10개 추출) ── */
   const recentStreams = useMemo(() => {
     if (!events) return [];
     return events
-      .filter((ev) => ev.type === '공식방송' && ev.date < todayStr)
+      .filter((ev) => (ev.type === '공식방송' || ev.type === '오프라인이벤트') && ev.date < todayStr)
       .sort((a, b) => b.date.localeCompare(a.date))
       .slice(0, 10);
   }, [events, todayStr]);
@@ -641,7 +641,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
               <div className="section-header-carousel">
                 <h3 className="recent-streams-section__title">
                   <Radio size={15} className="recent-streams-section__title-icon" />
-                  <span>최근 진행된 공식 방송 정보</span>
+                  <span>최근 진행된 공식 방송 및 오프라인 행사 정보</span>
                 </h3>
                 {recentStreams.length > visibleCount && (
                   <div className="carousel-nav-arrows">
@@ -650,7 +650,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                       onClick={handlePrevStream}
                       className="carousel-arrow-btn"
                       type="button"
-                      title="이전 방송 보기"
+                      title="이전 목록 보기"
                     >
                       <ChevronLeft size={16} />
                     </button>
@@ -658,7 +658,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                       onClick={handleNextStream}
                       className="carousel-arrow-btn"
                       type="button"
-                      title="다음 방송 보기"
+                      title="다음 목록 보기"
                     >
                       <ChevronRight size={16} />
                     </button>
@@ -669,6 +669,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                 {visibleStreams.map((ev) => {
                   const color = getGameColor(ev.game);
                   const isFixed = ev.is_fixed === true;
+                  const isOffline = ev.type === '오프라인이벤트';
                   
                   const imgSrc = ev.custom_img 
                      ? `./assets/${ev.custom_img}` 
@@ -678,14 +679,18 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                     <div
                       key={ev.id || `recent-stream-${ev.date}`}
                       className="recent-stream-card"
-                      onClick={() => onEventClick?.(ev, '공식방송')}
+                      onClick={() => onEventClick?.(ev, isOffline ? '오프라인이벤트' : '공식방송')}
                       style={{ '--theme-color': color }}
                       title="클릭하여 상세 정보 팝업 보기"
                     >
                       <div className="recent-stream-card__thumb-wrapper">
                         <img src={imgSrc} alt={ev.title} className="recent-stream-card__thumb" />
                         <div className="recent-stream-card__badge" style={{ backgroundColor: color }}>
-                          <Radio size={10} className="recent-stream-card__badge-icon" />
+                          {isOffline ? (
+                            <MapPin size={10} className="recent-stream-card__badge-icon" />
+                          ) : (
+                            <Radio size={10} className="recent-stream-card__badge-icon" />
+                          )}
                           <span>{ev.game}</span>
                         </div>
                         {gamesConfig?.[ev.game]?.copyright && (
@@ -697,7 +702,9 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                       
                       <div className="recent-stream-card__content">
                         <div className="recent-stream-card__meta-row">
-                          <span className="recent-stream-card__version">v{ev.version} 방송</span>
+                          <span className="recent-stream-card__version">
+                            {isOffline ? '📍 오프라인 행사' : `v${ev.version} 방송`}
+                          </span>
                           <span className={`recent-stream-card__status ${isFixed ? 'status-confirmed' : 'status-predicted'}`}>
                             {isFixed ? '확정' : '예상'}
                           </span>
@@ -706,7 +713,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                           {ev.title ? ev.title.replace(/「|」/g, '') : `${ev.game} 공식 특별 방송`}
                         </h4>
                         <p className="recent-stream-card__date">
-                          방송일자: {ev.date} {ev.time || '20:00'} (KST)
+                          {isOffline ? '행사일자' : '방송일자'}: {ev.date} {ev.time || (isOffline ? '' : '20:00')} {!isOffline && '(KST)'}
                         </p>
                         {ev.detail && (
                           <p className="recent-stream-card__detail">
