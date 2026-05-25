@@ -201,12 +201,12 @@ export default function DetailModal({ event, displayTypeName, gamesConfig, onClo
         </div>
 
         {/* ── Ticket Links (오프라인 예매처 복수 단추 동적 렌더러) ── */}
-        {event.ticket_links && event.ticket_links.length > 0 && (
+        {event.ticket_links && event.ticket_links.length > 0 && event.ticket_links.some(link => link && link.url) && (
           <div className="modal-metadata" style={{ marginTop: '0px', borderTop: 'none', borderTopLeftRadius: '0px', borderTopRightRadius: '0px', margin: '0rem 1.25rem 0.75rem 1.25rem' }}>
             <div className="modal-metadata-row" style={{ flexDirection: 'column', gap: '6px', alignItems: 'stretch' }}>
               <span className="modal-metadata-key" style={{ marginBottom: '2px' }}>🎟️ 예매 바로가기</span>
               <div className="modal-ticket-links" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {event.ticket_links.map((linkObj, idx) => (
+                {event.ticket_links.filter(link => link && link.url).map((linkObj, idx) => (
                   <a
                     key={idx}
                     href={linkObj.url}
