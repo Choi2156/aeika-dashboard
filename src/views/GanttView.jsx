@@ -233,14 +233,21 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     return map;
   }, [gameNames, eventsByGame]);
 
-  /* ── ★ 최근 진행된 공식 방송 및 오프라인 행사 필터링 (최근 순 정렬 및 최대 10개 추출) ── */
+  /* ── ★ 공식 방송 및 오프라인 행사: 오늘 기준 전후 날짜 범위 내 표시 ── */
   const recentStreams = useMemo(() => {
     if (!events) return [];
-    return events
-      .filter((ev) => (ev.type === '공식방송' || ev.type === '오프라인이벤트') && ev.date < todayStr)
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, 10);
-  }, [events, todayStr]);
+    const rangeStart = formatDateStr(addDays(today, -DATE_RANGE_BEFORE));
+    const rangeEnd   = formatDateStr(addDays(today, DATE_RANGE_AFTER));
+    const filtered = events.filter((ev) =>
+      (ev.type === '공식방송' || ev.type === '오프라인이벤트') &&
+      ev.date >= rangeStart &&
+      ev.date <= rangeEnd
+    );
+    // 미래 일정(예정)을 앞에, 과거 일정(최신)을 뒤에 배치
+    const future = filtered.filter((ev) => ev.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date));
+    const past   = filtered.filter((ev) => ev.date <  todayStr).sort((a, b) => b.date.localeCompare(a.date));
+    return [...future, ...past].slice(0, 10);
+  }, [events, today, todayStr]);
 
   // 추천 비디오 JSON 데이터베이스 연동 및 폴백 바인딩
   const recommendedShorts = useMemo(() => {
@@ -641,7 +648,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
               <div className="section-header-carousel">
                 <h3 className="recent-streams-section__title">
                   <Radio size={15} className="recent-streams-section__title-icon" />
-                  <span>최근 진행된 공식 방송 및 오프라인 행사 정보</span>
+                  <span>공식 방송 및 오프라인 행사 일정</span>
                 </h3>
                 {recentStreams.length > visibleCount && (
                   <div className="carousel-nav-arrows">
