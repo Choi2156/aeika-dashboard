@@ -1447,6 +1447,104 @@
   transform: translateY(-1px) !important;
 }
 
+/* =============================================================
+   캐러셀 헤더 및 컨트롤 네비게이션 스타일링
+   ============================================================= */
+.section-header-carousel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.section-header-carousel h3 {
+  margin-bottom: 0 !important;
+}
+
+.carousel-nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* 프리미엄 페이징 카운터 */
+.carousel-counter {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gantt-text-secondary, #94a3b8);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 3px 8px;
+  border-radius: 6px;
+  user-select: none;
+}
+
+[data-theme="light"] .carousel-counter {
+  background: rgba(15, 23, 42, 0.03);
+  border-color: rgba(15, 23, 42, 0.05);
+  color: var(--gantt-text-secondary, #475569);
+}
+
+/* 터치 및 마우스 호버 반응형 프리미엄 둥근 버튼 */
+.carousel-arrow-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  color: #ffffff;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .carousel-arrow-btn {
+  background: var(--gantt-bg-elevated, #f1f5f9);
+  border-color: var(--gantt-border, #cbd5e1);
+  color: var(--gantt-text-primary, #0f172a);
+}
+
+.carousel-arrow-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #a5b4fc;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
+  transform: scale(1.08);
+}
+
+[data-theme="light"] .carousel-arrow-btn:hover {
+  background: var(--gantt-today-header-bg, rgba(79, 70, 229, 0.14));
+  border-color: var(--gantt-today-border, #4f46e5);
+  color: var(--gantt-today-border, #4f46e5);
+}
+
+.carousel-arrow-btn:active {
+  transform: scale(0.95);
+}
+
+/* 캐러셀 하위 아이템 개수에 따른 그리드 찌그러짐 방지 대책 */
+.recent-streams-grid,
+.longform-videos-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .recent-streams-grid,
+  .longform-videos-grid {
+    /* visibleCount가 2이므로, PC 화면에서는 grid-template-columns를 2열 고정하여, 1개일 때도 가로 50%만 점유하도록 함 */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 
 
 

@@ -138,6 +138,11 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   const [currentShortIndex, setCurrentShortIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Bottom Carousels sliding state indexes
+  const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+  const [currentOtherIndex, setCurrentOtherIndex] = useState(0);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -228,16 +233,14 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     return map;
   }, [gameNames, eventsByGame]);
 
-  /* ── ★ 최근 진행된 공식 방송 필터링 (최근 순 정렬 및 최대 2개 추출) ── */
+  /* ── ★ 최근 진행된 공식 방송 필터링 (최근 순 정렬 및 최대 10개 추출로 확장) ── */
   const recentStreams = useMemo(() => {
     if (!events) return [];
     return events
       .filter((ev) => ev.type === '공식방송' && ev.date < todayStr)
       .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, 2);
+      .slice(0, 10);
   }, [events, todayStr]);
-
-
 
   // 추천 비디오 JSON 데이터베이스 연동 및 폴백 바인딩
   const recommendedShorts = useMemo(() => {
@@ -256,6 +259,63 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   const otherVideos = useMemo(() => {
     return recommendedLongforms.filter((v) => v.type !== 'story');
   }, [recommendedLongforms]);
+
+  // 캐러셀 슬라이더 화면 크기별 표시 개수 동적 연산
+  const visibleCount = isMobile ? 1 : 2;
+
+  // 무한 순환 캐러셀 Core 헬퍼 함수
+  const getVisibleItems = useCallback((items, currentIndex, vCount) => {
+    if (items.length <= vCount) return items;
+    const result = [];
+    for (let i = 0; i < vCount; i++) {
+      const targetIdx = (currentIndex + i) % items.length;
+      result.push(items[targetIdx]);
+    }
+    return result;
+  }, []);
+
+  const visibleStreams = useMemo(() => {
+    return getVisibleItems(recentStreams, currentStreamIndex, visibleCount);
+  }, [recentStreams, currentStreamIndex, visibleCount, getVisibleItems]);
+
+  const visibleStories = useMemo(() => {
+    return getVisibleItems(storyVideos, currentStoryIndex, visibleCount);
+  }, [storyVideos, currentStoryIndex, visibleCount, getVisibleItems]);
+
+  const visibleOthers = useMemo(() => {
+    return getVisibleItems(otherVideos, currentOtherIndex, visibleCount);
+  }, [otherVideos, currentOtherIndex, visibleCount, getVisibleItems]);
+
+  /* 캐러셀 슬라이더 무한 순환 제어 핸들러 */
+  const handlePrevStream = () => {
+    if (recentStreams.length <= visibleCount) return;
+    setCurrentStreamIndex((prev) => (prev - 1 + recentStreams.length) % recentStreams.length);
+  };
+
+  const handleNextStream = () => {
+    if (recentStreams.length <= visibleCount) return;
+    setCurrentStreamIndex((prev) => (prev + 1) % recentStreams.length);
+  };
+
+  const handlePrevStory = () => {
+    if (storyVideos.length <= visibleCount) return;
+    setCurrentStoryIndex((prev) => (prev - 1 + storyVideos.length) % storyVideos.length);
+  };
+
+  const handleNextStory = () => {
+    if (storyVideos.length <= visibleCount) return;
+    setCurrentStoryIndex((prev) => (prev + 1) % storyVideos.length);
+  };
+
+  const handlePrevOther = () => {
+    if (otherVideos.length <= visibleCount) return;
+    setCurrentOtherIndex((prev) => (prev - 1 + otherVideos.length) % otherVideos.length);
+  };
+
+  const handleNextOther = () => {
+    if (otherVideos.length <= visibleCount) return;
+    setCurrentOtherIndex((prev) => (prev + 1) % otherVideos.length);
+  };
 
   /* 수동 추천 쇼츠 슬라이더 넘기기 제어 */
   const handlePrevShort = () => {
@@ -578,18 +638,41 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
         <div className="gantt-bottom-left">
           {recentStreams.length > 0 && (
             <section className="recent-streams-section">
-              <h3 className="recent-streams-section__title">
-                <Radio size={15} className="recent-streams-section__title-icon" />
-                <span>최근 진행된 공식 방송 정보</span>
-              </h3>
+              <div className="section-header-carousel">
+                <h3 className="recent-streams-section__title">
+                  <Radio size={15} className="recent-streams-section__title-icon" />
+                  <span>최근 진행된 공식 방송 정보</span>
+                </h3>
+                {recentStreams.length > visibleCount && (
+                  <div className="carousel-nav-arrows">
+                    <span className="carousel-counter">{currentStreamIndex + 1} / {recentStreams.length}</span>
+                    <button
+                      onClick={handlePrevStream}
+                      className="carousel-arrow-btn"
+                      type="button"
+                      title="이전 방송 보기"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                    <button
+                      onClick={handleNextStream}
+                      className="carousel-arrow-btn"
+                      type="button"
+                      title="다음 방송 보기"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className="recent-streams-grid">
-                {recentStreams.map((ev) => {
+                {visibleStreams.map((ev) => {
                   const color = getGameColor(ev.game);
                   const isFixed = ev.is_fixed === true;
                   
                   const imgSrc = ev.custom_img 
-                    ? `./assets/${ev.custom_img}` 
-                    : gamesConfig?.[ev.game]?.defaultImg;
+                     ? `./assets/${ev.custom_img}` 
+                     : gamesConfig?.[ev.game]?.defaultImg;
 
                   return (
                     <div
@@ -641,12 +724,35 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
           {/* 1-2. 최근 공식 방송 하단: 애이카 아카이브 게임 스토리 풀버전 바로가기 */}
           {storyVideos.length > 0 && (
             <section className="longform-videos-section">
-              <h3 className="longform-videos-section__title">
-                <Youtube size={15} className="longform-videos-section__title-icon" />
-                <span>애이카 아카이브 게임 스토리 풀버전 바로가기</span>
-              </h3>
+              <div className="section-header-carousel">
+                <h3 className="longform-videos-section__title">
+                  <Youtube size={15} className="longform-videos-section__title-icon" />
+                  <span>애이카 아카이브 게임 스토리 풀버전 바로가기</span>
+                </h3>
+                {storyVideos.length > visibleCount && (
+                  <div className="carousel-nav-arrows">
+                    <span className="carousel-counter">{currentStoryIndex + 1} / {storyVideos.length}</span>
+                    <button
+                      onClick={handlePrevStory}
+                      className="carousel-arrow-btn"
+                      type="button"
+                      title="이전 스토리 보기"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                    <button
+                      onClick={handleNextStory}
+                      className="carousel-arrow-btn"
+                      type="button"
+                      title="다음 스토리 보기"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className="longform-videos-grid">
-                {storyVideos.map((video) => {
+                {visibleStories.map((video) => {
                   const color = getGameColor(video.game);
                   const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
                   return (
@@ -686,12 +792,35 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
           {/* 1-3. 스토리 외의 기타 기획/공략 롱폼 영상이 추가될 경우 분리 렌더링 */}
           {otherVideos.length > 0 && (
             <section className="longform-videos-section longform-videos-section--other">
-              <h3 className="longform-videos-section__title">
-                <Youtube size={15} className="longform-videos-section__title-icon" />
-                <span>애이카 아카이브 추천 기획/공략 영상 바로가기</span>
-              </h3>
+              <div className="section-header-carousel">
+                <h3 className="longform-videos-section__title">
+                  <Youtube size={15} className="longform-videos-section__title-icon" />
+                  <span>애이카 아카이브 추천 기획/공략 영상 바로가기</span>
+                </h3>
+                {otherVideos.length > visibleCount && (
+                  <div className="carousel-nav-arrows">
+                    <span className="carousel-counter">{currentOtherIndex + 1} / {otherVideos.length}</span>
+                    <button
+                      onClick={handlePrevOther}
+                      className="carousel-arrow-btn"
+                      type="button"
+                      title="이전 기획 영상 보기"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                    <button
+                      onClick={handleNextOther}
+                      className="carousel-arrow-btn"
+                      type="button"
+                      title="다음 기획 영상 보기"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className="longform-videos-grid">
-                {otherVideos.map((video) => {
+                {visibleOthers.map((video) => {
                   const color = getGameColor(video.game);
                   const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
                   return (
