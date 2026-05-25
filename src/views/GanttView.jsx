@@ -233,17 +233,18 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     return map;
   }, [gameNames, eventsByGame]);
 
-  /* ── ★ 공식 방송 및 오프라인 행사: 오늘 기준 전후 날짜 범위 내 표시 ── */
+  /* ── ★ 공식 방송 및 오프라인 행사: 오늘 기준 ±14일 범위, 확정 일정만 표시 ── */
   const recentStreams = useMemo(() => {
     if (!events) return [];
-    const rangeStart = formatDateStr(addDays(today, -DATE_RANGE_BEFORE));
-    const rangeEnd   = formatDateStr(addDays(today, DATE_RANGE_AFTER));
+    const rangeStart = formatDateStr(addDays(today, -14));
+    const rangeEnd   = formatDateStr(addDays(today, 14));
     const filtered = events.filter((ev) =>
       (ev.type === '공식방송' || ev.type === '오프라인이벤트') &&
+      ev.is_fixed === true &&
       ev.date >= rangeStart &&
       ev.date <= rangeEnd
     );
-    // 미래 일정(예정)을 앞에, 과거 일정(최신)을 뒤에 배치
+    // 미래·오늘 일정(예정)을 앞에, 과거 일정(최신)을 뒤에 배치
     const future = filtered.filter((ev) => ev.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date));
     const past   = filtered.filter((ev) => ev.date <  todayStr).sort((a, b) => b.date.localeCompare(a.date));
     return [...future, ...past].slice(0, 10);
