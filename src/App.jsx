@@ -14,6 +14,10 @@ import Footer from './components/Footer';
 import './styles/variables.css';
 import './styles/base.css';
 
+// 실시간 데이터 및 시스템 정밀 점검 모드 제어 스위치
+// (점검 활성화 시 true로 변경. 기존 UI는 정상 작동하나 상단 배너를 통해 동기화 및 데이터 면책 고지가 항시 노출됩니다.)
+const IS_UNDER_MAINTENANCE = true;
+
 // 확장성을 위한 마스터 설정 스키마 기본값 정의 (추후 완전히 새로운 필드가 추가되어도 크래시 없이 하위호환)
 const DEFAULT_SETTINGS = {
   theme: 'dark',
@@ -185,6 +189,20 @@ export default function App() {
       data-theme={theme}
       onMouseMove={handleMouseMove}
     >
+      {IS_UNDER_MAINTENANCE && (
+        <div className="maintenance-banner">
+          <div className="maintenance-banner__content">
+            <span className="maintenance-banner__icon">⚠️</span>
+            <div className="maintenance-banner__text-group">
+              <span className="maintenance-banner__title">실시간 데이터 및 시스템 정밀 점검 진행 중</span>
+              <span className="maintenance-banner__desc">
+                현재 대시보드 데이터 및 백엔드 동기화 시스템 점검이 진행 중입니다. 점검 중에도 기존 UI 및 차트 기능은 정상 작동하지만, 일시적인 데이터 손상이나 실시간 동기화 지연이 발생할 수 있으니 양해 부탁드립니다.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Header />
 
       <DashboardInfoBar meta={meta} />
