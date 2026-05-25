@@ -196,7 +196,7 @@ export default function App() {
             <div className="maintenance-banner__text-group">
               <span className="maintenance-banner__title">사이트 점검중</span>
               <span className="maintenance-banner__desc">
-                본 대시보드는 현재 임시 테스트 공개 기간으로, 실시간 데이터 최적화 및 시스템 점검이 진행되고 있습니다. 테스트 공개 기간 동안은 본 알림 배너가 항상 노출될 예정입니다. 점검 중에도 기존 UI 및 차트 기능은 정상 작동하지만, 일시적인 데이터 손상이나 실시간 동기화 지연이 발생할 수 있는 점 방랑자 여러분의 양해 부탁드립니다.
+                임시 테스트 공개 기간 동안은 본 알림 배너가 항상 노출됩니다. 점검 중에도 기존 UI 및 차트 기능은 정상 작동하지만, 일시적인 데이터 손상이나 실시간 업데이트 지연이 발생할 수 있는 점 이용자 여러분의 너른 양해 부탁드립니다.
               </span>
             </div>
           </div>
