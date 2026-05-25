@@ -26,7 +26,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function App() {
-  const { events, gamesConfig, recommendedVideos, briefingData, meta, loading, error } = useScheduleData();
+  const { events, gamesConfig, recommendedVideos, briefingData, patchNotes, meta, loading, error } = useScheduleData();
   
   // 1. 모바일 기기 최초 접속 시 모바일 직관 뷰('list') 디폴트화 보증을 위한 Lazy Initializer 이식
   const [currentView, setCurrentView] = useState(() => {
@@ -281,6 +281,7 @@ export default function App() {
       <GuideModal
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
+        patchNotes={patchNotes}
       />
 
       <LicenseModal

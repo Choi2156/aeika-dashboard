@@ -476,3 +476,191 @@ body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(0.92); }
 }
+
+/* ─── 가이드 모달 탭 스위처 ──────────────────── */
+.guide-modal__tabs {
+  display: flex;
+  background: var(--bg-secondary, #1e293b);
+  border-bottom: 2px solid var(--border-primary, rgba(255, 255, 255, 0.05));
+  margin-top: 10px;
+  padding: 0 16px;
+}
+
+[data-theme="light"] .guide-modal__tabs {
+  background: #f1f5f9;
+  border-bottom-color: #cbd5e1;
+}
+
+.guide-modal__tab {
+  flex: 1;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted, #64748b);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  margin-bottom: -2px; /* 보더라인 겹치기 */
+}
+
+.guide-modal__tab:hover {
+  color: var(--text-secondary, #94a3b8);
+}
+
+.guide-modal__tab--active {
+  color: var(--accent-indigo, #6366f1) !important;
+  border-bottom-color: var(--accent-indigo, #6366f1) !important;
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
+/* ─── 가이드 콘텐츠 높이 제한 및 스크롤바 격리 ────── */
+.guide-content {
+  max-height: 52vh !important; /* 화면 가득 차지 않게 가둬둠 */
+  overflow-y: auto !important;
+  padding-right: 8px;
+}
+
+/* 가이드 모달 내부 스크롤바 세밀 스타일링 */
+.guide-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.guide-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.guide-content::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: 99px;
+  border: none;
+}
+
+.guide-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.35);
+}
+
+/* ─── 패치노트 리스트 & 카드 ────────────────── */
+.patch-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 4px;
+}
+
+.patch-note-card {
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-lg, 8px);
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] .patch-note-card {
+  background: rgba(241, 245, 249, 0.5);
+  border-color: rgba(15, 23, 42, 0.05);
+}
+
+/* 최신 패치노트 카드 특별 시각적 효과 (인디고 네온 글로우) */
+.patch-note-card--latest {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(99, 102, 241, 0.08);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(15, 23, 42, 0.35) 100%);
+}
+
+[data-theme="light"] .patch-note-card--latest {
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 15px -5px rgba(99, 102, 241, 0.05);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(241, 245, 249, 0.5) 100%);
+}
+
+.patch-note-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.patch-note-card__badge-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.patch-note-card__version {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+[data-theme="light"] .patch-note-card__version {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.patch-note-card__latest-badge {
+  font-size: 0.55rem;
+  font-weight: 900;
+  color: #ffffff;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.2);
+}
+
+.patch-note-card__date {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.patch-note-card__title {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.patch-note-card__changes {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.patch-note-card__change-item {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-weight: 500;
+  position: relative;
+  padding-left: 12px;
+}
+
+.patch-note-card__change-item::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--accent-indigo, #6366f1);
+  font-weight: bold;
+}
+
+.patch-note-card--latest .patch-note-card__change-item::before {
+  color: #f97316;
+}
+
+.patch-notes-empty {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 40px 0;
+}

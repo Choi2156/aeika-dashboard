@@ -13,6 +13,7 @@ export function useScheduleData() {
     gamesConfig: GAMES_CONFIG,
     recommendedVideos: null,
     briefingData: null,
+    patchNotes: [],
     meta: null,
     loading: true,
     error: null,
@@ -21,12 +22,13 @@ export function useScheduleData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [dataRes, hintsRes, recRes, briefRes, updatesRes] = await Promise.all([
+        const [dataRes, hintsRes, recRes, briefRes, updatesRes, patchRes] = await Promise.all([
           fetch('./data/schedule_data.json?t=' + Date.now()),
           fetch('./data/schedule_hints.json?t=' + Date.now()),
           fetch('./data/recommended_videos.json?t=' + Date.now()),
           fetch('./data/briefing_data.json?t=' + Date.now()),
           fetch('./data/schedule_updates.json?t=' + Date.now()),
+          fetch('./data/patch_notes.json?t=' + Date.now()),
         ]);
 
         if (!dataRes.ok) throw new Error('schedule_data.json 로드 실패');
@@ -61,6 +63,16 @@ export function useScheduleData() {
           }
         }
 
+        // 패치노트 데이터 로드
+        let patchNotes = [];
+        if (patchRes && patchRes.ok) {
+          try {
+            patchNotes = await patchRes.json();
+          } catch (e) {
+            console.error('Failed to parse patch_notes.json:', e);
+          }
+        }
+
         // ID 기반 중복 제거 및 실시간 대치 (Merge & Override by ID Map)
         const baseEvents = scheduleData.events || [];
         const updateEvents = Array.isArray(updatesData) ? updatesData : [];
@@ -90,6 +102,7 @@ export function useScheduleData() {
           gamesConfig: GAMES_CONFIG,
           recommendedVideos,
           briefingData,
+          patchNotes,
           meta: scheduleData.meta || null,
           loading: false,
           error: null,
