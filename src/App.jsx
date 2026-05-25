@@ -36,6 +36,7 @@ export default function App() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEventTypeName, setSelectedEventTypeName] = useState('');
   const appRef = useRef(null);
+  const filterBarContainerRef = useRef(null);
   
   // 2. 테마 모드 상태 ('dark' | 'light')
   const [theme, setTheme] = useState('dark');
@@ -43,14 +44,38 @@ export default function App() {
   // 3. 로컬 스토리지 보존 동의 상태 (기본값: false)
   const [isStorageConsentEnabled, setIsStorageConsentEnabled] = useState(false);
 
-  // 4. 스크롤 스파이 훅 탑재: scrollY가 80px를 돌파하면 필터바 축소 신호(isShrunk) 가동
+  // 4. 스크롤 스파이 훅 탑재: 메뉴바가 화면 상단(sticky top 12px)에 도킹하기 직전(16px 여유)에 축소 가동
   const [isShrunk, setIsShrunk] = useState(false);
   useEffect(() => {
+    let originalOffset = 180; // 안전 마진 폴백
+    
+    // 레이아웃이 완전히 마운트되고 안착된 뒤 측정
+    const timer = setTimeout(() => {
+      if (filterBarContainerRef.current) {
+        originalOffset = filterBarContainerRef.current.offsetTop;
+      }
+    }, 150);
+
     const handleScroll = () => {
-      setIsShrunk(window.scrollY > 80);
+      // 12px 상단 sticky 여백 기준, 넘어가기 직전에 부드러운 수축 유도
+      setIsShrunk(window.scrollY > (originalOffset - 16));
     };
+
+    const handleResize = () => {
+      // 스크롤이 없을 때만 원래의 DOM 절대 위치를 갱신
+      if (filterBarContainerRef.current && window.scrollY === 0) {
+        originalOffset = filterBarContainerRef.current.offsetTop;
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
   
   // 테마 변경 시 document.body 전체에 data-theme 속성을 연계 바인딩하여 배경/스크롤바 등 무결점 통합 전환 보장
@@ -188,21 +213,23 @@ export default function App() {
 
       <DashboardInfoBar meta={meta} />
 
-      <GameFilterBar
-        activeGames={activeGames}
-        gamesConfig={gamesConfig}
-        onToggleGame={handleToggleGame}
-        onSelectAll={handleSelectAll}
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        onOpenGuide={() => setIsGuideOpen(true)}
-        meta={meta}
-        theme={theme}
-        onThemeChange={setTheme}
-        isStorageConsentEnabled={isStorageConsentEnabled}
-        onToggleStorageConsent={handleToggleStorageConsent}
-        isShrunk={isShrunk} // 스크롤 축소 신호 주입
-      />
+      <div ref={filterBarContainerRef} className="game-filter-bar-container">
+        <GameFilterBar
+          activeGames={activeGames}
+          gamesConfig={gamesConfig}
+          onToggleGame={handleToggleGame}
+          onSelectAll={handleSelectAll}
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          onOpenGuide={() => setIsGuideOpen(true)}
+          meta={meta}
+          theme={theme}
+          onThemeChange={setTheme}
+          isStorageConsentEnabled={isStorageConsentEnabled}
+          onToggleStorageConsent={handleToggleStorageConsent}
+          isShrunk={isShrunk} // 스크롤 축소 신호 주입
+        />
+      </div>
 
       <main className="main-content">
         {loading && (

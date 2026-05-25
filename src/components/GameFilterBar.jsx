@@ -1,5 +1,22 @@
 import { CheckSquare, Square, Monitor, Smartphone, HelpCircle, Sun, Moon, Database } from 'lucide-react';
 
+function getShortGameName(gameName) {
+  const mapping = {
+    '붕괴: 스타레일': '스타레일',
+    '젠레스 존 제로': '젠존제',
+    '원신': '원신',
+    '명조': '명조',
+    '명일방주: 엔드필드': '엔드필드',
+    '명일방주': '명방',
+    '블루 아카이브': '블아',
+    '소녀전선 2: 망명': '소전2',
+    '소녀전선2: 망명': '소전2',
+    '소녀전선2': '소전2',
+    '이환': '이환',
+  };
+  return mapping[gameName] || gameName;
+}
+
 /**
  * GameFilterBar 컴포넌트
  */
@@ -114,7 +131,7 @@ export default function GameFilterBar({
                     borderColor: color,
                   }}
                 />
-                <span className="game-filter-btn__label">{gameName}</span>
+                <span className="game-filter-btn__label">{isShrunk ? getShortGameName(gameName) : gameName}</span>
               </button>
             );
           })}
