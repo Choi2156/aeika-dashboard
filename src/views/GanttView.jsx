@@ -415,10 +415,11 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
       }
 
       const isSystemType = ['전반업데이트', '후반업데이트'].includes(ev.type);
+      const cleanVer = ev.version ? ev.version.replace(/\s*(전반|후반).*$/, '').trim() : '?';
       const label = isSystemType
         ? (isFixed
-          ? `[확정] v${ev.version || '?'} ${EVENT_TYPE_LABELS[ev.type] || ev.type}`
-          : `[예상] v${ev.version || '?'} ${EVENT_TYPE_LABELS[ev.type] || ev.type}`)
+          ? `[확정] v${cleanVer} ${EVENT_TYPE_LABELS[ev.type] || ev.type}`
+          : `[예상] v${cleanVer} ${EVENT_TYPE_LABELS[ev.type] || ev.type}`)
         : (isFixed
           ? `[확정] ${ev.title}`
           : `[예상] ${ev.title}`);
