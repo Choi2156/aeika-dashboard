@@ -69,7 +69,7 @@
   background: var(--modal-overlay-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  z-index: 50;
+  z-index: 1500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1432,6 +1432,48 @@
   bottom: 4px;
   font-size: 7.5px;
   padding: 1px 3.5px;
+}
+
+/* =============================================================
+   SCROLL SHRUNK GAME FILTER BAR
+   ============================================================= */
+
+/* 스크롤 시 콤팩트 축소 모드 */
+.game-filter-bar.game-filter-bar--shrunk {
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(99, 102, 241, 0.1);
+  background: rgba(15, 23, 42, 0.85); /* 좀 더 깊은 투명도 글래스모피즘 */
+  gap: 0;
+}
+
+[data-theme="light"] .game-filter-bar.game-filter-bar--shrunk {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__controls,
+.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__right {
+  display: none !important;
+}
+
+.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__left {
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__buttons {
+  justify-content: center;
+  width: 100%;
+  gap: 0.3rem;
+}
+
+.game-filter-bar.game-filter-bar--shrunk .game-filter-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.68rem;
+  border-radius: var(--radius-md);
 }
 
 

@@ -1,8 +1,14 @@
 import React from 'react';
-import { Mail, ShieldAlert, Heart } from 'lucide-react';
+import { Mail, ShieldAlert, Heart, Info } from 'lucide-react';
 import '../styles/components.css';
 
-export default function Footer() {
+/**
+ * Footer Component
+ * 
+ * Props:
+ *   onOpenLicense - Callback to open the copyright & disclaimer details modal
+ */
+export default function Footer({ onOpenLicense }) {
   return (
     <footer className="dashboard-footer">
       <div className="footer-content">
@@ -21,39 +27,43 @@ export default function Footer() {
 
         <hr className="footer-divider" />
 
-        <div className="footer-disclaimers">
-          <div className="disclaimer-item">
-            <span className="disclaimer-title">
-              <ShieldAlert size={13} />
-              <span>저작권 및 상표권 고지 (Copyright Disclaimer)</span>
+        <div className="footer-disclaimers" style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', marginBottom: '1rem' }}>
+          <div className="disclaimer-item" style={{ padding: '0.65rem 0.85rem', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', boxSizing: 'border-box' }}>
+            <span className="disclaimer-title" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+              <ShieldAlert size={12} style={{ color: 'var(--accent-indigo-light)' }} />
+              <span>저작권 고지</span>
             </span>
-            <p className="disclaimer-text" style={{ marginBottom: '0.5rem' }}>
-              본 대시보드에 사용된 모든 캐릭터 이미지, 로고, 게임 데이터 및 상표권은 각 게임 개발사 및 권리자의 공식 자산입니다. 본 대시보드는 정보 제공 및 사용자 편의 제공 목적으로 제작되었으며, 각 제조사의 지식재산권을 전적으로 존중하고 준수합니다.
-            </p>
-            <div className="disclaimer-copyrights" style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '0.65rem', color: 'var(--slate-500)', display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '0.5rem', borderLeft: '2px solid rgba(255, 255, 255, 0.05)' }}>
-              <div>Copyright © COGNOSPHERE. All Rights Reserved.</div>
-              <div>Copyright © KURO GAMES. ALL RIGHTS RESERVED.</div>
-              <div>Copyright © GRYPHLINE. All Rights Reserved.</div>
-            </div>
-          </div>
-
-          <div className="disclaimer-item">
-            <span className="disclaimer-title">
-              <ShieldAlert size={13} />
-              <span>예측 알고리즘 및 정보 면책 조항 (Data Disclaimer)</span>
-            </span>
-            <p className="disclaimer-text">
-              대시보드에 표기되는 D-Day 및 업데이트 스케줄([확정] 및 [예상])은 각 제조사의 정규 패치 주기 상수를 대입한 시스템 알고리즘 연산 결과와 관리자 검증을 기반으로 합니다. 단, 대형 명절이나 돌발 업데이트 지연, 공식 공지 번복 등으로 인해 실제 공개 스케줄과 오차가 발생할 수 있습니다. 본 사이트는 안내되는 스케줄 데이터의 정보 무결성을 보장하지 않으며 참고용 스케줄로서 어떠한 법적 책임도 지지 않습니다.
+            <p className="disclaimer-text" style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+              본 사이트에 수납된 모든 캐릭터 이미지, 공식 로고 및 상표권은 각 게임 개발사에 귀속됩니다. 
+              <button onClick={onOpenLicense} className="footer-detail-trigger-btn" style={{ background: 'none', border: 'none', color: 'var(--accent-indigo-light)', fontWeight: 700, padding: '0 4px', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.68rem' }}>
+                [상세 보기]
+              </button>
             </p>
           </div>
 
-          <div className="disclaimer-item">
-            <span className="disclaimer-title">
-              <ShieldAlert size={13} />
-              <span>라이선스 및 오픈소스 고지 (Open Source Licenses)</span>
+          <div className="disclaimer-item" style={{ padding: '0.65rem 0.85rem', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', boxSizing: 'border-box' }}>
+            <span className="disclaimer-title" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+              <ShieldAlert size={12} style={{ color: 'var(--accent-indigo-light)' }} />
+              <span>일정 면책 조항</span>
             </span>
-            <p className="disclaimer-text">
-              본 웹사이트의 프론트엔드 소스 코드는 <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" className="license-link">MIT License</a> 규격을 준수합니다. 사이트에 사용된 아이콘은 Lucide React 라이선스에 준하며, 서체는 Google Fonts에서 배포하는 Outfit 폰트(OFL)를 적용했습니다. 대시보드의 원활한 트래픽 유지를 위해 동영상 콘텐츠는 유튜브 임베디드 소스를 활용하여 우회 CDN 호스팅 구조를 적용했습니다.
+            <p className="disclaimer-text" style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+              공지되지 않은 [예상] 배너 일정 및 D-Day 타이머는 시스템 주기 연산 기반 수치이므로 오차가 있을 수 있습니다. 
+              <button onClick={onOpenLicense} className="footer-detail-trigger-btn" style={{ background: 'none', border: 'none', color: 'var(--accent-indigo-light)', fontWeight: 700, padding: '0 4px', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.68rem' }}>
+                [상세 보기]
+              </button>
+            </p>
+          </div>
+
+          <div className="disclaimer-item" style={{ padding: '0.65rem 0.85rem', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', boxSizing: 'border-box' }}>
+            <span className="disclaimer-title" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+              <Info size={12} style={{ color: 'var(--accent-indigo-light)' }} />
+              <span>라이선스 안내</span>
+            </span>
+            <p className="disclaimer-text" style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+              본 웹사이트 소스코드는 MIT 규격을 준수하며, 유튜브 우회 CDN 임베딩 호스팅 구조를 적용했습니다. 
+              <button onClick={onOpenLicense} className="footer-detail-trigger-btn" style={{ background: 'none', border: 'none', color: 'var(--accent-indigo-light)', fontWeight: 700, padding: '0 4px', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.68rem' }}>
+                [상세 보기]
+              </button>
             </p>
           </div>
         </div>

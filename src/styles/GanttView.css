@@ -603,8 +603,29 @@
     max-height: 70vh;
   }
 
+  .gantt-row-game {
+    padding: 0 4px !important;
+    justify-content: center !important;
+    gap: 4px !important;
+  }
+
+  .gantt-game-link-btn {
+    display: none !important;
+  }
+
+  .gantt-game-indicator {
+    width: 3px !important;
+    height: 16px !important;
+  }
+
   .gantt-game-name {
-    font-size: 11px;
+    font-size: 10px !important;
+    text-align: center !important;
+    word-break: break-all !important;
+  }
+
+  .gantt-chevron {
+    display: none !important;
   }
 
   .gantt-bar {
@@ -1260,8 +1281,9 @@
 }
 
 .longform-video-card__desc {
-  font-size: 0.7rem;
-  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -1269,7 +1291,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  opacity: 0.85;
+  opacity: 1;
   word-break: keep-all;
 }
 

@@ -6,6 +6,7 @@ import GanttView from './views/GanttView';
 import ListView from './views/ListView';
 import DetailModal from './components/DetailModal';
 import GuideModal from './components/GuideModal';
+import LicenseModal from './components/LicenseModal';
 import LiveBannerBoard from './components/LiveBannerBoard';
 import DashboardInfoBar from './components/DashboardInfoBar';
 import Footer from './components/Footer';
@@ -13,19 +14,44 @@ import Footer from './components/Footer';
 import './styles/variables.css';
 import './styles/base.css';
 
+// 확장성을 위한 마스터 설정 스키마 기본값 정의 (추후 완전히 새로운 필드가 추가되어도 크래시 없이 하위호환)
+const DEFAULT_SETTINGS = {
+  theme: 'dark',
+  currentView: 'gantt',
+  activeGames: {},
+};
+
 export default function App() {
   const { events, gamesConfig, recommendedVideos, briefingData, meta, loading, error } = useScheduleData();
-  const [currentView, setCurrentView] = useState('gantt');
+  
+  // 1. 모바일 기기 최초 접속 시 모바일 직관 뷰('list') 디폴트화 보증을 위한 Lazy Initializer 이식
+  const [currentView, setCurrentView] = useState(() => {
+    const isMobile = typeof window !== 'undefined' && 
+      (window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
+    return isMobile ? 'list' : 'gantt';
+  });
+
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isLicenseOpen, setIsLicenseOpen] = useState(false); // 신설 면책/라이선스 상세 모달
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEventTypeName, setSelectedEventTypeName] = useState('');
   const appRef = useRef(null);
   
-  // 1. 테마 모드 상태 ('dark' | 'light')
+  // 2. 테마 모드 상태 ('dark' | 'light')
   const [theme, setTheme] = useState('dark');
   
-  // 2. 로컬 스토리지 보존 동의 상태 (기본값: false)
+  // 3. 로컬 스토리지 보존 동의 상태 (기본값: false)
   const [isStorageConsentEnabled, setIsStorageConsentEnabled] = useState(false);
+
+  // 4. 스크롤 스파이 훅 탑재: scrollY가 80px를 돌파하면 필터바 축소 신호(isShrunk) 가동
+  const [isShrunk, setIsShrunk] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsShrunk(window.scrollY > 80);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   // 테마 변경 시 document.body 전체에 data-theme 속성을 연계 바인딩하여 배경/스크롤바 등 무결점 통합 전환 보장
   useEffect(() => {
@@ -34,47 +60,54 @@ export default function App() {
   
   // 게임 활성화 상태 관리
   const [activeGames, setActiveGames] = useState({});
-
-  // 3. 마운트 시 저장소에서 이전 설정(동의 유저에 한해) 세밀 복원
+  
+  // 5. [개선] 단일 직렬화 객체 복원 엔진 (동의 유저에 한해 모바일/PC 통합 자동 복구 및 하위호환)
   useEffect(() => {
-    const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
     const savedConsent = localStorage.getItem('subculture_dashboard_consent') === 'true';
-    
-    if (savedConsent && !isMobile) {
+    if (savedConsent) {
       setIsStorageConsentEnabled(true);
       
-      const savedTheme = localStorage.getItem('subculture_dashboard_theme');
-      if (savedTheme === 'dark' || savedTheme === 'light') {
-        setTheme(savedTheme);
-      }
-      
-      const savedView = localStorage.getItem('subculture_dashboard_view');
-      if (savedView === 'gantt' || savedView === 'list') {
-        setCurrentView(savedView);
+      const savedSettingsStr = localStorage.getItem('subculture_dashboard_settings');
+      if (savedSettingsStr) {
+        try {
+          const parsed = JSON.parse(savedSettingsStr);
+          // 마스터 템플릿과 병합함으로써 추후 신규 컬럼 필드가 추가되더라도 누락 없이 안전 융합
+          const merged = { ...DEFAULT_SETTINGS, ...parsed };
+          
+          if (merged.theme === 'dark' || merged.theme === 'light') {
+            setTheme(merged.theme);
+          }
+          if (merged.currentView === 'gantt' || merged.currentView === 'list') {
+            setCurrentView(merged.currentView);
+          }
+        } catch (e) {
+          console.error('Failed to restore master dashboard settings from local storage:', e);
+        }
       }
     }
   }, []);
 
-  // 4. gamesConfig 로딩 시점 필터 복원 철벽 방어선
+  // 6. gamesConfig 로딩 시점에 활성화 게임 필터 복원
   useEffect(() => {
     if (gamesConfig) {
-      const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
       const savedConsent = localStorage.getItem('subculture_dashboard_consent') === 'true';
-      
-      if (savedConsent && !isMobile) {
-        const savedGames = localStorage.getItem('subculture_dashboard_active_games');
-        if (savedGames) {
+      if (savedConsent) {
+        const savedSettingsStr = localStorage.getItem('subculture_dashboard_settings');
+        if (savedSettingsStr) {
           try {
-            const parsed = JSON.parse(savedGames);
-            const configKeys = Object.keys(gamesConfig);
-            const parsedKeys = Object.keys(parsed);
-            const isMatch = configKeys.every(k => parsedKeys.includes(k));
-            if (isMatch) {
-              setActiveGames(parsed);
-              return;
+            const parsed = JSON.parse(savedSettingsStr);
+            const savedGames = parsed.activeGames;
+            if (savedGames) {
+              const configKeys = Object.keys(gamesConfig);
+              const parsedKeys = Object.keys(savedGames);
+              const isMatch = configKeys.every(k => parsedKeys.includes(k));
+              if (isMatch) {
+                setActiveGames(savedGames);
+                return;
+              }
             }
           } catch (e) {
-            console.error('Failed to restore active games cache:', e);
+            console.error('Failed to restore active games cache from master settings object:', e);
           }
         }
       }
@@ -87,29 +120,28 @@ export default function App() {
     }
   }, [gamesConfig]);
 
-  // 5. 동의 유저 대상 자동 상태 백업 저장 세션
+  // 7. [개선] 단일 직렬화 객체 자동 실시간 백업 세션 (모바일/PC 통합 세션 백업 보장)
   useEffect(() => {
-    const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isStorageConsentEnabled && !isMobile) {
+    if (isStorageConsentEnabled) {
       localStorage.setItem('subculture_dashboard_consent', 'true');
-      localStorage.setItem('subculture_dashboard_theme', theme);
-      localStorage.setItem('subculture_dashboard_view', currentView);
-      if (Object.keys(activeGames).length > 0) {
-        localStorage.setItem('subculture_dashboard_active_games', JSON.stringify(activeGames));
-      }
+      
+      const settingsObj = {
+        theme,
+        currentView,
+        activeGames
+      };
+      localStorage.setItem('subculture_dashboard_settings', JSON.stringify(settingsObj));
     }
   }, [isStorageConsentEnabled, theme, currentView, activeGames]);
 
-  // 6. 설정 보존 철회 시 로컬 샌드박스 데이터 100% 영구 흔적 소거
+  // 8. 설정 보존 철회 시 로컬 저장소 흔적 100% 소거
   const handleToggleStorageConsent = (isEnabled) => {
     if (isEnabled) {
       setIsStorageConsentEnabled(true);
     } else {
       setIsStorageConsentEnabled(false);
       localStorage.removeItem('subculture_dashboard_consent');
-      localStorage.removeItem('subculture_dashboard_theme');
-      localStorage.removeItem('subculture_dashboard_view');
-      localStorage.removeItem('subculture_dashboard_active_games');
+      localStorage.removeItem('subculture_dashboard_settings');
     }
   };
 
@@ -169,6 +201,7 @@ export default function App() {
         onThemeChange={setTheme}
         isStorageConsentEnabled={isStorageConsentEnabled}
         onToggleStorageConsent={handleToggleStorageConsent}
+        isShrunk={isShrunk} // 스크롤 축소 신호 주입
       />
 
       <main className="main-content">
@@ -231,7 +264,12 @@ export default function App() {
         onClose={() => setIsGuideOpen(false)}
       />
 
-      <Footer />
+      <LicenseModal
+        isOpen={isLicenseOpen}
+        onClose={() => setIsLicenseOpen(false)}
+      />
+
+      <Footer onOpenLicense={() => setIsLicenseOpen(true)} />
     </div>
   );
 }

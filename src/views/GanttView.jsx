@@ -46,6 +46,23 @@ function addDays(date, days) {
   return d;
 }
 
+function getShortGameName(gameName) {
+  const mapping = {
+    '붕괴: 스타레일': '스타레일',
+    '젠레스 존 제로': '젠존제',
+    '원신': '원신',
+    '명조': '명조',
+    '명일방주: 엔드필드': '엔드필드',
+    '명일방주': '명방',
+    '블루 아카이브': '블아',
+    '소녀전선 2: 망명': '소전2',
+    '소녀전선2: 망명': '소전2',
+    '소녀전선2': '소전2',
+    '이환': '이환',
+  };
+  return mapping[gameName] || gameName;
+}
+
 /* Display type name mapping */
 const EVENT_TYPE_LABELS = {
   '전반업데이트': '버전 업데이트',
@@ -118,6 +135,18 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   const scrollRef = useRef(null);
   const [hoveredCol, setHoveredCol] = useState(null);
   const [currentShortIndex, setCurrentShortIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const gameColWidth = isMobile ? 80 : GAME_COL_WIDTH;
 
   const today = useMemo(() => getToday(), []);
   const todayStr = useMemo(() => formatDateStr(today), [today]);
@@ -264,9 +293,9 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     const todayIndex = dateAxis.findIndex((d) => d.isToday);
     if (todayIndex === -1) return;
     const scrollTarget =
-      todayIndex * CELL_WIDTH - scrollRef.current.clientWidth / 2 + GAME_COL_WIDTH;
+      todayIndex * CELL_WIDTH - scrollRef.current.clientWidth / 2 + gameColWidth;
     scrollRef.current.scrollLeft = Math.max(0, scrollTarget);
-  }, [dateAxis]);
+  }, [dateAxis, gameColWidth]);
 
   /* ── Get theme color for game ── */
   const getGameColor = useCallback(
@@ -400,13 +429,13 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
       <div className="gantt-container" ref={scrollRef}>
         <div
           className="gantt-grid"
-          style={{ width: `${GAME_COL_WIDTH + totalGridWidth}px` }}
+          style={{ width: `${gameColWidth + totalGridWidth}px` }}
         >
           {/* ═══ Header Row ═══ */}
           <div className="gantt-header">
             <div
               className="gantt-header-game gantt-sticky-intersect"
-              style={{ width: `${GAME_COL_WIDTH}px`, minWidth: `${GAME_COL_WIDTH}px` }}
+              style={{ width: `${gameColWidth}px`, minWidth: `${gameColWidth}px` }}
             >
               <span className="gantt-header-game-label">게임</span>
             </div>
@@ -446,8 +475,8 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                   <div
                     className="gantt-row-game gantt-sticky-col"
                     style={{
-                      width: `${GAME_COL_WIDTH}px`,
-                      minWidth: `${GAME_COL_WIDTH}px`,
+                      width: `${gameColWidth}px`,
+                      minWidth: `${gameColWidth}px`,
                       '--game-color': color,
                     }}
                     onClick={() => onToggleGame && onToggleGame(gameName)}
@@ -455,7 +484,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                     <span className="gantt-game-indicator" style={{ backgroundColor: color }} />
                     
                     <div className="gantt-game-meta-group">
-                      <span className="gantt-game-name">{gameName}</span>
+                      <span className="gantt-game-name">{isMobile ? getShortGameName(gameName) : gameName}</span>
                       {!isCollapsed && gamesConfig?.[gameName]?.officialUrl && (
                         <a
                           href={gamesConfig[gameName].officialUrl}
@@ -609,7 +638,6 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                         )}
                       </div>
                       <div className="longform-video-card__content">
-                        <h4 className="longform-video-card__title">{video.title}</h4>
                         {video.desc && <p className="longform-video-card__desc">{video.desc}</p>}
                       </div>
                     </a>
@@ -655,7 +683,6 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                         )}
                       </div>
                       <div className="longform-video-card__content">
-                        <h4 className="longform-video-card__title">{video.title}</h4>
                         {video.desc && <p className="longform-video-card__desc">{video.desc}</p>}
                       </div>
                     </a>

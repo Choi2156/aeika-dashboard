@@ -16,6 +16,7 @@ export default function GameFilterBar({
   onThemeChange,
   isStorageConsentEnabled,
   onToggleStorageConsent,
+  isShrunk,
 }) {
   const handleToggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -67,7 +68,7 @@ export default function GameFilterBar({
   };
 
   return (
-    <section className="game-filter-bar">
+    <section className={`game-filter-bar ${isShrunk ? 'game-filter-bar--shrunk' : ''}`}>
       {/* 1. 왼쪽 그룹: 필터 및 일괄제어 */}
       <div className="game-filter-bar__left">
         <div className="game-filter-bar__controls">
