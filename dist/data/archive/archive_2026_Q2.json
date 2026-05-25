@@ -39,19 +39,6 @@
     "link": ""
   },
   {
-    "id": "EVT_ZZZ_20260506_0001",
-    "game": "젠레스 존 제로",
-    "version": "2.8",
-    "type": "전반업데이트",
-    "title": "2.8 버전 - 「뉴: 에리두의 일몰」",
-    "date": "2026-05-06",
-    "time": "",
-    "is_fixed": true,
-    "detail": "전반 5/6 프로미아 픽업 및 파에톤의 기록 개방: 시즌 2 에필로그 「뉴: 에리두의 일몰(하)」",
-    "custom_img": "zzz_2.8_banner.webp",
-    "link": ""
-  },
-  {
     "id": "EVT_HSR_20260513_0001",
     "game": "붕괴: 스타레일",
     "version": "4.2 후반",
@@ -76,57 +63,5 @@
     "detail": "후반 5/14 특수 헤드헌팅(4중 복각 픽업) 및 1.2 버전 장방이 단독 픽업에 후반 특수 픽업 추가",
     "custom_img": "endfield_1.2_banner.webp",
     "link": ""
-  },
-  {
-    "id": "EVT_GNS_20260520_0001",
-    "game": "원신",
-    "version": "6.6",
-    "type": "전반업데이트",
-    "title": "6.6 「일곱 번째 달」 버전 - 「공허 겁회의 푸라나」",
-    "date": "2026-05-20",
-    "time": "",
-    "is_fixed": true,
-    "detail": "전반 5/20 니콜 픽업 및 마신 임무 개방: 공월의 노래 9막 「멸망 속에서 피어난 지혜」, 10막 「천 갈래 길과 소멸하는 인과」",
-    "custom_img": "genshin_6.6_banner.webp",
-    "link": ""
-  },
-  {
-    "id": "EVT_WW_20260521_0001",
-    "game": "명조",
-    "version": "3.3 후반",
-    "type": "후반업데이트",
-    "title": "3.3 후반 캐릭터 튜닝 전환",
-    "date": "2026-05-21",
-    "time": "",
-    "is_fixed": true,
-    "detail": "후반 5/21 데니아 픽업 및 조수 임무 개방: 제3장 · 에필로그 「녹아내린 밤하늘 아래」",
-    "custom_img": "wuthering_3.3_banner.webp",
-    "link": ""
-  },
-  {
-    "id": "EVT_HSR_20260522_0001",
-    "game": "붕괴: 스타레일",
-    "version": "4.3",
-    "type": "공식방송",
-    "title": "4.3 버전 「산 자의 망천에 잠겨」 프리뷰 스페셜 프로그램",
-    "date": "2026-05-22",
-    "time": "19:30",
-    "is_fixed": true,
-    "detail": "공식 방송 5/22 19:30 진행 예정",
-    "custom_img": "starrail_4.3_stream.jpg",
-    "link": "https://www.youtube.com/live/Q2ZxjPxeibw"
-  },
-  {
-    "id": "EVT_AKEF_20260522_0001",
-    "game": "명일방주: 엔드필드",
-    "version": "1.3",
-    "type": "공식방송",
-    "title": "1.3 「과거를 찾아서」 버전의 미리보기 프로그램",
-    "date": "2026-05-22",
-    "time": "20:30",
-    "is_fixed": true,
-    "detail": "공식 방송 5월 22일 20:30(KST)",
-    "custom_img": "endfield_1.3_banner.webp",
-    "link": "https://youtu.be/GZWh3krEAPk?si=uihoytp5qULDpsOx"
   }
 ]

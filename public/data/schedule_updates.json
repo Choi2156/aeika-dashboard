@@ -26,27 +26,6 @@
     "link": ""
   },
   {
-    "game": "붕괴: 스타레일",
-    "version": "",
-    "type": "오프라인이벤트",
-    "title": "은하 열차 오프라인 팝업 스토어",
-    "date": "2026-06-15",
-    "end_date": "2026-06-18",
-    "time": "",
-    "is_fixed": true,
-    "detail": "붕괴: 스타레일 은하 열차 오프라인 팝업 스토어가 홍대에서 4일간 진행됩니다.",
-    "location": "홍대입구역 팝업 스토어 전용관",
-    "ticket_links": [
-      {
-        "name": "인터파크 티켓",
-        "url": "https://ticket.interpark.com"
-      }
-    ],
-    "link": "https://cafe.naver.com/hoyoverse",
-    "custom_img": "evt_hsr_1779681161.png",
-    "id": "EVT_HSR_20260615_0001"
-  },
-  {
     "id": "EVT_HSR_20260622_0001",
     "game": "붕괴: 스타레일",
     "version": "4.3 후반",
