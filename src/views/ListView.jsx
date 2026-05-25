@@ -17,6 +17,7 @@ export default function ListView({ events, gamesConfig, activeGames, onEventClic
     '전반업데이트': '버전 업데이트',
     '후반업데이트': '후반업데이트',
     '공식방송': '공식방송',
+    '오프라인이벤트': '오프라인 이벤트',
   };
 
   // ── Today string (YYYY-MM-DD) ───────────────────────────────
@@ -225,7 +226,7 @@ export default function ListView({ events, gamesConfig, activeGames, onEventClic
               {/* Right column: event card (넷플릭스 스타일 가로 일러스트 배경 마스크 카드 개편) */}
               <div className="list-view__right">
                 <div
-                  className={`list-view__card ${isToday ? 'list-view__card--today' : ''} ${event.type === '공식방송' ? 'list-view__card--stream' : ''}`}
+                  className={`list-view__card ${isToday ? 'list-view__card--today' : ''} ${event.type === '공식방송' ? 'list-view__card--stream' : ''} ${event.type === '오프라인이벤트' ? 'list-view__card--offline' : ''}`}
                   onClick={() => onEventClick && onEventClick(event, displayTypeName)}
                   role="button"
                   tabIndex={0}
@@ -291,6 +292,11 @@ export default function ListView({ events, gamesConfig, activeGames, onEventClic
                       <div className="list-view__title">
                         {event.title || displayTypeName}
                       </div>
+                      {event.type === '오프라인이벤트' && event.location && (
+                        <div className="list-view__offline-location" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: 'var(--accent-indigo-light)', marginTop: '4px', marginBottom: '2px', fontWeight: 700 }}>
+                          <span>📍 {event.location}</span>
+                        </div>
+                      )}
                       {event.detail && (
                         <div className="list-view__detail">{event.detail}</div>
                       )}

@@ -1431,6 +1431,22 @@
   }
 }
 
+/* ── Offline event bar styling (📍 오프라인 행사 특화) ── */
+.gantt-bar-offline {
+  border-style: solid !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  font-family: inherit;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-sizing: border-box;
+}
+
+.gantt-bar-offline:hover {
+  filter: brightness(1.25) !important;
+  box-shadow: 0 0 15px var(--bar-color), 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
 
 
 

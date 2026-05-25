@@ -69,6 +69,7 @@ const EVENT_TYPE_LABELS = {
   '후반업데이트': '후반 업데이트',
   '공식방송': '방송',
   '행사': '행사',
+  '오프라인이벤트': '오프라인 이벤트',
 };
 
 /* ────────────────────────────────────────────
@@ -212,7 +213,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     const map = {};
     gameNames.forEach((gameName) => {
       const gameEvents = eventsByGame[gameName] || [];
-      const baseLanes = ['전반업데이트', '후반업데이트', '공식방송'];
+      const baseLanes = ['전반업데이트', '후반업데이트', '공식방송', '오프라인이벤트'];
       
       const customTypes = new Set();
       gameEvents.forEach((ev) => {
@@ -310,6 +311,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     if (ev.type === '공식방송') return '공식방송';
     if (ev.type === '후반업데이트') return '후반업데이트';
     if (ev.type === '전반업데이트') return '전반업데이트';
+    if (ev.type === '오프라인이벤트') return '오프라인이벤트';
     return ev.type;
   }, []);
 
@@ -325,7 +327,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
       const isStream = ev.type === '공식방송';
 
       // 해당 게임의 동적 레인 맵에서 본 이벤트 타입의 인덱스 추적
-      const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
+      const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송', '오프라인이벤트'];
       const laneIndex = lanes.indexOf(ev.type) !== -1 ? lanes.indexOf(ev.type) : 0;
       const topPos = `${laneIndex * 36 + 6}px`;
 
@@ -346,6 +348,39 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
             }}
             title={`${ev.version || ''} ${displayType}`}
           />
+        );
+      }
+
+      const isOfflineEvent = ev.type === '오프라인이벤트';
+      if (isOfflineEvent) {
+        return (
+          <div
+            key={ev.id || `${gameName}-offline-${ev.start_date}`}
+            className="gantt-bar gantt-bar-offline"
+            style={{
+              left: `${bar.left}px`,
+              width: `${bar.width}px`,
+              top: topPos,
+              transform: 'none',
+              height: '28px',
+              '--bar-color': color,
+              backgroundColor: 'rgba(99, 102, 241, 0.06)',
+              border: `1.5px solid ${color}`,
+              boxShadow: `0 0 10px rgba(99, 102, 241, 0.15)`,
+              color: '#ffffff',
+              fontWeight: 700,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEventClick?.(ev, displayType);
+            }}
+            title={`${ev.title} (장소: ${ev.location || '—'})`}
+          >
+            <span className="gantt-bar-label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span>📍</span>
+              <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{ev.title}</span>
+            </span>
+          </div>
         );
       }
 
@@ -463,7 +498,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
               const gameEvents = eventsByGame[gameName] || [];
               const color = getGameColor(gameName);
               
-              const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
+              const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송', '오프라인이벤트'];
               const rowH = isCollapsed ? ROW_HEIGHT_COLLAPSED : (lanes.length * 36 + 12);
 
               return (

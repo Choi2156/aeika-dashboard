@@ -1476,6 +1476,43 @@
   border-radius: var(--radius-md);
 }
 
+/* =============================================================
+   🎟️ Ticket Link Button Styles (DetailModal)
+   ============================================================= */
+.ticket-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, var(--indigo-600) 0%, var(--indigo-700) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-base, 150ms) ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.ticket-link-btn:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);
+  border-color: var(--accent-indigo-light);
+}
+
+.ticket-link-btn:active {
+  transform: translateY(0);
+}
+
+[data-theme="light"] .ticket-link-btn {
+  background: linear-gradient(135deg, var(--indigo-500) 0%, var(--indigo-600) 100%);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+}
+
 
 
 

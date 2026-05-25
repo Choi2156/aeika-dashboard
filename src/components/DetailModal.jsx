@@ -152,7 +152,7 @@ export default function DetailModal({ event, displayTypeName, gamesConfig, onClo
         )}
 
         {/* ── Metadata ── */}
-        <div className="modal-metadata">
+        <div className="modal-metadata" style={event.ticket_links && event.ticket_links.length > 0 ? { borderBottomLeftRadius: '0px', borderBottomRightRadius: '0px', borderBottom: 'none', margin: '0.75rem 1.25rem 0rem 1.25rem' } : {}}>
           {isStream ? (
             <div className="modal-metadata-row">
               <span className="modal-metadata-key">방송일</span>
@@ -178,6 +178,14 @@ export default function DetailModal({ event, displayTypeName, gamesConfig, onClo
               )}
             </>
           )}
+          {event.location && (
+            <div className="modal-metadata-row">
+              <span className="modal-metadata-key">장소</span>
+              <span className="modal-metadata-value" style={{ color: 'var(--accent-indigo-light)', fontWeight: 700 }}>
+                📍 {event.location}
+              </span>
+            </div>
+          )}
           {event.time && (
             <div className="modal-metadata-row">
               <span className="modal-metadata-key">시간</span>
@@ -192,6 +200,28 @@ export default function DetailModal({ event, displayTypeName, gamesConfig, onClo
           )}
         </div>
 
+        {/* ── Ticket Links (오프라인 예매처 복수 단추 동적 렌더러) ── */}
+        {event.ticket_links && event.ticket_links.length > 0 && (
+          <div className="modal-metadata" style={{ marginTop: '0px', borderTop: 'none', borderTopLeftRadius: '0px', borderTopRightRadius: '0px', margin: '0rem 1.25rem 0.75rem 1.25rem' }}>
+            <div className="modal-metadata-row" style={{ flexDirection: 'column', gap: '6px', alignItems: 'stretch' }}>
+              <span className="modal-metadata-key" style={{ marginBottom: '2px' }}>🎟️ 예매 바로가기</span>
+              <div className="modal-ticket-links" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {event.ticket_links.map((linkObj, idx) => (
+                  <a
+                    key={idx}
+                    href={linkObj.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ticket-link-btn"
+                  >
+                    <span>{linkObj.name || `예매처 ${idx + 1}`}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Link Button ── */}
         {event.link ? (
           <a
@@ -201,7 +231,7 @@ export default function DetailModal({ event, displayTypeName, gamesConfig, onClo
             rel="noopener noreferrer"
           >
             <ExternalLink size={16} />
-            상세 링크 열기
+            공식 공지 / 사이트 열기
           </a>
         ) : (
           <div className="modal-bottom-spacer" />
