@@ -1,6 +1,6 @@
 [
   {
-    "id": "starrail_4.3_update",
+    "id": "EVT_HSR_20260601_0001",
     "game": "붕괴: 스타레일",
     "version": "4.3",
     "type": "전반업데이트",
@@ -13,7 +13,7 @@
     "link": ""
   },
   {
-    "id": "starrail_4.3_half",
+    "id": "EVT_HSR_20260622_0001",
     "game": "붕괴: 스타레일",
     "version": "4.3 후반",
     "type": "후반업데이트",
@@ -26,7 +26,7 @@
     "link": ""
   },
   {
-    "id": "endfield_1.3_update",
+    "id": "EVT_AKEF_20260605_0001",
     "game": "명일방주: 엔드필드",
     "version": "1.3",
     "type": "전반업데이트",
@@ -39,7 +39,7 @@
     "link": ""
   },
   {
-    "id": "endfield_1.3_half",
+    "id": "EVT_AKEF_20260626_0001",
     "game": "명일방주: 엔드필드",
     "version": "1.3 후반",
     "type": "후반업데이트",
@@ -52,7 +52,7 @@
     "link": ""
   },
   {
-    "id": "starrail_kintex_festival",
+    "id": "EVT_HSR_20260615_0001",
     "game": "붕괴: 스타레일",
     "version": "",
     "type": "오프라인이벤트",

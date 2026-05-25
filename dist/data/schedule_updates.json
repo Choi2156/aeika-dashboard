@@ -1,6 +1,6 @@
 [
   {
-    "id": "starrail_4.3_update",
+    "id": "EVT_HSR_20260601_0001",
     "game": "붕괴: 스타레일",
     "version": "4.3",
     "type": "전반업데이트",
@@ -13,7 +13,7 @@
     "link": ""
   },
   {
-    "id": "starrail_4.3_half",
+    "id": "EVT_HSR_20260622_0001",
     "game": "붕괴: 스타레일",
     "version": "4.3 후반",
     "type": "후반업데이트",
@@ -26,7 +26,7 @@
     "link": ""
   },
   {
-    "id": "endfield_1.3_update",
+    "id": "EVT_AKEF_20260605_0001",
     "game": "명일방주: 엔드필드",
     "version": "1.3",
     "type": "전반업데이트",
@@ -39,7 +39,7 @@
     "link": ""
   },
   {
-    "id": "endfield_1.3_half",
+    "id": "EVT_AKEF_20260626_0001",
     "game": "명일방주: 엔드필드",
     "version": "1.3 후반",
     "type": "후반업데이트",
@@ -50,5 +50,23 @@
     "detail": "후반 6/26 '카뮤' 출시 및 카뮤 스토리 「망자의 춤」 개방",
     "custom_img": "endfield_1.3_banner.webp",
     "link": ""
+  },
+  {
+    "id": "EVT_HSR_20260615_0001",
+    "game": "붕괴: 스타레일",
+    "version": "",
+    "type": "오프라인이벤트",
+    "title": "스타레일 은하 열차 글로벌 오프라인 페스티벌",
+    "date": "2026-06-15",
+    "end_date": "2026-06-18",
+    "is_fixed": true,
+    "location": "서울 킨텍스(KINTEX) 제2전시장 7홀",
+    "detail": "개척자 여러분을 위한 전 세계 최대 규모의 글로벌 오프라인 페스티벌이 서울에서 개최됩니다! 다양한 미니 게임 부스와 공식 굿즈샵, 코스프레 시상식 등 다채로운 이벤트가 준비되어 있으니 꼭 참석해 보세요.",
+    "custom_img": "kintex_festival.png",
+    "link": "https://hsr.hoyoverse.com/ko-kr/news/12345",
+    "ticket_links": [
+      {"name": "인터파크 예매", "url": "https://ticket.interpark.com"},
+      {"name": "티켓링크 예매", "url": "https://www.ticketlink.co.kr"}
+    ]
   }
 ]

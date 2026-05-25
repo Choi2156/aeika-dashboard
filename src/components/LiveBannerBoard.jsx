@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Play, Volume2, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock } from 'lucide-react';
 import '../styles/components.css';
 
 /**
@@ -21,13 +21,35 @@ export default function LiveBannerBoard({ events, gamesConfig, onEventClick }) {
     return `${yyyy}-${mm}-${dd}`;
   }, []);
 
-  // 2. 현재 진행 중인 일정 필터링 및 전후반 중복 제거
+  // 날짜 간 일수 차이 계산 헬퍼
+  const getDaysDiff = (dateStr1, dateStr2) => {
+    if (!dateStr1 || !dateStr2) return 999;
+    const d1 = new Date(dateStr1);
+    const d2 = new Date(dateStr2);
+    d1.setHours(0, 0, 0, 0);
+    d2.setHours(0, 0, 0, 0);
+    return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+  };
+
+  // 2. 현재 진행 중이거나 7일 이내 도래할 일정 필터링 및 전후반 중복 제거
   const liveEvents = useMemo(() => {
     if (!events || events.length === 0) return [];
     
     const activeCandidates = events.filter((ev) => {
-      if (!ev.start_date || !ev.end_date) return false;
-      return todayStr >= ev.start_date && todayStr <= ev.end_date;
+      if (!ev.start_date) return false;
+      
+      // A. 현재 진행 중인 일정
+      if (ev.end_date && todayStr >= ev.start_date && todayStr <= ev.end_date) {
+        return true;
+      }
+      
+      // B. 다가오는 7일 이내의 일정 (D-7 ~ D-1)
+      const diff = getDaysDiff(todayStr, ev.start_date);
+      if (diff > 0 && diff <= 7) {
+        return true;
+      }
+      
+      return false;
     });
 
     const filtered = [];
@@ -90,29 +112,54 @@ export default function LiveBannerBoard({ events, gamesConfig, onEventClick }) {
     setCurrentIndex((prev) => (prev + 1) % liveEvents.length);
   };
 
-  // 일정 타입별 배너 타이틀/뱃지 텍스트 파싱
+  // 일정 타입별 배너 타이틀/뱃지 텍스트 파싱 (D-Day 연산 및 표시 내용 뱃지 정밀 분기)
   const getBannerMeta = (ev) => {
     const isFixed = ev.is_fixed === true;
+    const diff = getDaysDiff(todayStr, ev.start_date);
+    const isUpcoming = diff > 0 && diff <= 7;
+    
     let badgeText = isFixed ? 'LIVE' : '예측 라이브';
     let titleText = '';
     let actionIcon = <Play size={11} />;
 
-    if (ev.banner_text) {
-      titleText = ev.banner_text;
-    } else {
+    // D-Day 다가오는 스케줄의 경우 표시 내용 정밀 분기
+    if (isUpcoming) {
+      badgeText = `D-${diff}`;
+      actionIcon = <Clock size={11} />;
+      
+      const typeLabels = {
+        '전반업데이트': '업데이트',
+        '후반업데이트': '후반 픽업',
+        '공식방송': '공식 방송',
+        '오프라인이벤트': '행사',
+      };
+      const label = typeLabels[ev.type] || '일정';
+      
       if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
         const cleanVer = ev.version ? ev.version.replace(' 후반', '') : '?';
-        titleText = `${ev.game} v${cleanVer} 진행 중!`;
-      } else if (ev.type === '공식방송') {
-        badgeText = isFixed ? 'STREAMING' : '방송 예정';
-        titleText = `${ev.game} v${ev.version || '?'} 공식 방송 진행 중!`;
-        actionIcon = <Volume2 size={11} />;
-      } else if (ev.type === '행사') {
-        badgeText = isFixed ? 'FESTIVAL' : '행사 예정';
-        titleText = `${ev.game} 행사 [${ev.title}] 진행 중!`;
-        actionIcon = <Info size={11} />;
+        titleText = `${ev.game} v${cleanVer} ${label} 예정 (${badgeText})`;
       } else {
-        titleText = `${ev.game} ${ev.title} 진행 중!`;
+        titleText = `${ev.game} ${label} [${ev.title}] 예정 (${badgeText})`;
+      }
+    } else {
+      // 기존 진행 중인 LIVE 스펙 보존
+      if (ev.banner_text) {
+        titleText = ev.banner_text;
+      } else {
+        if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
+          const cleanVer = ev.version ? ev.version.replace(' 후반', '') : '?';
+          titleText = `${ev.game} v${cleanVer} 진행 중!`;
+        } else if (ev.type === '공식방송') {
+          badgeText = isFixed ? 'STREAMING' : '방송 예정';
+          titleText = `${ev.game} v${ev.version || '?'} 공식 방송 진행 중!`;
+          actionIcon = <Volume2 size={11} />;
+        } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
+          badgeText = isFixed ? 'FESTIVAL' : '행사 예정';
+          titleText = `${ev.game} 행사 [${ev.title}] 진행 중!`;
+          actionIcon = <Info size={11} />;
+        } else {
+          titleText = `${ev.game} ${ev.title} 진행 중!`;
+        }
       }
     }
 

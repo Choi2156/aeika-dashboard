@@ -12,7 +12,7 @@
   },
   "events": [
     {
-      "id": "genshin_6.6_update",
+      "id": "EVT_GNS_20260520_0001",
       "game": "원신",
       "version": "6.6",
       "type": "전반업데이트",
@@ -25,7 +25,7 @@
       "link": ""
     },
     {
-      "id": "genshin_6.6_half",
+      "id": "EVT_GNS_20260609_0001",
       "game": "원신",
       "version": "6.6 후반",
       "type": "후반업데이트",
@@ -38,7 +38,7 @@
       "link": ""
     },
     {
-      "id": "starrail_4.2_update",
+      "id": "EVT_HSR_20260422_0001",
       "game": "붕괴: 스타레일",
       "version": "4.2",
       "type": "전반업데이트",
@@ -51,7 +51,7 @@
       "link": ""
     },
     {
-      "id": "starrail_4.2_half",
+      "id": "EVT_HSR_20260513_0001",
       "game": "붕괴: 스타레일",
       "version": "4.2 후반",
       "type": "후반업데이트",
@@ -64,7 +64,7 @@
       "link": ""
     },
     {
-      "id": "starrail_4.3_stream",
+      "id": "EVT_HSR_20260522_0001",
       "game": "붕괴: 스타레일",
       "version": "4.3",
       "type": "공식방송",
@@ -77,7 +77,7 @@
       "link": "https://www.youtube.com/live/Q2ZxjPxeibw"
     },
     {
-      "id": "zzz_2.8_update",
+      "id": "EVT_ZZZ_20260506_0001",
       "game": "젠레스 존 제로",
       "version": "2.8",
       "type": "전반업데이트",
@@ -90,7 +90,7 @@
       "link": ""
     },
     {
-      "id": "zzz_2.8_half",
+      "id": "EVT_ZZZ_20260527_0001",
       "game": "젠레스 존 제로",
       "version": "2.8 후반",
       "type": "후반업데이트",
@@ -103,7 +103,7 @@
       "link": ""
     },
     {
-      "id": "wuthering_3.3_update",
+      "id": "EVT_WW_20260430_0001",
       "game": "명조",
       "version": "3.3",
       "type": "전반업데이트",
@@ -116,7 +116,7 @@
       "link": ""
     },
     {
-      "id": "wuthering_3.3_half",
+      "id": "EVT_WW_20260521_0001",
       "game": "명조",
       "version": "3.3 후반",
       "type": "후반업데이트",
@@ -129,7 +129,7 @@
       "link": ""
     },
     {
-      "id": "endfield_1.2_update",
+      "id": "EVT_AKEF_20260417_0001",
       "game": "명일방주: 엔드필드",
       "version": "1.2",
       "type": "전반업데이트",
@@ -142,7 +142,7 @@
       "link": ""
     },
     {
-      "id": "endfield_1.2_half",
+      "id": "EVT_AKEF_20260514_0001",
       "game": "명일방주: 엔드필드",
       "version": "1.2 후반",
       "type": "후반업데이트",
@@ -155,7 +155,7 @@
       "link": ""
     },
     {
-      "id": "endfield_1.3_stream",
+      "id": "EVT_AKEF_20260522_0001",
       "game": "명일방주: 엔드필드",
       "version": "1.3",
       "type": "공식방송",
