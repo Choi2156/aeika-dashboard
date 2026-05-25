@@ -1315,6 +1315,28 @@
   transform: translateY(-2px);
 }
 
+/* 메일 텍스트 표시용 — 넓은 알약형 pill */
+.footer-social-btn--mail-text {
+  width: auto;
+  height: 36px;
+  border-radius: 9999px;
+  padding: 0 0.9rem;
+  gap: 0.45rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: default;
+  user-select: text;
+}
+
+.footer-social-btn--mail-text:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--slate-400);
+}
+
 .footer-social-btn:active {
   transform: translateY(0) scale(0.95);
 }
