@@ -1,6 +1,22 @@
 [
   {
     "game": "명조",
+    "version": "3.4",
+    "type": "공식방송",
+    "title": "3.4 버전 프리뷰 특별 방송",
+    "date": "2026-05-25",
+    "end_date": "2026-05-25",
+    "time": "",
+    "is_fixed": true,
+    "detail": "명조:워더링 웨이브 3.4 버전의 프리뷰 특별 방송입니다.",
+    "location": "",
+    "ticket_links": [],
+    "link": "",
+    "custom_img": "evt_ww_1779718701.webp",
+    "id": "EVT_WW_20260525_0001"
+  },
+  {
+    "game": "명조",
     "version": "",
     "type": "오프라인이벤트",
     "title": "띵조 페스티벌: 빛나는 순간, 당신과 함께",
