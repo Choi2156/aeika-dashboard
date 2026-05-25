@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, ShieldAlert, Heart, Info } from 'lucide-react';
+import { Mail, ShieldAlert, Heart, Info, Github } from 'lucide-react';
 import '../styles/components.css';
 
 /**
@@ -17,10 +17,33 @@ export default function Footer({ onOpenLicense }) {
             <span className="footer-brand__logo">🗓️ AEIKA ARCHIVE</span>
             <p className="footer-brand__sub">서브컬처 게임 일정 대시보드 (비공식 팬 사이트)</p>
           </div>
-          <div className="footer-contact">
-            <a href="mailto:choi21mg@gmail.com" className="footer-email-link" title="관리자에게 문의/제보 메일 보내기">
-              <Mail size={14} />
-              <span>choi21mg@gmail.com</span>
+          <div className="footer-social-links">
+            <a
+              href="https://github.com/Choi2156"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-social-btn footer-social-btn--github"
+              title="GitHub 프로필 보기"
+            >
+              <Github size={16} />
+            </a>
+            <a
+              href="https://www.youtube.com/@AEIKA215"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-social-btn footer-social-btn--youtube"
+              title="애이카 아카이브 유튜브 채널 방문"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            </a>
+            <a
+              href="mailto:choi21mg@gmail.com"
+              className="footer-social-btn footer-social-btn--mail"
+              title="관리자에게 문의/제보 메일 보내기"
+            >
+              <Mail size={16} />
             </a>
           </div>
         </div>
