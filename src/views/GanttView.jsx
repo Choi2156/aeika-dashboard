@@ -63,6 +63,26 @@ function getShortGameName(gameName) {
   return mapping[gameName] || gameName;
 }
 
+// 테마 컬러 광채 처리를 위한 HEX ➔ RGB 파서 유틸리티
+function hexToRgb(hex) {
+  if (!hex || typeof hex !== 'string') return '99, 102, 241';
+  const c = hex.replace('#', '');
+  if (c.length === 3) {
+    const r = parseInt(c.substring(0, 1).repeat(2), 16);
+    const g = parseInt(c.substring(1, 2).repeat(2), 16);
+    const b = parseInt(c.substring(2, 3).repeat(2), 16);
+    return `${r}, ${g}, ${b}`;
+  }
+  if (c.length === 6) {
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
+  }
+  return '99, 102, 241'; // Fallback
+}
+
+
 /* Display type name mapping */
 const EVENT_TYPE_LABELS = {
   '전반업데이트': '버전 업데이트',
@@ -242,22 +262,25 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
       (ev.type === '공식방송' || ev.type === '오프라인이벤트') &&
       ev.is_fixed === true &&
       ev.date >= rangeStart &&
-      ev.date <= rangeEnd
+      ev.date <= rangeEnd &&
+      (!activeGames || activeGames[ev.game] !== false) // activeGames 필터 적용
     );
     // 미래·오늘 일정(예정)을 앞에, 과거 일정(최신)을 뒤에 배치
     const future = filtered.filter((ev) => ev.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date));
     const past   = filtered.filter((ev) => ev.date <  todayStr).sort((a, b) => b.date.localeCompare(a.date));
     return [...future, ...past].slice(0, 10);
-  }, [events, today, todayStr]);
+  }, [events, today, todayStr, activeGames]);
 
   // 추천 비디오 JSON 데이터베이스 연동 및 폴백 바인딩
   const recommendedShorts = useMemo(() => {
-    return recommendedVideos?.shorts?.length > 0 ? recommendedVideos.shorts : RECOMMENDED_SHORTS;
-  }, [recommendedVideos]);
+    const rawShorts = recommendedVideos?.shorts?.length > 0 ? recommendedVideos.shorts : RECOMMENDED_SHORTS;
+    return rawShorts.filter((sh) => !activeGames || activeGames[sh.game] !== false);
+  }, [recommendedVideos, activeGames]);
 
   const recommendedLongforms = useMemo(() => {
-    return recommendedVideos?.longform?.length > 0 ? recommendedVideos.longform : LONGFORM_VIDEOS;
-  }, [recommendedVideos]);
+    const rawLongforms = recommendedVideos?.longform?.length > 0 ? recommendedVideos.longform : LONGFORM_VIDEOS;
+    return rawLongforms.filter((v) => !activeGames || activeGames[v.game] !== false);
+  }, [recommendedVideos, activeGames]);
 
   // 스토리 및 기타 롱폼 영상 이원화 분류 파이프라인
   const storyVideos = useMemo(() => {
@@ -432,9 +455,9 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
               transform: 'none',
               height: '28px',
               '--bar-color': color,
-              backgroundColor: 'rgba(99, 102, 241, 0.06)',
+              backgroundColor: `rgba(${hexToRgb(color)}, 0.06)`,
               border: `1.5px solid ${color}`,
-              boxShadow: `0 0 10px rgba(99, 102, 241, 0.15)`,
+              boxShadow: `0 0 10px rgba(${hexToRgb(color)}, 0.15)`,
               color: '#ffffff',
               fontWeight: 700,
             }}

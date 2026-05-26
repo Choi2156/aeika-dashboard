@@ -7,7 +7,7 @@ import '../styles/components.css';
  * PC 뷰에서 상단 필터바와 간트 차트 사이 공간에 와이드 형태로 렌더링됩니다.
  * 슬라이더 가로 깨짐 버그 완치 및 넷플릭스 스타일의 우측 이미지 페이드아웃 마스크 레이아웃이 적용되었습니다.
  */
-export default function LiveBannerBoard({ events, gamesConfig, onEventClick }) {
+export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEventClick }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayTimerRef = useRef(null);
@@ -37,6 +37,11 @@ export default function LiveBannerBoard({ events, gamesConfig, onEventClick }) {
     
     const activeCandidates = events.filter((ev) => {
       if (!ev.start_date) return false;
+      
+      // activeGames 필터링 추가
+      if (activeGames && activeGames[ev.game] === false) {
+        return false;
+      }
       
       // A. 현재 진행 중인 일정
       if (ev.end_date && todayStr >= ev.start_date && todayStr <= ev.end_date) {
@@ -79,7 +84,7 @@ export default function LiveBannerBoard({ events, gamesConfig, onEventClick }) {
     });
 
     return filtered;
-  }, [events, todayStr]);
+  }, [events, todayStr, activeGames]);
 
   // 3. 오토 플레이 제어
   useEffect(() => {
@@ -100,6 +105,15 @@ export default function LiveBannerBoard({ events, gamesConfig, onEventClick }) {
       }
     };
   }, [liveEvents, isHovered]);
+
+  // 3-2. liveEvents 배열 축소 시 currentIndex가 범위를 초과하지 않도록 바운드 제어
+  useEffect(() => {
+    if (liveEvents.length === 0) {
+      setCurrentIndex(0);
+    } else if (currentIndex >= liveEvents.length) {
+      setCurrentIndex(0);
+    }
+  }, [liveEvents.length, currentIndex]);
 
   // 수동 제어 핸들러
   const handlePrev = (e) => {

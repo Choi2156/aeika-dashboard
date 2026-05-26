@@ -11,7 +11,7 @@ export default function Header() {
       <div className="header__title-group">
         <h1 className="header__title">
           서브컬쳐 게임 일정 대쉬보드
-          <span className="header__version">v1.0.1</span>
+          <span className="header__version">v1.0.2</span>
         </h1>
         <p className="header__subtitle">
           여러 게임의 공식 일정과 주기에 맞춘 예상 일정을 표기합니다.

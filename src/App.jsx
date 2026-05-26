@@ -244,6 +244,7 @@ export default function App() {
               <LiveBannerBoard
                 events={events}
                 gamesConfig={gamesConfig}
+                activeGames={activeGames}
                 onEventClick={handleEventClick}
               />
             )}

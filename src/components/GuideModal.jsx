@@ -41,13 +41,19 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
     const overlay = overlayRef.current;
     if (overlay) {
       overlay.classList.remove('modal-visible');
+      let closed = false;
       const onEnd = () => {
+        if (closed) return;
+        closed = true;
         overlay.removeEventListener('transitionend', onEnd);
         onClose();
       };
       overlay.addEventListener('transitionend', onEnd);
       // Fallback
       setTimeout(() => {
+        if (closed) return;
+        closed = true;
+        overlay.removeEventListener('transitionend', onEnd);
         onClose();
       }, 300);
     } else {
@@ -218,7 +224,7 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                     </div>
                     <h4 className="patch-note-card__title">{note.title}</h4>
                     <ul className="patch-note-card__changes">
-                      {note.changes.map((change, idx) => (
+                      {note.changes?.map((change, idx) => (
                         <li key={idx} className="patch-note-card__change-item">{change}</li>
                       ))}
                     </ul>

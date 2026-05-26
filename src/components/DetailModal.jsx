@@ -35,13 +35,19 @@ export default function DetailModal({ event, displayTypeName, gamesConfig, onClo
     const overlay = overlayRef.current;
     if (overlay) {
       overlay.classList.remove('modal-visible');
+      let closed = false;
       const onEnd = () => {
+        if (closed) return;
+        closed = true;
         overlay.removeEventListener('transitionend', onEnd);
         onClose();
       };
       overlay.addEventListener('transitionend', onEnd);
       // Fallback if transitionend never fires
       setTimeout(() => {
+        if (closed) return;
+        closed = true;
+        overlay.removeEventListener('transitionend', onEnd);
         onClose();
       }, 300);
     } else {

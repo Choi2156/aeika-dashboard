@@ -297,7 +297,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
       };
     }
 
-    const duration = getEventDuration(ev, allEvents, gamesConfig);
+    const duration = getEventDuration(ev, allEvents, gamesConfig, hintsData);
     const startD = parseDate(ev.date);
     const endD = addDays(startD, duration - 1);
     return {
@@ -316,16 +316,27 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
  * @param {Object} event - 이벤트 객체
  * @param {Object[]} allEvents - 전체 이벤트 배열 (해당 게임의 전반업데이트 찾기용)
  * @param {Object} gamesConfig - 게임별 설정
+ * @param {Object} hintsData - 전체 힌트 데이터 (schedule_hints.json)
  * @returns {number} 일 단위 기간
  */
-export function getEventDuration(event, allEvents, gamesConfig) {
+export function getEventDuration(event, allEvents, gamesConfig, hintsData) {
   // 1. 이벤트 객체 자체에 지정된 duration이 있으면 최우선으로 사용
   if (typeof event.duration === 'number' && event.duration > 0) {
     return event.duration;
   }
 
   const gameConfig = gamesConfig[event.game];
-  const cycle = gameConfig?.cycle || 42;
+  
+  // 힌트 데이터에서 이 게임에 해당하는 힌트 목록 필터링
+  const gameHints = [];
+  if (hintsData && hintsData.hints) {
+    const gameHintsList = hintsData.hints.filter(h => h.game === event.game);
+    gameHints.push(...gameHintsList);
+  }
+
+  const cleanVer = cleanVersion(event.version);
+  const currentHint = gameHints.find(h => h.trigger_version === cleanVer);
+  const cycle = currentHint?.cycle_override || gameConfig?.cycle || 42;
 
   if (event.type === '공식방송') {
     return 1;
@@ -333,8 +344,7 @@ export function getEventDuration(event, allEvents, gamesConfig) {
 
   if (event.type === '전반업데이트') {
     // 다음 버전의 확정 전반업데이트가 존재하면 그 시작일 전날까지를 기간으로 삼아 자동 단축/연장 대응!
-    const cleanVer = cleanVersion(event.version);
-    const nextVer = getNextVersion(cleanVer); // gameHints 참조 제거하여 ReferenceError 원천 차단
+    const nextVer = getNextVersion(cleanVer, gameHints);
     const nextUpdate = allEvents.find(
       e => e.game === event.game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer && e.is_fixed
     );
@@ -348,18 +358,18 @@ export function getEventDuration(event, allEvents, gamesConfig) {
 
   if (event.type === '후반업데이트') {
     // 후반업데이트는 해당 버전의 전반업데이트 '실제 렌더링 종료일'을 기준으로 연쇄 추적 계산하여 어긋남 오류 원천 소멸!
-    const cleanVer = cleanVersion(event.version);
     const mainUpdate = allEvents.find(
       e => e.game === event.game && e.type === '전반업데이트' && cleanVersion(e.version) === cleanVer
     );
     if (mainUpdate) {
-      const mainDuration = getEventDuration(mainUpdate, allEvents, gamesConfig);
+      const mainDuration = getEventDuration(mainUpdate, allEvents, gamesConfig, hintsData);
       const mainStart = parseDate(mainUpdate.date);
       const mainEnd = addDays(mainStart, mainDuration);
       const halfStart = parseDate(event.date);
       return Math.max(1, getDaysDiff(halfStart, mainEnd));
     }
-    return 21; // 기본값
+    const halfCycle = currentHint?.half_cycle_override || gameConfig?.halfCycle || Math.floor(cycle / 2);
+    return halfCycle;
   }
 
   // 2. '행사' 등 예측 시스템 외부의 기타 커스텀 유형들은 기본적으로 1일 표시 (end_date가 없을 경우)
