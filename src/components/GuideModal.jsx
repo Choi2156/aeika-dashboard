@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Info } from 'lucide-react';
+import { X, Info, Video, ExternalLink } from 'lucide-react';
 import '../styles/components.css';
 
 /**
@@ -111,6 +111,28 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
         <div className="guide-content">
           {activeTab === 'guide' && (
             <div className="guide-sections">
+              {/* 📺 신설: 동영상 대시보드 튜토리얼 퀵배너 */}
+              <div className="guide-video-banner">
+                <div className="guide-video-banner__body">
+                  <div className="guide-video-banner__icon-wrap">
+                    <Video size={20} />
+                  </div>
+                  <div className="guide-video-banner__text-group">
+                    <span className="guide-video-banner__label">TUTORIAL VIDEO</span>
+                    <h4 className="guide-video-banner__title">대시보드 200% 활용 가이드 영상</h4>
+                    <p className="guide-video-banner__desc">캘린더 조작법부터 스마트 알림, 예상 일정 알고리즘의 원리까지 한 번에 쉽게 이해하세요!</p>
+                  </div>
+                </div>
+                <a 
+                  href="https://youtu.be/YrVYqVkYFs8" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="guide-video-banner__btn"
+                >
+                  <span>영상 보러가기</span>
+                  <ExternalLink size={12} />
+                </a>
+              </div>
               {/* Section 1 */}
               <div className="guide-section">
                 <div className="guide-section-heading">

@@ -664,3 +664,113 @@ body {
   color: var(--text-muted);
   padding: 40px 0;
 }
+
+/* ─── 가이드 동영상 튜토리얼 퀵배너 (Guide Video Banner) ─── */
+.guide-video-banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(99, 102, 241, 0.03) 100%);
+  border: 1px dashed rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-lg, 8px);
+  padding: 14px;
+  margin-bottom: 20px;
+  gap: 12px;
+  box-shadow: inset 0 0 15px rgba(239, 68, 68, 0.01);
+  transition: all var(--transition-fast, 150ms) ease;
+}
+
+.guide-video-banner:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25), inset 0 0 20px rgba(239, 68, 68, 0.03);
+}
+
+@media (min-width: 640px) {
+  .guide-video-banner {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+.guide-video-banner__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.guide-video-banner__icon-wrap {
+  width: 38px;
+  height: 38px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md, 6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff4444;
+  filter: drop-shadow(0 0 4px rgba(255, 68, 68, 0.3));
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.guide-video-banner__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.guide-video-banner__label {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.58rem;
+  font-weight: 900;
+  color: #ff4444;
+  letter-spacing: 0.1em;
+}
+
+.guide-video-banner__title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.guide-video-banner__desc {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  font-weight: 500;
+  word-break: keep-all;
+}
+
+.guide-video-banner__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(185, 28, 28, 0.4) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  padding: 8px 16px;
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast, 150ms) ease;
+  flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.guide-video-banner__btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.45) 0%, rgba(185, 28, 28, 0.55) 100%);
+  border-color: rgba(255, 68, 68, 0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.guide-video-banner__btn:active {
+  transform: translateY(0);
+}
