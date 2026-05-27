@@ -1177,6 +1177,17 @@
   box-shadow: 0 0 8px var(--theme-color, #6366f1);
 }
 
+/* 채널 바로가기 버튼 및 방문자 카운터 정렬 그룹 */
+.shorts-channel-footer-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 16px;
+  box-sizing: border-box;
+}
+
 /* 최하단 채널 바로가기 버튼 */
 .shorts-channel-direct-btn {
   display: inline-flex;
