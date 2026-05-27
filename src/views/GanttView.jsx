@@ -242,7 +242,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     } else if (currentShortIndex >= recommendedShorts.length) {
       setCurrentShortIndex(recommendedShorts.length - 1);
     }
-  }, [recommendedShorts, currentShortIndex]);
+  }, [recommendedShorts.length, currentShortIndex]);
 
   useEffect(() => {
     if (recentStreams.length === 0) {
@@ -250,7 +250,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     } else if (currentStreamIndex >= recentStreams.length) {
       setCurrentStreamIndex(recentStreams.length - 1);
     }
-  }, [recentStreams, currentStreamIndex]);
+  }, [recentStreams.length, currentStreamIndex]);
 
   useEffect(() => {
     if (storyVideos.length === 0) {
@@ -258,7 +258,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     } else if (currentStoryIndex >= storyVideos.length) {
       setCurrentStoryIndex(storyVideos.length - 1);
     }
-  }, [storyVideos, currentStoryIndex]);
+  }, [storyVideos.length, currentStoryIndex]);
 
   useEffect(() => {
     if (otherVideos.length === 0) {
@@ -266,7 +266,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     } else if (currentOtherIndex >= otherVideos.length) {
       setCurrentOtherIndex(otherVideos.length - 1);
     }
-  }, [otherVideos, currentOtherIndex]);
+  }, [otherVideos.length, currentOtherIndex]);
 
   useEffect(() => {
     const checkMobile = () => {
