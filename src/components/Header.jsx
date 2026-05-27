@@ -14,23 +14,22 @@ export default function Header() {
           서브컬쳐 게임 일정 대쉬보드
           <span className="header__version">v1.0.4</span>
         </h1>
-        <p className="header__subtitle">
-          여러 게임의 공식 일정과 주기에 맞춘 예상 일정을 표기합니다.
+        <div className="header__subtitle-container">
+          <p className="header__subtitle">
+            여러 게임의 공식 일정과 주기에 맞춘 예상 일정을 표기합니다.
+          </p>
           <span className="header__warning">
             ⚠️ 공지되지 않은 미래 일정은 과거 주기를 기반으로 한 예상치입니다.
           </span>
-        </p>
+        </div>
       </div>
 
       <div className="header__actions">
-        {/* 누적 조회수 독립형 박스 */}
-        <div className="header__visitor-box" title="사이트 누적 조회수 통계">
-          <VisitorCounter />
-        </div>
+        {/* 누적 조회수 독립형 커스텀 버튼 */}
+        <VisitorCounter />
 
         {/* 유튜브 채널 구독/홍보 박스 */}
         <div className="header__youtube-promo">
-          <span className="youtube-promo__text">다양한 게임 소식과 쇼츠는</span>
           <a
             href="https://www.youtube.com/@AEIKA215"
             target="_blank"
@@ -39,10 +38,11 @@ export default function Header() {
             title="애이카 아카이브 유튜브 채널 바로가기"
           >
             <Youtube size={14} className="youtube-promo__icon" />
-            <span>애이카 아카이브!</span>
+            <span>채널 바로가기</span>
           </a>
         </div>
 
+        {/* 제보 및 피드백 버튼 */}
         <a
           href="https://docs.google.com/forms/d/e/1FAIpQLSfETPGku14-e4MI8iXNxZ7WkazTopwkLduHNK5d3MAz-5VhIQ/viewform?usp=publish-editor"
           target="_blank"
