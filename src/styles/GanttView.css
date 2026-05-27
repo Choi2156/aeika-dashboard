@@ -955,6 +955,66 @@
   border: none;
 }
 
+/* 쇼츠 썸네일 커스텀 오버레이 및 플레이어 (터치 스와이프 활성화) */
+.shorts-player-thumbnail-overlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+}
+
+.shorts-player-thumbnail-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.45); /* 다크니스 차단 필터 */
+  transition: background 0.3s ease;
+}
+
+.shorts-player-thumbnail-overlay:hover::before {
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.shorts-custom-play-btn {
+  position: relative;
+  z-index: 2;
+  width: 60px;
+  height: 60px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.shorts-player-thumbnail-overlay:hover .shorts-custom-play-btn {
+  transform: scale(1.15);
+  border-color: #ff0000;
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
+}
+
+.shorts-play-icon-glow {
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6));
+  transition: all 0.3s ease;
+}
+
+.shorts-player-thumbnail-overlay:hover .shorts-play-icon-glow {
+  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
+}
+
 .shorts-info-box {
   display: flex;
   flex-direction: column;

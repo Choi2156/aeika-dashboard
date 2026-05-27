@@ -162,6 +162,11 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [currentOtherIndex, setCurrentOtherIndex] = useState(0);
+  const [isPlayingShort, setIsPlayingShort] = useState(false);
+
+  useEffect(() => {
+    setIsPlayingShort(false);
+  }, [currentShortIndex]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -358,24 +363,64 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   };
 
   /* ── 모바일 터치 스와이프 이벤트 핸들러 빌더 (사용성 개선) ── */
-  const touchStartXRef = useRef(null);
-  const createTouchHandlers = (onNext, onPrev) => ({
-    onTouchStart: (e) => {
-      touchStartXRef.current = e.touches[0].clientX;
-    },
-    onTouchEnd: (e) => {
-      if (touchStartXRef.current === null) return;
-      const diffX = touchStartXRef.current - e.changedTouches[0].clientX;
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          onNext();
-        } else {
-          onPrev();
+  const createTouchHandlers = (onNext, onPrev) => {
+    let startX = null;
+    let startY = null;
+    let lastX = null;
+    let lastY = null;
+
+    return {
+      onTouchStart: (e) => {
+        if (e.touches && e.touches.length > 0) {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+          lastX = startX;
+          lastY = startY;
         }
+      },
+      onTouchMove: (e) => {
+        if (e.touches && e.touches.length > 0) {
+          lastX = e.touches[0].clientX;
+          lastY = e.touches[0].clientY;
+        }
+      },
+      onTouchEnd: (e) => {
+        if (startX === null || lastX === null) return;
+        const diffX = startX - lastX;
+        const diffY = startY - lastY;
+        
+        // 가로 스와이프 판정: 최소 40px 이상 이동했고, 가로 방향 이동이 세로 방향보다 더 명확할 때
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+          if (diffX > 0) {
+            onNext();
+          } else {
+            onPrev();
+          }
+        }
+        startX = null;
+        startY = null;
+        lastX = null;
+        lastY = null;
+      },
+      onTouchCancel: () => {
+        if (startX === null || lastX === null) return;
+        const diffX = startX - lastX;
+        const diffY = startY - lastY;
+        
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+          if (diffX > 0) {
+            onNext();
+          } else {
+            onPrev();
+          }
+        }
+        startX = null;
+        startY = null;
+        lastX = null;
+        lastY = null;
       }
-      touchStartXRef.current = null;
-    }
-  });
+    };
+  };
 
   const streamTouch = createTouchHandlers(handleNextStream, handlePrevStream);
   const storyTouch = createTouchHandlers(handleNextStory, handlePrevStory);
@@ -1032,15 +1077,30 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                 </button>
 
                 <div className="shorts-player-container">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${recommendedShorts[currentShortIndex]?.id}`}
-                    title={`${recommendedShorts[currentShortIndex]?.game || '추천'} 쇼츠`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  ></iframe>
+                  {isPlayingShort ? (
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${recommendedShorts[currentShortIndex]?.id}?autoplay=1`}
+                      title={`${recommendedShorts[currentShortIndex]?.game || '추천'} 쇼츠`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></iframe>
+                  ) : (
+                    <div
+                      className="shorts-player-thumbnail-overlay"
+                      onClick={() => setIsPlayingShort(true)}
+                      title="클릭하여 쇼츠 감상하기"
+                      style={{
+                        backgroundImage: `url(https://img.youtube.com/vi/${recommendedShorts[currentShortIndex]?.id}/hqdefault.jpg)`
+                      }}
+                    >
+                      <div className="shorts-custom-play-btn">
+                        <Youtube size={32} color="#ff0000" fill="#ff0000" className="shorts-play-icon-glow" />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <button
