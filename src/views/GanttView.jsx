@@ -1018,10 +1018,10 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
               <Youtube size={15} className="recommended-shorts-section__title-icon" />
               <span>추천 인기 쇼츠</span>
             </h3>
-            <div className="recommended-shorts-widget recommended-shorts-widget--minimal">
+            <div className="recommended-shorts-widget recommended-shorts-widget--minimal" {...shortsTouch}>
               
               {/* 이전 버튼 + 중앙 플레이어 + 다음 버튼 슬라이더 메인 그룹 */}
-              <div className="shorts-slider-main" {...shortsTouch}>
+              <div className="shorts-slider-main">
                 <button
                   onClick={handlePrevShort}
                   className="shorts-slider-arrow shorts-slider-arrow--left"
