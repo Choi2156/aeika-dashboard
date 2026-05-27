@@ -235,38 +235,6 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     setIsPlayingShort(false);
   }, [currentShortIndex]);
 
-  // 게임 필터 토글로 인해 비디오 목록 개수가 동적으로 바뀔 때 인덱스 범위를 안전하게 케어하는 방어 로직
-  useEffect(() => {
-    if (recommendedShorts.length === 0) {
-      setCurrentShortIndex(0);
-    } else if (currentShortIndex >= recommendedShorts.length) {
-      setCurrentShortIndex(recommendedShorts.length - 1);
-    }
-  }, [recommendedShorts.length]);
-
-  useEffect(() => {
-    if (recentStreams.length === 0) {
-      setCurrentStreamIndex(0);
-    } else if (currentStreamIndex >= recentStreams.length) {
-      setCurrentStreamIndex(recentStreams.length - 1);
-    }
-  }, [recentStreams.length]);
-
-  useEffect(() => {
-    if (storyVideos.length === 0) {
-      setCurrentStoryIndex(0);
-    } else if (currentStoryIndex >= storyVideos.length) {
-      setCurrentStoryIndex(storyVideos.length - 1);
-    }
-  }, [storyVideos.length]);
-
-  useEffect(() => {
-    if (otherVideos.length === 0) {
-      setCurrentOtherIndex(0);
-    } else if (currentOtherIndex >= otherVideos.length) {
-      setCurrentOtherIndex(otherVideos.length - 1);
-    }
-  }, [otherVideos.length]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -395,6 +363,39 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   const otherVideos = useMemo(() => {
     return recommendedLongforms.filter((v) => v.type !== 'story');
   }, [recommendedLongforms]);
+
+  // 게임 필터 토글로 인해 비디오 목록 개수가 동적으로 바뀔 때 인덱스 범위를 안전하게 케어하는 방어 로직
+  useEffect(() => {
+    if (recommendedShorts.length === 0) {
+      setCurrentShortIndex(0);
+    } else if (currentShortIndex >= recommendedShorts.length) {
+      setCurrentShortIndex(recommendedShorts.length - 1);
+    }
+  }, [recommendedShorts.length]);
+
+  useEffect(() => {
+    if (recentStreams.length === 0) {
+      setCurrentStreamIndex(0);
+    } else if (currentStreamIndex >= recentStreams.length) {
+      setCurrentStreamIndex(recentStreams.length - 1);
+    }
+  }, [recentStreams.length]);
+
+  useEffect(() => {
+    if (storyVideos.length === 0) {
+      setCurrentStoryIndex(0);
+    } else if (currentStoryIndex >= storyVideos.length) {
+      setCurrentStoryIndex(storyVideos.length - 1);
+    }
+  }, [storyVideos.length]);
+
+  useEffect(() => {
+    if (otherVideos.length === 0) {
+      setCurrentOtherIndex(0);
+    } else if (currentOtherIndex >= otherVideos.length) {
+      setCurrentOtherIndex(otherVideos.length - 1);
+    }
+  }, [otherVideos.length]);
 
   // 캐러셀 슬라이더 화면 크기별 표시 개수 동적 연산
   const visibleCount = isMobile ? 1 : 2;
