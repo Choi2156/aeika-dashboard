@@ -11,9 +11,10 @@
   opacity: 0;
   transform: scale(0.95);
   transition: opacity 0.5s ease, transform 0.5s ease;
+  vertical-align: middle;
 }
 
-/* 로딩 완료 시 자연스럽게 스케일과 투명도가 복원되며 노출 */
+/* 로딩 완료 시 등장 */
 .visitor-counter-container.loaded {
   opacity: 1;
   transform: scale(1);
@@ -27,16 +28,16 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-width: 245px;
+  min-width: 150px;
   height: 20px;
 }
 
-/* 한국어 와이드 배지에 맞추어 스켈레톤 너비 상향 */
+/* 단독 누적 조회수 뱃지 너비에 맞게 스켈레톤 크기 축소 최적화 */
 .badge-skeleton {
   position: absolute;
   top: 0;
   left: 0;
-  width: 245px;
+  width: 150px;
   height: 20px;
   border-radius: 4px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
@@ -47,7 +48,7 @@
 .visitor-badge-img {
   height: 20px;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: opacity 0.4s ease;
 }
 
@@ -71,9 +72,9 @@
 /* 모바일 뷰 최적화 */
 @media (max-width: 768px) {
   .badge-wrapper {
-    min-width: 230px;
+    min-width: 135px;
   }
   .badge-skeleton {
-    width: 230px;
+    width: 135px;
   }
 }

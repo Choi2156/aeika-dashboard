@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronDown, ChevronRight, ChevronLeft, Radio, Globe, Youtube, MapPin } from 'lucide-react';
-import VisitorCounter from '../components/VisitorCounter';
 import '../styles/GanttView.css';
 
 /* ────────────────────────────────────────────
@@ -1259,20 +1258,17 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                 </div>
               )}
 
-              {/* 최하단 채널 바로가기 버튼 및 방문자 카운터 가로 정렬 그룹 */}
-              <div className="shorts-channel-footer-group">
-                <a
-                  href="https://www.youtube.com/@AEIKA215"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shorts-channel-direct-btn"
-                  title="유튜브 채널 방문하여 더 많은 영상보기"
-                >
-                  <Youtube size={13} />
-                  <span>애이카 아카이브 바로가기</span>
-                </a>
-                <VisitorCounter />
-              </div>
+              {/* 최하단 채널 바로가기 버튼 */}
+              <a
+                href="https://www.youtube.com/@AEIKA215"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shorts-channel-direct-btn"
+                title="유튜브 채널 방문하여 더 많은 영상보기"
+              >
+                <Youtube size={13} />
+                <span>애이카 아카이브 바로가기</span>
+              </a>
               
             </div>
           </section>

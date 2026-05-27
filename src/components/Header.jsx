@@ -1,4 +1,5 @@
 import { Youtube, MessageSquare } from 'lucide-react';
+import VisitorCounter from './VisitorCounter';
 
 /**
  * Header 컴포넌트
@@ -11,7 +12,7 @@ export default function Header() {
       <div className="header__title-group">
         <h1 className="header__title">
           서브컬쳐 게임 일정 대쉬보드
-          <span className="header__version">v1.0.3</span>
+          <span className="header__version">v1.0.4</span>
         </h1>
         <p className="header__subtitle">
           여러 게임의 공식 일정과 주기에 맞춘 예상 일정을 표기합니다.
@@ -34,6 +35,7 @@ export default function Header() {
             <Youtube size={14} className="youtube-promo__icon" />
             <span>애이카 아카이브!</span>
           </a>
+          <VisitorCounter />
         </div>
 
         <a
