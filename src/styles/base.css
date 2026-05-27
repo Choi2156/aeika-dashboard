@@ -379,6 +379,22 @@ body {
   flex-wrap: wrap;
 }
 
+/* 독립형 누적 조회수 글래스모피즘 박스 */
+.header__visitor-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.01), 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  height: 38px; /* 유튜브 박스/피드백 버튼과 동일한 세로축 맞춤 */
+}
+
 .header__feedback-btn {
   display: inline-flex;
   align-items: center;

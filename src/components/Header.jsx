@@ -23,6 +23,12 @@ export default function Header() {
       </div>
 
       <div className="header__actions">
+        {/* 누적 조회수 독립형 박스 */}
+        <div className="header__visitor-box" title="사이트 누적 조회수 통계">
+          <VisitorCounter />
+        </div>
+
+        {/* 유튜브 채널 구독/홍보 박스 */}
         <div className="header__youtube-promo">
           <span className="youtube-promo__text">다양한 게임 소식과 쇼츠는</span>
           <a
@@ -35,7 +41,6 @@ export default function Header() {
             <Youtube size={14} className="youtube-promo__icon" />
             <span>애이카 아카이브!</span>
           </a>
-          <VisitorCounter />
         </div>
 
         <a
