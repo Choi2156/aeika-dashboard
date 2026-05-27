@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ChevronDown, ChevronRight, ChevronLeft, Radio, Globe, Youtube, MapPin } from 'lucide-react';
+import VisitorCounter from '../components/VisitorCounter';
 import '../styles/GanttView.css';
 
 /* ────────────────────────────────────────────
@@ -1298,6 +1299,9 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
             </div>
           </section>
         </div>
+
+        {/* 방문자 수 & 누적 조회수 카운터 */}
+        <VisitorCounter />
       </div>
     </div>
   );

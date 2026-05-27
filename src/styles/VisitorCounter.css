@@ -1,0 +1,109 @@
+.visitor-counter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px auto 10px auto;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  width: fit-content;
+  max-width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* 로딩 완료 시 자연스럽게 위로 솟아오르며 등장 */
+.visitor-counter-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.visitor-counter-container.loading {
+  opacity: 0.5;
+  transform: translateY(0);
+}
+
+.visitor-counter-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.counter-label-icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+}
+
+.counter-text {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.badge-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 140px;
+  height: 20px;
+}
+
+/* 배지가 불러와지는 동안 표시될 세련된 스켈레톤 UI */
+.badge-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 140px;
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+  animation: loading-pulse 1.5s infinite;
+}
+
+.visitor-badge-img {
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: opacity 0.4s ease;
+}
+
+.visitor-badge-img.hidden {
+  opacity: 0;
+}
+
+.visitor-badge-img.visible {
+  opacity: 1;
+}
+
+@keyframes loading-pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 모바일 화면 최적화 */
+@media (max-width: 768px) {
+  .visitor-counter-container {
+    margin: 20px auto 10px auto;
+    padding: 8px 12px;
+  }
+  .counter-text {
+    font-size: 0.8rem;
+  }
+  .badge-wrapper {
+    min-width: 130px;
+  }
+  .badge-skeleton {
+    width: 130px;
+  }
+}
