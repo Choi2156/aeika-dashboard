@@ -1088,6 +1088,12 @@
   .live-banner-board {
     min-height: auto;
   }
+
+  .live-banner-board--welcome {
+    height: auto !important;
+    min-height: 136px;
+    padding: 1rem 1.25rem !important;
+  }
   
   .live-banner-slide {
     padding: 0.85rem 1.5rem 1rem 1.5rem;

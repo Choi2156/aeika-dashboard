@@ -51,8 +51,9 @@ export default function App() {
   const [isShrunk, setIsShrunk] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
-      // 150px 이상 스크롤되었을 때 정확히 메뉴바를 축소하여 자연스럽게 상단에 sticky 고정
-      setIsShrunk(window.scrollY > 150);
+      const isMobile = window.innerWidth <= 768;
+      const threshold = isMobile ? 280 : 150; // 모바일에선 더 늦게(280px) 축소되도록 임계치 상향!
+      setIsShrunk(window.scrollY > threshold);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);

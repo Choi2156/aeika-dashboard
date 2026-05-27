@@ -357,6 +357,32 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     setCurrentShortIndex((prev) => (prev + 1) % recommendedShorts.length);
   };
 
+  /* ── 모바일 터치 스와이프 이벤트 핸들러 빌더 (사용성 개선) ── */
+  const touchStartXRef = useRef(null);
+  const createTouchHandlers = (onNext, onPrev) => ({
+    onTouchStart: (e) => {
+      touchStartXRef.current = e.touches[0].clientX;
+    },
+    onTouchEnd: (e) => {
+      if (touchStartXRef.current === null) return;
+      const diffX = touchStartXRef.current - e.changedTouches[0].clientX;
+      if (Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          onNext();
+        } else {
+          onPrev();
+        }
+      }
+      touchStartXRef.current = null;
+    }
+  });
+
+  const streamTouch = createTouchHandlers(handleNextStream, handlePrevStream);
+  const storyTouch = createTouchHandlers(handleNextStory, handlePrevStory);
+  const otherTouch = createTouchHandlers(handleNextOther, handlePrevOther);
+  const shortsTouch = createTouchHandlers(handleNextShort, handlePrevShort);
+
+
   /* ── Calculate event bar positions ── */
   const getBarStyle = useCallback(
     (ev) => {
@@ -388,6 +414,95 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
       todayIndex * CELL_WIDTH - scrollRef.current.clientWidth / 2 + gameColWidth;
     scrollRef.current.scrollLeft = Math.max(0, scrollTarget);
   }, [dateAxis, gameColWidth]);
+
+  /* ── PC 뷰: 마우스 휠 세로 스크롤을 가로 스크롤로 치환 ── */
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const handleWheel = (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        container.scrollLeft += e.deltaY;
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
+
+  /* ── PC 뷰: 마우스 드래그 가로 스크롤 (Swipe to Scroll) ── */
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    let isDown = false;
+    let startX;
+    let scrollLeftVal;
+    let isDragging = false;
+    let dragStartX = 0;
+
+    const handleMouseDown = (e) => {
+      // 좌클릭만 허용 (이벤트 바 등 다른 요소 오인 동작 차단)
+      if (e.button !== 0) return;
+      isDown = true;
+      container.classList.add('gantt-container--dragging');
+      startX = e.pageX - container.offsetLeft;
+      scrollLeftVal = container.scrollLeft;
+      isDragging = false;
+      dragStartX = e.pageX;
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      container.classList.remove('gantt-container--dragging');
+    };
+
+    const handleMouseUp = (e) => {
+      isDown = false;
+      container.classList.remove('gantt-container--dragging');
+      
+      // 실제 마우스를 드래그하여 이동했다면 클릭 이벤트를 강제 캡처/차단
+      if (isDragging) {
+        const handlePreventClick = (evt) => {
+          evt.stopPropagation();
+          evt.preventDefault();
+          window.removeEventListener('click', handlePreventClick, true);
+        };
+        window.addEventListener('click', handlePreventClick, true);
+      }
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDown) return;
+      
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 1.3; // 감속/가속도 조정
+      
+      if (Math.abs(e.pageX - dragStartX) > 5) {
+        isDragging = true;
+      }
+      
+      if (isDragging) {
+        e.preventDefault();
+        container.scrollLeft = scrollLeftVal - walk;
+      }
+    };
+
+    container.addEventListener('mousedown', handleMouseDown);
+    container.addEventListener('mouseleave', handleMouseLeave);
+    container.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      container.removeEventListener('mousedown', handleMouseDown);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+      container.removeEventListener('mouseup', handleMouseUp);
+      container.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
 
   /* ── Get theme color for game ── */
   const getGameColor = useCallback(
@@ -696,7 +811,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                   </div>
                 )}
               </div>
-              <div className="recent-streams-grid">
+              <div className="recent-streams-grid" {...streamTouch}>
                 {visibleStreams.map((ev) => {
                   const color = getGameColor(ev.game);
                   const isFixed = ev.is_fixed === true;
@@ -789,7 +904,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                   </div>
                 )}
               </div>
-              <div className="longform-videos-grid">
+              <div className="longform-videos-grid" {...storyTouch}>
                 {visibleStories.map((video) => {
                   const color = getGameColor(video.game);
                   const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
@@ -857,7 +972,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                   </div>
                 )}
               </div>
-              <div className="longform-videos-grid">
+              <div className="longform-videos-grid" {...otherTouch}>
                 {visibleOthers.map((video) => {
                   const color = getGameColor(video.game);
                   const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
@@ -906,7 +1021,7 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
             <div className="recommended-shorts-widget recommended-shorts-widget--minimal">
               
               {/* 이전 버튼 + 중앙 플레이어 + 다음 버튼 슬라이더 메인 그룹 */}
-              <div className="shorts-slider-main">
+              <div className="shorts-slider-main" {...shortsTouch}>
                 <button
                   onClick={handlePrevShort}
                   className="shorts-slider-arrow shorts-slider-arrow--left"

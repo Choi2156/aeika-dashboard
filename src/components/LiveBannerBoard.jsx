@@ -117,13 +117,31 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
 
   // 수동 제어 핸들러
   const handlePrev = (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setCurrentIndex((prev) => (prev - 1 + liveEvents.length) % liveEvents.length);
   };
 
   const handleNext = (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setCurrentIndex((prev) => (prev + 1) % liveEvents.length);
+  };
+
+  // 모바일 터치 스와이프 제어 헬퍼
+  const touchStartXRef = useRef(null);
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e) => {
+    if (touchStartXRef.current === null) return;
+    const diffX = touchStartXRef.current - e.changedTouches[0].clientX;
+    if (Math.abs(diffX) > 50) {
+      if (diffX > 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+    }
+    touchStartXRef.current = null;
   };
 
   // 일정 타입별 배너 타이틀/뱃지 텍스트 파싱 (D-Day 연산 및 표시 내용 뱃지 정밀 분기)
@@ -217,6 +235,8 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
       className="live-banner-board"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       title="클릭하여 상세 정보 팝업 보기"
     >
       {/* 1. 슬라이더 가로 트랙 레일 (자식 크기가 width: 100% 이고 고정 너비로 슬라이딩) */}
