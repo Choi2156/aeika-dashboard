@@ -1212,6 +1212,41 @@
   transform: translateY(0);
 }
 
+/* 쇼츠 추천 비디오 부재 시 예외 카드 스타일 */
+.shorts-no-data-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  min-width: 290px;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-primary);
+  background: rgba(15, 23, 42, 0.25);
+  box-sizing: border-box;
+  padding: 1.5rem;
+}
+
+[data-theme="light"] .shorts-no-data-card {
+  background: rgba(241, 245, 249, 0.5);
+}
+
+.shorts-no-data-card__text {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 8px 0 4px 0;
+  word-break: keep-all;
+}
+
+.shorts-no-data-card__sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  word-break: keep-all;
+}
+
 /* =============================================================
    유튜브 채널 추천 롱폼 영상 카드 섹션 (스토리 풀버전)
    ============================================================= */

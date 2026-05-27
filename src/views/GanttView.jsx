@@ -92,6 +92,65 @@ const EVENT_TYPE_LABELS = {
   '오프라인이벤트': '오프라인 이벤트',
 };
 
+/**
+ * 활성화된 게임 개수에 맞춰 노출 영상(롱폼/숏폼)을 동적으로 분배하는 프리미엄 추천 알고리즘
+ */
+function allocateVideos(allVideos, activeGames, targetCount = 6) {
+  if (!allVideos || allVideos.length === 0) return [];
+  
+  // activeGames가 주어지지 않았거나 빈 객체일 경우 모든 게임 활성화 상태로 취급
+  const activeGameNames = activeGames && Object.keys(activeGames).length > 0
+    ? Object.keys(activeGames).filter(name => activeGames[name] !== false)
+    : Array.from(new Set(allVideos.map(v => v.game)));
+  
+  const n = activeGameNames.length;
+  if (n === 0) return [];
+  
+  // 1. 활성화된 게임별 영상 목록 분류 및 내림차순(addedAt 내림차순) 정렬
+  const gameVideoMap = {};
+  activeGameNames.forEach(game => {
+    gameVideoMap[game] = allVideos
+      .filter(v => v.game === game)
+      .sort((a, b) => {
+        const dateA = a.addedAt ? new Date(a.addedAt) : new Date(0);
+        const dateB = b.addedAt ? new Date(b.addedAt) : new Date(0);
+        return dateB - dateA; // 최신순
+      });
+  });
+  
+  // 2. 게임당 기본 보장 할당량 및 잔여 개수 계산
+  const base = Math.floor(targetCount / n);
+  let remainder = targetCount % n;
+  
+  // 3. 잔여 보너스 슬롯(+1개) 우선순위 배정
+  // 우선순위: 각 게임의 가장 최신 영상의 addedAt이 가장 최근인 순서
+  const sortedGamesForBonus = [...activeGameNames].sort((a, b) => {
+    const latestA = gameVideoMap[a]?.[0]?.addedAt || '';
+    const latestB = gameVideoMap[b]?.[0]?.addedAt || '';
+    if (latestA && latestB) return latestB.localeCompare(latestA);
+    if (latestA) return -1;
+    if (latestB) return 1;
+    return 0;
+  });
+  
+  const bonusSet = new Set(sortedGamesForBonus.slice(0, remainder));
+  
+  // 4. 할당 한도에 맞춰 각 게임별 비디오 슬라이싱 취합
+  const selectedVideos = [];
+  activeGameNames.forEach(game => {
+    const limit = base + (bonusSet.has(game) ? 1 : 0);
+    const sliced = gameVideoMap[game]?.slice(0, limit) || [];
+    selectedVideos.push(...sliced);
+  });
+  
+  // 5. 취합된 비디오 목록 전체를 최신순으로 2차 정렬하여 세련되게 반환
+  return selectedVideos.sort((a, b) => {
+    const dateA = a.addedAt ? new Date(a.addedAt) : new Date(0);
+    const dateB = b.addedAt ? new Date(b.addedAt) : new Date(0);
+    return dateB - dateA;
+  });
+}
+
 /* ────────────────────────────────────────────
    유튜브 추천 쇼츠 및 롱폼 영상 폴백 데이터셋
    ──────────────────────────────────────────── */
@@ -99,22 +158,26 @@ const RECOMMENDED_SHORTS = [
   {
     id: '7JXTFo3jALM',
     url: 'https://youtube.com/shorts/7JXTFo3jALM',
-    game: '붕괴: 스타레일'
+    game: '붕괴: 스타레일',
+    addedAt: '2026-05-27T09:30:00Z'
   },
   {
     id: 'XzpEjNb24uU',
     url: 'https://youtube.com/shorts/XzpEjNb24uU',
-    game: '명조'
+    game: '명조',
+    addedAt: '2026-05-27T10:00:00Z'
   },
   {
     id: 'yYTIHZEmfwM',
     url: 'https://youtube.com/shorts/yYTIHZEmfwM',
-    game: '원신'
+    game: '원신',
+    addedAt: '2026-05-27T08:30:00Z'
   },
   {
     id: 'yeB6_T3W1o0',
     url: 'https://youtube.com/shorts/yeB6_T3W1o0',
-    game: '젠레스 존 제로'
+    game: '젠레스 존 제로',
+    addedAt: '2026-05-27T09:00:00Z'
   }
 ];
 
@@ -124,28 +187,32 @@ const LONGFORM_VIDEOS = [
     url: 'https://youtu.be/5w1xdAsMvCg',
     game: '젠레스 존 제로',
     type: 'story',
-    desc: '메인 스토리 시즌 2 에필로그 - 「뉴: 에리두의 일몰(하)」 (2.8버전) 컷편집 스토리 풀버전'
+    desc: '메인 스토리 시즌 2 에필로그 - 「뉴: 에리두의 일몰(하)」 (2.8버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-27T10:30:00Z'
   },
   {
     id: 'YOYFRqSUp7Y',
     url: 'https://youtu.be/YOYFRqSUp7Y',
     game: '명일방주: 엔드필드',
     type: 'story',
-    desc: '2장 프로세스 6 - 「천근의 무게」 (1.2버전) 컷편집 스토리 풀버전'
+    desc: '2장 프로세스 6 - 「천근의 무게」 (1.2버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-27T09:15:00Z'
   },
   {
     id: 'LNHYjxEm-ek',
     url: 'https://youtu.be/LNHYjxEm-ek',
     game: '명조',
     type: 'story',
-    desc: '조수 임무 제3장 제5막 「어젯밤의 뭇별들」 에필로그, 후일담 (3.3버전) 컷편집 스토리 풀버전'
+    desc: '조수 임무 제3장 제5막 「어젯밤의 뭇별들」 에필로그, 후일담 (3.3버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-27T09:45:00Z'
   },
   {
     id: 'Fh38s_obFT4',
     url: 'https://youtu.be/Fh38s_obFT4',
     game: '붕괴: 스타레일',
     type: 'story',
-    desc: '개척 임무 5장 3막 이상 낙원 - 「그리하여, 웃음소리는 멈추지 않으리」 (4.2버전) 컷편집 스토리 풀버전'
+    desc: '개척 임무 5장 3막 이상 낙원 - 「그리하여, 웃음소리는 멈추지 않으리」 (4.2버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-27T09:00:00Z'
   }
 ];
 
@@ -167,6 +234,39 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   useEffect(() => {
     setIsPlayingShort(false);
   }, [currentShortIndex]);
+
+  // 게임 필터 토글로 인해 비디오 목록 개수가 동적으로 바뀔 때 인덱스 범위를 안전하게 케어하는 방어 로직
+  useEffect(() => {
+    if (recommendedShorts.length === 0) {
+      setCurrentShortIndex(0);
+    } else if (currentShortIndex >= recommendedShorts.length) {
+      setCurrentShortIndex(recommendedShorts.length - 1);
+    }
+  }, [recommendedShorts, currentShortIndex]);
+
+  useEffect(() => {
+    if (recentStreams.length === 0) {
+      setCurrentStreamIndex(0);
+    } else if (currentStreamIndex >= recentStreams.length) {
+      setCurrentStreamIndex(recentStreams.length - 1);
+    }
+  }, [recentStreams, currentStreamIndex]);
+
+  useEffect(() => {
+    if (storyVideos.length === 0) {
+      setCurrentStoryIndex(0);
+    } else if (currentStoryIndex >= storyVideos.length) {
+      setCurrentStoryIndex(storyVideos.length - 1);
+    }
+  }, [storyVideos, currentStoryIndex]);
+
+  useEffect(() => {
+    if (otherVideos.length === 0) {
+      setCurrentOtherIndex(0);
+    } else if (currentOtherIndex >= otherVideos.length) {
+      setCurrentOtherIndex(otherVideos.length - 1);
+    }
+  }, [otherVideos, currentOtherIndex]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -279,12 +379,12 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
   // 추천 비디오 JSON 데이터베이스 연동 및 폴백 바인딩
   const recommendedShorts = useMemo(() => {
     const rawShorts = recommendedVideos?.shorts?.length > 0 ? recommendedVideos.shorts : RECOMMENDED_SHORTS;
-    return rawShorts.filter((sh) => !activeGames || activeGames[sh.game] !== false);
+    return allocateVideos(rawShorts, activeGames, 6);
   }, [recommendedVideos, activeGames]);
 
   const recommendedLongforms = useMemo(() => {
     const rawLongforms = recommendedVideos?.longform?.length > 0 ? recommendedVideos.longform : LONGFORM_VIDEOS;
-    return rawLongforms.filter((v) => !activeGames || activeGames[v.game] !== false);
+    return allocateVideos(rawLongforms, activeGames, 6);
   }, [recommendedVideos, activeGames]);
 
   // 스토리 및 기타 롱폼 영상 이원화 분류 파이프라인
@@ -1065,73 +1165,83 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
             </h3>
             <div className="recommended-shorts-widget recommended-shorts-widget--minimal" {...shortsTouch}>
               
-              {/* 이전 버튼 + 중앙 플레이어 + 다음 버튼 슬라이더 메인 그룹 */}
-              <div className="shorts-slider-main">
-                <button
-                  onClick={handlePrevShort}
-                  className="shorts-slider-arrow shorts-slider-arrow--left"
-                  type="button"
-                  title="이전 쇼츠 보기"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-
-                <div className="shorts-player-container">
-                  {isPlayingShort ? (
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${recommendedShorts[currentShortIndex]?.id}?autoplay=1`}
-                      title={`${recommendedShorts[currentShortIndex]?.game || '추천'} 쇼츠`}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    ></iframe>
-                  ) : (
-                    <div
-                      className="shorts-player-thumbnail-overlay"
-                      onClick={() => setIsPlayingShort(true)}
-                      title="클릭하여 쇼츠 감상하기"
-                      style={{
-                        backgroundImage: `url(https://img.youtube.com/vi/${recommendedShorts[currentShortIndex]?.id}/hqdefault.jpg)`
-                      }}
+              {recommendedShorts.length > 0 ? (
+                <>
+                  {/* 이전 버튼 + 중앙 플레이어 + 다음 버튼 슬라이더 메인 그룹 */}
+                  <div className="shorts-slider-main">
+                    <button
+                      onClick={handlePrevShort}
+                      className="shorts-slider-arrow shorts-slider-arrow--left"
+                      type="button"
+                      title="이전 쇼츠 보기"
                     >
-                      <div className="shorts-custom-play-btn">
-                        <Youtube size={32} color="#ff0000" fill="#ff0000" className="shorts-play-icon-glow" />
-                      </div>
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    <div className="shorts-player-container">
+                      {isPlayingShort ? (
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          src={`https://www.youtube.com/embed/${recommendedShorts[currentShortIndex]?.id}?autoplay=1`}
+                          title={`${recommendedShorts[currentShortIndex]?.game || '추천'} 쇼츠`}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        ></iframe>
+                      ) : (
+                        <div
+                          className="shorts-player-thumbnail-overlay"
+                          onClick={() => setIsPlayingShort(true)}
+                          title="클릭하여 쇼츠 감상하기"
+                          style={{
+                            backgroundImage: `url(https://img.youtube.com/vi/${recommendedShorts[currentShortIndex]?.id}/hqdefault.jpg)`
+                          }}
+                        >
+                          <div className="shorts-custom-play-btn">
+                            <Youtube size={32} color="#ff0000" fill="#ff0000" className="shorts-play-icon-glow" />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+
+                    <button
+                      onClick={handleNextShort}
+                      className="shorts-slider-arrow shorts-slider-arrow--right"
+                      type="button"
+                      title="다음 쇼츠 보기"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+
+                  {/* 하단 점형 페이지네이션 인디케이터 (대강의 쇼츠 개수 인지용) */}
+                  <div className="shorts-dot-indicators">
+                    {recommendedShorts.map((sh, idx) => {
+                      const gameColor = getGameColor(sh.game);
+                      const isActive = idx === currentShortIndex;
+                      return (
+                        <span
+                          key={sh.id || `short-dot-${idx}`}
+                          className={`shorts-dot ${isActive ? 'shorts-dot--active' : ''}`}
+                          onClick={() => setCurrentShortIndex(idx)}
+                          style={{
+                            backgroundColor: isActive ? gameColor : undefined,
+                            borderColor: gameColor
+                          }}
+                          title={`${sh.game} 쇼츠로 이동`}
+                        />
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="shorts-no-data-card">
+                  <Youtube size={24} color="#64748b" style={{ marginBottom: '6px' }} />
+                  <p className="shorts-no-data-card__text">활성화된 게임의 추천 쇼츠가 없습니다.</p>
+                  <span className="shorts-no-data-card__sub">필터바에서 다른 게임을 활성화해주세요.</span>
                 </div>
-
-                <button
-                  onClick={handleNextShort}
-                  className="shorts-slider-arrow shorts-slider-arrow--right"
-                  type="button"
-                  title="다음 쇼츠 보기"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-
-              {/* 하단 점형 페이지네이션 인디케이터 (대강의 쇼츠 개수 인지용) */}
-              <div className="shorts-dot-indicators">
-                {recommendedShorts.map((sh, idx) => {
-                  const gameColor = getGameColor(sh.game);
-                  const isActive = idx === currentShortIndex;
-                  return (
-                    <span
-                      key={sh.id || `short-dot-${idx}`}
-                      className={`shorts-dot ${isActive ? 'shorts-dot--active' : ''}`}
-                      onClick={() => setCurrentShortIndex(idx)}
-                      style={{
-                        backgroundColor: isActive ? gameColor : undefined,
-                        borderColor: gameColor
-                      }}
-                      title={`${sh.game} 쇼츠로 이동`}
-                    />
-                  );
-                })}
-              </div>
+              )}
 
               {/* 최하단 채널 바로가기 버튼 */}
               <a
