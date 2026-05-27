@@ -156,63 +156,77 @@ function allocateVideos(allVideos, activeGames, targetCount = 6) {
    ──────────────────────────────────────────── */
 const RECOMMENDED_SHORTS = [
   {
-    id: '7JXTFo3jALM',
-    url: 'https://youtube.com/shorts/7JXTFo3jALM',
-    game: '붕괴: 스타레일',
-    addedAt: '2026-05-27T09:30:00Z'
-  },
-  {
-    id: 'XzpEjNb24uU',
-    url: 'https://youtube.com/shorts/XzpEjNb24uU',
-    game: '명조',
-    addedAt: '2026-05-27T10:00:00Z'
-  },
-  {
-    id: 'yYTIHZEmfwM',
-    url: 'https://youtube.com/shorts/yYTIHZEmfwM',
+    id: '-3d9wSi1OZM',
+    url: 'https://youtube.com/shorts/-3d9wSi1OZM',
     game: '원신',
-    addedAt: '2026-05-27T08:30:00Z'
+    addedAt: '2026-05-28T00:00:00Z'
   },
   {
-    id: 'yeB6_T3W1o0',
-    url: 'https://youtube.com/shorts/yeB6_T3W1o0',
+    id: '1M7x9j_9zDI',
+    url: 'https://youtube.com/shorts/1M7x9j_9zDI',
+    game: '붕괴: 스타레일',
+    addedAt: '2026-05-28T00:00:00Z'
+  },
+  {
+    id: 'f3T9CmNpY9g',
+    url: 'https://youtube.com/shorts/f3T9CmNpY9g',
     game: '젠레스 존 제로',
-    addedAt: '2026-05-27T09:00:00Z'
+    addedAt: '2026-05-28T00:00:00Z'
+  },
+  {
+    id: 'odf4xNvPlyc',
+    url: 'https://youtube.com/shorts/odf4xNvPlyc',
+    game: '명조',
+    addedAt: '2026-05-28T00:00:00Z'
+  },
+  {
+    id: '1tl4_rgI8bU',
+    url: 'https://youtube.com/shorts/1tl4_rgI8bU',
+    game: '명일방주: 엔드필드',
+    addedAt: '2026-05-28T00:00:00Z'
   }
 ];
 
 const LONGFORM_VIDEOS = [
   {
-    id: '5w1xdAsMvCg',
-    url: 'https://youtu.be/5w1xdAsMvCg',
-    game: '젠레스 존 제로',
+    id: 'oA3_Fz3BQcU',
+    url: 'https://youtu.be/oA3_Fz3BQcU',
+    game: '원신',
     type: 'story',
-    desc: '메인 스토리 시즌 2 에필로그 - 「뉴: 에리두의 일몰(하)」 (2.8버전) 컷편집 스토리 풀버전',
-    addedAt: '2026-05-27T10:30:00Z'
-  },
-  {
-    id: 'YOYFRqSUp7Y',
-    url: 'https://youtu.be/YOYFRqSUp7Y',
-    game: '명일방주: 엔드필드',
-    type: 'story',
-    desc: '2장 프로세스 6 - 「천근의 무게」 (1.2버전) 컷편집 스토리 풀버전',
-    addedAt: '2026-05-27T09:15:00Z'
-  },
-  {
-    id: 'LNHYjxEm-ek',
-    url: 'https://youtu.be/LNHYjxEm-ek',
-    game: '명조',
-    type: 'story',
-    desc: '조수 임무 제3장 제5막 「어젯밤의 뭇별들」 에필로그, 후일담 (3.3버전) 컷편집 스토리 풀버전',
-    addedAt: '2026-05-27T09:45:00Z'
+    desc: '린네아 전설 임무 - 예언하는 새의 장·제1막「귀환의 날갯짓」(6.5버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-28T00:00:00Z'
   },
   {
     id: 'Fh38s_obFT4',
     url: 'https://youtu.be/Fh38s_obFT4',
     game: '붕괴: 스타레일',
     type: 'story',
-    desc: '개척 임무 5장 3막 이상 낙원 - 「그리하여, 웃음소리는 멈추지 않으리」 (4.2버전) 컷편집 스토리 풀버전',
-    addedAt: '2026-05-27T09:00:00Z'
+    desc: '개척 임무 5장 3막 이상 낙원 - 「그리하여, 웃음소리는 멈추지 않으리」(4.2버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-28T00:00:00Z'
+  },
+  {
+    id: '5w1xdAsMvCg',
+    url: 'https://youtu.be/5w1xdAsMvCg',
+    game: '젠레스 존 제로',
+    type: 'story',
+    desc: '메인 스토리 시즌 2 에필로그 - 「뉴: 에리두의 일몰(하)」(2.8버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-28T00:00:00Z'
+  },
+  {
+    id: 'LNHYjxEm-ek',
+    url: 'https://youtu.be/LNHYjxEm-ek',
+    game: '명조',
+    type: 'story',
+    desc: '조수 임무 제3장 제5막 - 「어젯밤의 뭇별들」 에필로그/후일담 (3.3버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-28T00:00:00Z'
+  },
+  {
+    id: 'YOYFRqSUp7Y',
+    url: 'https://youtu.be/YOYFRqSUp7Y',
+    game: '명일방주: 엔드필드',
+    type: 'story',
+    desc: '2장 프로세스 6 - 「천근의 무게」(1.2버전) 컷편집 스토리 풀버전',
+    addedAt: '2026-05-28T00:00:00Z'
   }
 ];
 
