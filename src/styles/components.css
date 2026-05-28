@@ -1335,12 +1335,68 @@
   user-select: text;
 }
 
-.footer-social-btn--mail-text:hover {
-  transform: none;
-  box-shadow: none;
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-  color: var(--slate-400);
+/* 클릭 가능한 이메일 복사 버튼 및 모던 호버 스타일 */
+.clickable-mail-btn {
+  cursor: pointer !important;
+  user-select: none !important;
+  position: relative;
+  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.clickable-mail-btn:hover {
+  background: rgba(99, 102, 241, 0.14) !important;
+  border-color: rgba(99, 102, 241, 0.45) !important;
+  color: #a5b4fc !important;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.22) !important;
+  transform: translateY(-2px) !important;
+}
+
+.clickable-mail-btn:active {
+  transform: translateY(0) scale(0.97) !important;
+}
+
+/* 복사 완료 안내 툴팁 말풍선 */
+.copy-tooltip-toast {
+  position: absolute;
+  bottom: 45px; /* 버튼 상단에 플로팅 */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(99, 102, 241, 0.65);
+  color: #a5b4fc;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 8px rgba(99, 102, 241, 0.3);
+  white-space: nowrap;
+  animation: tooltip-fade-in-up 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.copy-tooltip-toast::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.88) transparent transparent transparent;
+}
+
+@keyframes tooltip-fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .footer-social-btn:active {

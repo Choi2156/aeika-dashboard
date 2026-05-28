@@ -25,10 +25,12 @@ export default function Header() {
       </div>
 
       <div className="header__actions">
-        {/* 누적 조회수 독립형 커스텀 버튼 */}
-        <VisitorCounter />
+        {/* 1. 누적 조회수 외곽 그린 강조 박스 */}
+        <div className="header__visitor-promo" title="사이트 누적 조회수 통계">
+          <VisitorCounter />
+        </div>
 
-        {/* 유튜브 채널 구독/홍보 박스 */}
+        {/* 2. 유튜브 채널 구독/홍보 외곽 레드 강조 박스 */}
         <div className="header__youtube-promo">
           <a
             href="https://www.youtube.com/@AEIKA215"
@@ -42,17 +44,19 @@ export default function Header() {
           </a>
         </div>
 
-        {/* 제보 및 피드백 버튼 */}
-        <a
-          href="https://docs.google.com/forms/d/e/1FAIpQLSfETPGku14-e4MI8iXNxZ7WkazTopwkLduHNK5d3MAz-5VhIQ/viewform?usp=publish-editor"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="header__feedback-btn"
-          title="대시보드 피드백 및 일정 오류 제보하기"
-        >
-          <MessageSquare size={14} className="header__feedback-icon" />
-          <span>제보 및 피드백</span>
-        </a>
+        {/* 3. 제보 및 피드백 외곽 퍼플 강조 박스 */}
+        <div className="header__feedback-promo">
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfETPGku14-e4MI8iXNxZ7WkazTopwkLduHNK5d3MAz-5VhIQ/viewform?usp=publish-editor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="header__feedback-btn"
+            title="대시보드 피드백 및 일정 오류 제보하기"
+          >
+            <MessageSquare size={14} className="header__feedback-icon" />
+            <span>제보 및 피드백</span>
+          </a>
+        </div>
       </div>
     </header>
   );

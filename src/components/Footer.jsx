@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, ShieldAlert, Heart, Info, Github } from 'lucide-react';
 import '../styles/components.css';
 
@@ -9,6 +9,19 @@ import '../styles/components.css';
  *   onOpenLicense - Callback to open the copyright & disclaimer details modal
  */
 export default function Footer({ onOpenLicense }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText("choi21mg@gmail.com")
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500); // 1.5초 후 툴팁 닫힘
+      })
+      .catch((err) => {
+        console.error("이메일 주소 복사 실패:", err);
+      });
+  };
+
   return (
     <footer className="dashboard-footer">
       <div className="footer-content">
@@ -38,10 +51,19 @@ export default function Footer({ onOpenLicense }) {
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
               </svg>
             </a>
-            <span className="footer-social-btn footer-social-btn--mail footer-social-btn--mail-text">
+            <div 
+              className="footer-social-btn footer-social-btn--mail footer-social-btn--mail-text clickable-mail-btn"
+              onClick={handleCopyEmail}
+              title="클릭하여 이메일 주소 복사"
+            >
               <Mail size={14} />
               <span>choi21mg@gmail.com</span>
-            </span>
+              {copied && (
+                <div className="copy-tooltip-toast">
+                  <span>복사되었습니다!</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
