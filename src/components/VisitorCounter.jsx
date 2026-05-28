@@ -55,10 +55,10 @@ export default function VisitorCounter() {
   }
 
   return (
-    <div className={`header__visitor-btn ${loading ? 'loading' : 'loaded'}`} title="대시보드 누적 조회수">
+    <span className={`header__visitor-btn ${loading ? 'loading' : 'loaded'}`} title="대시보드 누적 조회수">
       <Eye size={14} className="visitor-btn__icon" />
       <span className="visitor-btn__label">누적 조회수</span>
       <span className="visitor-btn__count">{loading ? '...' : hits}</span>
-    </div>
+    </span>
   );
 }

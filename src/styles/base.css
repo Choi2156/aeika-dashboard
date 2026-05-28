@@ -179,8 +179,9 @@ body {
 /* 유튜브 구독 홍보 섹션 스타일 */
 /* 누적 조회수 외곽 그린 강조 박스 */
 .header__visitor-promo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   background: rgba(16, 185, 129, 0.04);
   border: 1px solid rgba(16, 185, 129, 0.12);
@@ -195,8 +196,9 @@ body {
 
 /* 유튜브 구독 홍보 섹션 스타일 */
 .header__youtube-promo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   background: rgba(239, 68, 68, 0.04);
   border: 1px solid rgba(239, 68, 68, 0.12);
@@ -211,8 +213,9 @@ body {
 
 /* 제보 및 피드백 외곽 퍼플 강조 박스 */
 .header__feedback-promo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   background: rgba(99, 102, 241, 0.04);
   border: 1px solid rgba(99, 102, 241, 0.12);
