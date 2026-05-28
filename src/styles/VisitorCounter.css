@@ -41,8 +41,13 @@
 }
 
 .visitor-btn__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(16, 185, 129, 0.35);
-  padding: 1px 6px;
+  padding: 0 6px;
+  height: 16px; /* 절대 높이 제한으로 상하 팽창 완전 방어 */
+  line-height: 1;
   border-radius: 4px;
   color: #34d399;
   font-family: 'Inter', sans-serif;
@@ -52,6 +57,7 @@
   min-width: 20px;
   text-align: center;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
 }
 
 /* 로딩/에러 트랜지션 애니메이션 */
