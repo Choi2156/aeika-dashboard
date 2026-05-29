@@ -5,6 +5,13 @@
       "trigger_version": "6.7",
       "next_version_number": "7.0",
       "note": "대형 마일스톤 버전 점프 (6.8이 아닌 7.0으로 직행)"
+    },
+    {
+      "game": "명조",
+      "trigger_version": "3.4",
+      "cycle_override": 32,
+      "half_cycle_override": 5,
+      "note": "3.4 버전 사이버펑크 콜라보로 인한 32일 단축 주기 적용"
     }
   ]
 }
