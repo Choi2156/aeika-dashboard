@@ -24,6 +24,12 @@
       "trigger_version": "2.8",
       "next_version_number": "3.0",
       "note": "2.8 버전 종료 후 2.9를 건너뛰고 3.0 마일스톤 버전으로 직행"
+    },
+    {
+      "game": "붕괴: 스타레일",
+      "trigger_version": "4.8",
+      "next_version_number": "5.0",
+      "note": "4.8 피날레 버전 종료 후 4.9를 건너뛰고 5.0 메이저 버전으로 점프"
     }
   ]
 }
