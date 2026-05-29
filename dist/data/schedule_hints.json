@@ -12,6 +12,12 @@
       "cycle_override": 32,
       "half_cycle_override": 5,
       "note": "3.4 버전 사이버펑크 콜라보로 인한 32일 단축 주기 적용"
+    },
+    {
+      "game": "명조",
+      "trigger_version": "3.5",
+      "stream_date_override": "2026-06-30",
+      "note": "3.4 단축 주기에 따라 3.5 시작일(7/10)의 10일 전인 6/30으로 공식방송 예약 적용"
     }
   ]
 }
