@@ -2,6 +2,52 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock } from 'lucide-react';
 import '../styles/components.css';
 
+// 원신 6.x 및 기타 서브컬처 게임 버전의 프리미엄 타이틀 포맷터 헬퍼
+const getVersionFullTitle = (game, version, allEvents) => {
+  if (!version) return '';
+  const cleanVer = version.replace(' 후반', '').trim();
+  
+  if (game === '원신' && cleanVer.match(/^6\.\d/)) {
+    const match = cleanVer.match(/^6\.(\d)/);
+    const minor = parseInt(match[1], 10);
+    const ordinals = ["첫", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
+    const ord = ordinals[minor] || `${minor + 1}`;
+    
+    let subtitle = '???';
+    if (allEvents) {
+      const mainEvent = allEvents.find(e => 
+        e.game === '원신' && 
+        e.type === '전반업데이트' && 
+        e.version.replace(' 후반', '').trim() === cleanVer
+      );
+      if (mainEvent && mainEvent.title) {
+        const subMatch = mainEvent.title.match(/-\s*「([^」]+)」/);
+        if (subMatch) subtitle = subMatch[1];
+      }
+    }
+    const suffix = version.includes('후반') ? ' 후반' : '';
+    return `v${cleanVer}${suffix} 「${ord} 번째 달」 버전 - 「${subtitle}」`;
+  }
+
+  if (allEvents) {
+    const mainEvent = allEvents.find(e => 
+      e.game === game && 
+      e.type === '전반업데이트' && 
+      e.version.replace(' 후반', '').trim() === cleanVer
+    );
+    if (mainEvent && mainEvent.title) {
+      let t = mainEvent.title;
+      if (version.includes('후반')) {
+        // "3.3 버전 - ..." 형태에서 "버전"을 "버전 후반"으로 변경
+        t = t.replace('버전', '버전 후반');
+      }
+      return t;
+    }
+  }
+
+  return `${cleanVer} 버전${version.includes('후반') ? ' 후반' : ''}`;
+};
+
 /**
  * 실시간 오늘의 라이브 소식 배너 캐러셀 (LiveBannerBoard)
  * PC 뷰에서 상단 필터바와 간트 차트 사이 공간에 와이드 형태로 렌더링됩니다.
@@ -154,24 +200,26 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
     let titleText = '';
     let actionIcon = <Play size={11} />;
 
+    // 이벤트/오프라인 타이틀을 감싸는 헬퍼 (중복 브래킷 방지)
+    const cleanEventTitle = (title) => {
+      if (!title) return '';
+      return title.startsWith('[') ? title : `[${title}]`;
+    };
+
     // D-Day 다가오는 스케줄의 경우 표시 내용 정밀 분기
     if (isUpcoming) {
       badgeText = `D-${diff}`;
       actionIcon = <Clock size={11} />;
       
-      const typeLabels = {
-        '전반업데이트': '업데이트',
-        '후반업데이트': '후반 픽업',
-        '공식방송': '공식 방송',
-        '오프라인이벤트': '행사',
-      };
-      const label = typeLabels[ev.type] || '일정';
-      
       if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
-        const cleanVer = ev.version ? ev.version.replace(' 후반', '') : '?';
-        titleText = `${ev.game} v${cleanVer} ${label} 예정 (${badgeText})`;
+        const fullVer = getVersionFullTitle(ev.game, ev.version, events);
+        titleText = `${ev.game} ${fullVer} 업데이트 예정 (${badgeText})`;
+      } else if (ev.type === '공식방송') {
+        titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 예정 (${badgeText})`;
+      } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
+        titleText = `${cleanEventTitle(ev.title)} 예정 (${badgeText})`;
       } else {
-        titleText = `${ev.game} ${label} [${ev.title}] 예정 (${badgeText})`;
+        titleText = `${ev.game} [${ev.title}] 예정 (${badgeText})`;
       }
     } else {
       // 기존 진행 중인 LIVE 스펙 보존
@@ -179,18 +227,18 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
         titleText = ev.banner_text;
       } else {
         if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
-          const cleanVer = ev.version ? ev.version.replace(' 후반', '') : '?';
-          titleText = `${ev.game} v${cleanVer} 진행 중!`;
+          const fullVer = getVersionFullTitle(ev.game, ev.version, events);
+          titleText = `${ev.game} ${fullVer} 진행 중!`;
         } else if (ev.type === '공식방송') {
           badgeText = isFixed ? 'STREAMING' : '방송 예정';
-          titleText = `${ev.game} v${ev.version || '?'} 공식 방송 진행 중!`;
+          titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중!`;
           actionIcon = <Volume2 size={11} />;
         } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
           badgeText = isFixed ? 'FESTIVAL' : '행사 예정';
-          titleText = `${ev.game} 행사 [${ev.title}] 진행 중!`;
+          titleText = `${cleanEventTitle(ev.title)} 진행 중!`;
           actionIcon = <Info size={11} />;
         } else {
-          titleText = `${ev.game} ${ev.title} 진행 중!`;
+          titleText = `${ev.game} [${ev.title}] 진행 중!`;
         }
       }
     }

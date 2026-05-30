@@ -279,6 +279,7 @@ export default function App() {
 
       <DetailModal
         event={selectedEvent}
+        events={events}
         displayTypeName={selectedEventTypeName}
         gamesConfig={gamesConfig}
         onClose={() => setSelectedEvent(null)}

@@ -208,7 +208,8 @@
   font-weight: 600;
   color: var(--slate-300);
   background: var(--slate-700);
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   line-height: 1.5;
 }
 

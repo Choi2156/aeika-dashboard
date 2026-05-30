@@ -2,16 +2,47 @@ import { useEffect, useRef } from 'react';
 import { X, ExternalLink } from 'lucide-react';
 import '../styles/components.css';
 
+// 원신 6.x 정식 버전 명칭 포맷터 헬퍼
+const formatVersionBadge = (game, version, allEvents) => {
+  if (!version) return '';
+  if (game === '원신') {
+    const cleanVer = version.replace(' 후반', '').trim();
+    const match = cleanVer.match(/^6\.(\d)/);
+    if (match) {
+      const minor = parseInt(match[1], 10);
+      const ordinals = ["첫", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
+      const ord = ordinals[minor] || `${minor + 1}`;
+      
+      let subtitle = '???';
+      if (allEvents) {
+        const mainEvent = allEvents.find(e => 
+          e.game === '원신' && 
+          e.type === '전반업데이트' && 
+          e.version.replace(' 후반', '').trim() === cleanVer
+        );
+        if (mainEvent && mainEvent.title) {
+          const subMatch = mainEvent.title.match(/-\s*「([^」]+)」/);
+          if (subMatch) subtitle = subMatch[1];
+        }
+      }
+      const suffix = version.includes('후반') ? ' 후반' : '';
+      return `v${cleanVer}${suffix} 「${ord} 번째 달」 버전 - 「${subtitle}」`;
+    }
+  }
+  return `v${version.replace(/^v/, '')}`;
+};
+
 /**
  * DetailModal — Event Detail Popup
  *
  * Props:
  *   event          – The event object (or null if closed)
+ *   events         – Array of all events (for dynamic lookup)
  *   displayTypeName – e.g. '버전 업데이트', '후반업데이트', '공식방송'
  *   gamesConfig    – Game configuration map
  *   onClose        – Callback to close the modal
  */
-export default function DetailModal({ event, displayTypeName, gamesConfig, onClose }) {
+export default function DetailModal({ event, events, displayTypeName, gamesConfig, onClose }) {
   const overlayRef = useRef(null);
   const closingRef = useRef(false);
 
@@ -106,7 +137,7 @@ export default function DetailModal({ event, displayTypeName, gamesConfig, onClo
                 {gameName}
               </span>
               {event.version && (
-                <span className="badge-version">{event.version}</span>
+                <span className="badge-version">{formatVersionBadge(event.game, event.version, events)}</span>
               )}
               <span
                 className={
