@@ -307,7 +307,22 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     };
   });
 
-  return processedEvents;
+  // 3. 종료 후 2주일(14일) 경과한 오프라인 행사는 차트와 리스트 뷰에서 노출 제외 (아카이브 강제 이양)
+  const today = getToday();
+  const cutoffDate = addDays(today, -14);
+  const cutoffStr = formatDate(cutoffDate);
+
+  const activeEvents = processedEvents.filter((ev) => {
+    if (ev.type === '오프라인이벤트' || ev.type === '행사') {
+      const endDate = ev.end_date || ev.start_date || ev.date;
+      if (endDate < cutoffStr) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  return activeEvents;
 }
 
 /**

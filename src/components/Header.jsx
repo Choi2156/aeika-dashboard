@@ -12,7 +12,7 @@ export default function Header() {
       <div className="header__title-group">
         <h1 className="header__title">
           서브컬쳐 게임 일정 대쉬보드
-          <span className="header__version">v1.0.4</span>
+          <span className="header__version">v1.1.0</span>
         </h1>
         <div className="header__subtitle-container">
           <p className="header__subtitle">
@@ -25,38 +25,32 @@ export default function Header() {
       </div>
 
       <div className="header__actions">
-        {/* 1. 누적 조회수 외곽 그린 강조 박스 */}
-        <div className="header__visitor-promo" title="사이트 누적 조회수 통계">
-          <VisitorCounter />
-        </div>
+        {/* 1. 누적 조회수 */}
+        <VisitorCounter />
 
-        {/* 2. 유튜브 채널 구독/홍보 외곽 레드 강조 박스 */}
-        <div className="header__youtube-promo">
-          <a
-            href="https://www.youtube.com/@AEIKA215"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="youtube-promo__btn"
-            title="애이카 아카이브 유튜브 채널 바로가기"
-          >
-            <Youtube size={14} className="youtube-promo__icon" />
-            <span>채널 바로가기</span>
-          </a>
-        </div>
+        {/* 2. 유튜브 채널 구독/홍보 */}
+        <a
+          href="https://www.youtube.com/@AEIKA215"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="youtube-promo__btn"
+          title="애이카 아카이브 유튜브 채널 바로가기"
+        >
+          <Youtube size={14} className="youtube-promo__icon" />
+          <span>채널 바로가기</span>
+        </a>
 
-        {/* 3. 제보 및 피드백 외곽 퍼플 강조 박스 */}
-        <div className="header__feedback-promo">
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfETPGku14-e4MI8iXNxZ7WkazTopwkLduHNK5d3MAz-5VhIQ/viewform?usp=publish-editor"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="header__feedback-btn"
-            title="대시보드 피드백 및 일정 오류 제보하기"
-          >
-            <MessageSquare size={14} className="header__feedback-icon" />
-            <span>제보 및 피드백</span>
-          </a>
-        </div>
+        {/* 3. 제보 및 피드백 */}
+        <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSfETPGku14-e4MI8iXNxZ7WkazTopwkLduHNK5d3MAz-5VhIQ/viewform?usp=publish-editor"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="header__feedback-btn"
+          title="대시보드 피드백 및 일정 오류 제보하기"
+        >
+          <MessageSquare size={14} className="header__feedback-icon" />
+          <span>제보 및 피드백</span>
+        </a>
       </div>
     </header>
   );

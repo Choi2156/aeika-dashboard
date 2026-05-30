@@ -345,13 +345,22 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
     if (!events) return [];
     const rangeStart = formatDateStr(addDays(today, -14));
     const rangeEnd   = formatDateStr(addDays(today, 14));
-    const filtered = events.filter((ev) =>
-      (ev.type === '공식방송' || ev.type === '오프라인이벤트') &&
-      ev.is_fixed === true &&
-      ev.date >= rangeStart &&
-      ev.date <= rangeEnd &&
-      (!activeGames || activeGames[ev.game] !== false) // activeGames 필터 적용
-    );
+    const filtered = events.filter((ev) => {
+      if (ev.type !== '공식방송' && ev.type !== '오프라인이벤트') return false;
+      if (ev.is_fixed !== true) return false;
+      if (activeGames && activeGames[ev.game] === false) return false;
+      
+      // 날짜 범위 확인
+      if (ev.date < rangeStart || ev.date > rangeEnd) return false;
+      
+      // 오프라인 이벤트 종료 시 노출 제외 처리 (end_date가 있으면 end_date 기준, 없으면 date 기준)
+      if (ev.type === '오프라인이벤트') {
+        const isEnded = ev.end_date ? ev.end_date < todayStr : ev.date < todayStr;
+        if (isEnded) return false;
+      }
+      
+      return true;
+    });
     // 미래·오늘 일정(예정)을 앞에, 과거 일정(최신)을 뒤에 배치
     const future = filtered.filter((ev) => ev.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date));
     const past   = filtered.filter((ev) => ev.date <  todayStr).sort((a, b) => b.date.localeCompare(a.date));
@@ -887,18 +896,34 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                     
                     <div className="gantt-game-meta-group">
                       <span className="gantt-game-name">{isMobile ? getShortGameName(gameName) : gameName}</span>
-                      {!isCollapsed && gamesConfig?.[gameName]?.officialUrl && (
-                        <a
-                          href={gamesConfig[gameName].officialUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="gantt-game-link-btn"
-                          onClick={(e) => e.stopPropagation()}
-                          title={`${gameName} 공식 사이트 / 다운로드`}
-                        >
-                          <Globe size={11} />
-                          <span>공식 사이트</span>
-                        </a>
+                      {!isCollapsed && (gamesConfig?.[gameName]?.officialUrl || gamesConfig?.[gameName]?.youtubeUrl) && (
+                        <div className="gantt-game-links">
+                          {gamesConfig?.[gameName]?.officialUrl && (
+                            <a
+                              href={gamesConfig[gameName].officialUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="gantt-game-link-btn"
+                              onClick={(e) => e.stopPropagation()}
+                              title={`${gameName} 공식 사이트 / 다운로드`}
+                            >
+                              <Globe size={11} />
+                              <span>공식 사이트</span>
+                            </a>
+                          )}
+                          {gamesConfig?.[gameName]?.youtubeUrl && (
+                            <a
+                              href={gamesConfig[gameName].youtubeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="gantt-game-youtube-btn"
+                              onClick={(e) => e.stopPropagation()}
+                              title={`${gameName} 공식 유튜브 채널`}
+                            >
+                              <Youtube size={12} />
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
 
@@ -1011,9 +1036,15 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                           <span className="recent-stream-card__version">
                             {isOffline ? '📍 오프라인 행사' : `v${ev.version} 방송`}
                           </span>
-                          <span className={`recent-stream-card__status ${isFixed ? 'status-confirmed' : 'status-predicted'}`}>
-                            {isFixed ? '확정' : '예상'}
-                          </span>
+                          {(!isOffline && ev.date < todayStr) ? (
+                            <span className="recent-stream-card__status status-ended">
+                              종료됨
+                            </span>
+                          ) : (
+                            <span className={`recent-stream-card__status ${isFixed ? 'status-confirmed' : 'status-predicted'}`}>
+                              {isFixed ? '확정' : '예상'}
+                            </span>
+                          )}
                         </div>
                         <h4 className="recent-stream-card__title">
                           {ev.title ? ev.title.replace(/「|」/g, '') : `${ev.game} 공식 특별 방송`}
@@ -1034,13 +1065,13 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
             </section>
           )}
 
-          {/* 1-2. 최근 공식 방송 하단: 애이카 아카이브 게임 스토리 풀버전 바로가기 */}
+          {/* 1-2. 최근 공식 방송 하단: 스토리 풀버전 바로보기 */}
           {storyVideos.length > 0 && (
             <section className="longform-videos-section">
               <div className="section-header-carousel">
                 <h3 className="longform-videos-section__title">
                   <Youtube size={15} className="longform-videos-section__title-icon" />
-                  <span>애이카 아카이브 게임 스토리 풀버전 바로가기</span>
+                  <span>스토리 풀버전 바로보기</span>
                 </h3>
                 {storyVideos.length > visibleCount && (
                   <div className="carousel-nav-arrows">

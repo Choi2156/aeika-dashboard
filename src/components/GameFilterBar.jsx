@@ -90,22 +90,22 @@ export default function GameFilterBar({
       <div className="game-filter-bar__left">
         <div className="game-filter-bar__controls">
           <button
-            className="game-filter-bar__control-btn"
+            className={`game-filter-bar__control-btn ${isShrunk ? 'game-filter-bar__control-btn--icon-only' : ''}`}
             onClick={() => onSelectAll(true)}
             type="button"
             title="모든 게임 표시"
           >
-            <CheckSquare size={13} />
-            <span>전체 표시</span>
+            <CheckSquare size={14} />
+            {!isShrunk && <span>전체 표시</span>}
           </button>
           <button
-            className="game-filter-bar__control-btn"
+            className={`game-filter-bar__control-btn ${isShrunk ? 'game-filter-bar__control-btn--icon-only' : ''}`}
             onClick={() => onSelectAll(false)}
             type="button"
             title="모든 게임 숨기기"
           >
-            <Square size={13} />
-            <span>전체 해제</span>
+            <Square size={14} />
+            {!isShrunk && <span>전체 해제</span>}
           </button>
         </div>
 
@@ -113,25 +113,36 @@ export default function GameFilterBar({
           {gameNames.map((gameName) => {
             const isActive = activeGames[gameName] !== false;
             const color = gamesConfig[gameName]?.theme?.color || '#818cf8';
+            const iconUrl = gamesConfig[gameName]?.icon;
+            const hideText = !isActive || isShrunk;
 
             return (
               <button
                 key={gameName}
-                className={`game-filter-btn ${isActive ? 'game-filter-btn--active' : 'game-filter-btn--inactive'}`}
+                className={`game-filter-btn ${isActive ? 'game-filter-btn--active' : 'game-filter-btn--inactive'} ${hideText ? 'game-filter-btn--icon-only' : ''}`}
                 onClick={() => onToggleGame(gameName)}
                 type="button"
                 style={{
                   '--filter-color': color,
                 }}
+                title={`${gameName} 필터 ${isActive ? '끄기' : '켜기'}`}
               >
-                <span
-                  className="game-filter-btn__indicator"
-                  style={{
-                    backgroundColor: isActive ? color : 'transparent',
-                    borderColor: color,
-                  }}
-                />
-                <span className="game-filter-btn__label">{isShrunk ? getShortGameName(gameName) : gameName}</span>
+                {iconUrl ? (
+                  <img
+                    className="game-filter-btn__icon-img"
+                    src={iconUrl}
+                    alt={gameName}
+                  />
+                ) : (
+                  <span
+                    className="game-filter-btn__indicator"
+                    style={{
+                      backgroundColor: isActive ? color : 'transparent',
+                      borderColor: color,
+                    }}
+                  />
+                )}
+                {!hideText && <span className="game-filter-btn__label">{gameName}</span>}
               </button>
             );
           })}
@@ -140,89 +151,59 @@ export default function GameFilterBar({
 
       {/* 2. 오른쪽 그룹: 뷰 전환 및 이용 가이드 */}
       <div className="game-filter-bar__right">
-        <div className="game-filter-bar__view-switcher" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <div className="game-filter-bar__view-switcher">
           <div className="view-switcher">
             <button
-              className={`view-switcher__btn ${currentView === 'gantt' ? 'view-switcher__btn--active' : ''}`}
+              className={`view-switcher__btn ${currentView === 'gantt' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
               onClick={() => handleViewChange('gantt')}
               title="PC형 와이드 간트 뷰"
               id="btn-view-gantt"
             >
-              <Monitor />
-              <span className="view-switcher__label">PC</span>
+              <Monitor size={14} />
+              {!isShrunk && <span className="view-switcher__label">PC</span>}
             </button>
             <button
-              className={`view-switcher__btn ${currentView === 'list' ? 'view-switcher__btn--active' : ''}`}
+              className={`view-switcher__btn ${currentView === 'list' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
               onClick={() => handleViewChange('list')}
               title="모바일형 직관 리스트 뷰"
               id="btn-view-list"
             >
-              <Smartphone />
-              <span className="view-switcher__label">Mobile</span>
+              <Smartphone size={14} />
+              {!isShrunk && <span className="view-switcher__label">Mobile</span>}
             </button>
           </div>
 
           {/* 테마 버튼 (텍스트 없이 아이콘 단독으로 심플하게 디자인) */}
           <button
-            className="theme-switcher-btn"
+            className={`theme-switcher-btn ${isShrunk ? 'theme-switcher-btn--shrunk' : ''}`}
             onClick={handleToggleTheme}
             type="button"
             title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-            style={{
-              background: 'none',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              padding: '0.45rem',
-              borderRadius: '50%',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 150ms ease',
-              width: '32px',
-              height: '32px',
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            }}
           >
             {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
           {/* 설정 저장 단추 */}
           <button
-            className={`storage-consent-btn ${isStorageConsentEnabled ? 'storage-consent-btn--active' : ''}`}
+            className={`storage-consent-btn ${isStorageConsentEnabled ? 'storage-consent-btn--active' : ''} ${isShrunk ? 'storage-consent-btn--icon-only' : ''}`}
             onClick={handleToggleStorage}
             type="button"
             title="개인 필터 및 테마 설정 브라우저 자동 보존"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '0.7rem',
-              fontWeight: 700,
-              color: isStorageConsentEnabled ? 'var(--accent-indigo-light)' : 'var(--text-secondary)',
-              backgroundColor: isStorageConsentEnabled ? 'rgba(129, 140, 248, 0.06)' : 'rgba(255, 255, 255, 0.03)',
-              border: `1px solid ${isStorageConsentEnabled ? 'var(--accent-indigo)' : 'var(--border-subtle)'}`,
-              borderRadius: 'var(--radius-md)',
-              padding: '0.35rem 0.65rem',
-              cursor: 'pointer',
-              transition: 'all 150ms ease',
-              height: '32px',
-              boxSizing: 'border-box'
-            }}
           >
-            <Database size={12} style={{ color: isStorageConsentEnabled ? 'var(--accent-indigo-light)' : 'inherit' }} />
-            <span>설정 저장</span>
+            <Database size={12} />
+            {!isShrunk && <span>설정 저장</span>}
           </button>
         </div>
 
         <button
-          className="game-filter-bar__guide-btn"
+          className={`game-filter-bar__guide-btn ${isShrunk ? 'game-filter-bar__guide-btn--icon-only' : ''}`}
           onClick={handleOpenGuide}
           type="button"
           id="open-guide-btn"
+          title="이용 안내 보기"
         >
-          <HelpCircle />
-          <span>이용 안내</span>
+          <HelpCircle size={14} />
+          {!isShrunk && <span>이용 안내</span>}
         </button>
       </div>
     </section>

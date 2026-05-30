@@ -14,9 +14,13 @@ import Footer from './components/Footer';
 import './styles/variables.css';
 import './styles/base.css';
 
-// 실시간 데이터 및 시스템 정밀 점검 모드 제어 스위치
-// (점검 활성화 시 true로 변경. 기존 UI는 정상 작동하나 상단 배너를 통해 동기화 및 데이터 면책 고지가 항시 노출됩니다.)
-const IS_UNDER_MAINTENANCE = true;
+// ==========================================
+// 🚨 [점검 모드 마스터 설정 스위치]
+// ==========================================
+export const MAINTENANCE_CONFIG = {
+  active: true, // 점검 중 상태 활성화 여부 (true = 활성화, false = 비활성화)
+  message: "임시 테스트 공개 기간 동안은 본 알림 배너가 항상 노출됩니다. 점검 중에도 기존 UI 및 차트 기능은 정상 작동하지만, 일시적인 데이터 손상이나 실시간 업데이트 지연이 발생할 수 있는 점 이용자 여러분의 너른 양해 부탁드립니다." // 상단 배너에 노출할 점검 안내 상세 텍스트
+};
 
 // 확장성을 위한 마스터 설정 스키마 기본값 정의 (추후 완전히 새로운 필드가 추가되어도 크래시 없이 하위호환)
 const DEFAULT_SETTINGS = {
@@ -190,14 +194,14 @@ export default function App() {
       data-theme={theme}
       onMouseMove={handleMouseMove}
     >
-      {IS_UNDER_MAINTENANCE && (
+      {MAINTENANCE_CONFIG.active && (
         <div className="maintenance-banner">
           <div className="maintenance-banner__content">
             <span className="maintenance-banner__icon">⚠️</span>
             <div className="maintenance-banner__text-group">
               <span className="maintenance-banner__title">사이트 점검중</span>
               <span className="maintenance-banner__desc">
-                임시 테스트 공개 기간 동안은 본 알림 배너가 항상 노출됩니다. 점검 중에도 기존 UI 및 차트 기능은 정상 작동하지만, 일시적인 데이터 손상이나 실시간 업데이트 지연이 발생할 수 있는 점 이용자 여러분의 너른 양해 부탁드립니다.
+                {MAINTENANCE_CONFIG.message}
               </span>
             </div>
           </div>

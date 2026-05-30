@@ -583,7 +583,7 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-xl);
-  padding: 0.65rem 1rem;
+  padding: 0.85rem 1.25rem; /* 높이를 키우기 위해 패딩 증가 */
   margin-bottom: 1.25rem;
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(16px);
@@ -594,7 +594,16 @@
   top: 12px; /* 상단 여백 유지 */
   z-index: 100;
   
-  transition: top 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+/* 단축 메뉴바: 모바일 등 가로가 좁아도 무조건 1열 단축 도크 형태로 전환 */
+.game-filter-bar--shrunk {
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.45rem 1rem !important;
+  gap: 0.75rem !important;
 }
 
 .game-filter-bar__left {
@@ -605,6 +614,12 @@
   min-width: 0; /* overflow 방지 */
   position: relative;
   z-index: 5;
+}
+
+.game-filter-bar--shrunk .game-filter-bar__left {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
 }
 
 .game-filter-bar__right {
@@ -618,6 +633,14 @@
   position: relative;
   z-index: 10; /* 왼쪽 영역 오버플로우 시 클릭 방해 차단 z-index 확보 */
   pointer-events: auto;
+}
+
+.game-filter-bar--shrunk .game-filter-bar__right {
+  border-top: none !important;
+  padding-top: 0 !important;
+  justify-content: flex-end !important;
+  gap: 0.65rem !important;
+  flex-wrap: nowrap !important;
 }
 
 @media (min-width: 1024px) {
@@ -653,16 +676,18 @@
   align-items: center;
   gap: 0.375rem;
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-secondary);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-secondary);
   border-radius: var(--radius-md);
-  padding: 0.35rem 0.6rem; /* 단위 오류 수정하여 글씨 삐져나옴 완벽 해결 */
+  padding: 0.45rem 0.8rem; /* 크기 확장 */
   cursor: pointer;
   transition: all var(--transition-fast);
   box-shadow: var(--shadow-lg);
+  height: 36px;
+  box-sizing: border-box;
 }
 
 .game-filter-bar__control-btn:hover {
@@ -674,6 +699,16 @@
   background: var(--accent-indigo);
   color: #ffffff;
   border-color: var(--accent-indigo);
+}
+
+.game-filter-bar__control-btn--icon-only {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
 }
 
 .game-filter-bar__buttons {
@@ -688,14 +723,16 @@
   align-items: center;
   gap: 0.4rem;
   font-family: inherit;
-  font-size: 0.72rem;
+  font-size: 0.78rem; /* 폰트 확장 */
   font-weight: 700;
   border-radius: var(--radius-lg);
-  padding: 0.35rem 0.65rem;
+  padding: 0.45rem 0.85rem; /* 패딩 확장으로 버튼 대형화 */
   cursor: pointer;
   transition: all var(--transition-fast);
   border: 1px solid var(--border-secondary);
   box-shadow: var(--shadow-lg);
+  height: 36px;
+  box-sizing: border-box;
 }
 
 .game-filter-btn--active {
@@ -715,7 +752,7 @@
   background: transparent;
   color: var(--text-dim);
   border-color: var(--border-primary);
-  opacity: 0.5;
+  opacity: 0.45 !important;
 }
 
 .game-filter-btn:hover {
@@ -724,8 +761,8 @@
 }
 
 .game-filter-btn__indicator {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   border: 1px solid var(--filter-color);
   flex-shrink: 0;
@@ -734,6 +771,46 @@
 
 .game-filter-btn--active .game-filter-btn__indicator {
   box-shadow: 0 0 6px var(--filter-color);
+}
+
+.game-filter-btn__icon-img {
+  width: 24px; /* 앱 아이콘 크기 대폭 확장 */
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--filter-color);
+  transition: all var(--transition-fast);
+}
+
+.game-filter-btn--icon-only {
+  padding: 0 !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  overflow: hidden !important; /* 원형 테두리 외부로 삐져나가지 않도록 강제 차단 */
+}
+
+.game-filter-btn--icon-only .game-filter-btn__icon-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  border: none !important; /* 이미지 고유 테두리를 제거해 둥근 버튼을 100% 꽉 채우기 */
+}
+
+/* 비활성화 시에도 게임을 손쉽게 인지할 수 있도록 명도 상향 및 채도 부분 보존 */
+.game-filter-btn--inactive .game-filter-btn__icon-img {
+  filter: grayscale(50%) brightness(90%) !important;
+  border-color: var(--border-primary);
+  opacity: 0.8 !important;
+}
+
+.game-filter-btn--active .game-filter-btn__icon-img {
+  box-shadow: 0 0 8px var(--filter-color);
 }
 
 .game-filter-bar__meta {
@@ -746,6 +823,79 @@
 .game-filter-bar__view-switcher {
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.view-switcher__btn--icon-only {
+  width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+}
+
+/* 테마 스위처 스타일링 */
+.theme-switcher-btn {
+  background: none;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  background-color: rgba(255, 255, 255, 0.03);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.theme-switcher-btn:hover {
+  border-color: var(--accent-indigo);
+  color: #ffffff;
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+/* 설정 저장 단추 스타일링 */
+.storage-consent-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+  height: 36px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.storage-consent-btn--active {
+  color: var(--accent-indigo-light) !important;
+  background-color: rgba(129, 140, 248, 0.06) !important;
+  border-color: var(--accent-indigo) !important;
+}
+
+.storage-consent-btn:hover {
+  border-color: var(--accent-indigo);
+  color: #ffffff;
+}
+
+.storage-consent-btn--icon-only {
+  width: 36px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
 }
 
 .game-filter-bar__guide-btn {
@@ -759,11 +909,13 @@
   background: var(--bg-tertiary);
   border: 1px solid var(--border-secondary);
   border-radius: var(--radius-md);
-  padding: 0.375rem 0.75rem;
+  padding: 0.45rem 0.85rem;
   cursor: pointer;
   transition: all var(--transition-fast);
   box-shadow: var(--shadow-lg);
   flex-shrink: 0;
+  height: 36px;
+  box-sizing: border-box;
 }
 
 .game-filter-bar__guide-btn:hover {
@@ -781,6 +933,16 @@
   width: 13px;
   height: 13px;
   color: var(--accent-indigo-light);
+}
+
+.game-filter-bar__guide-btn--icon-only {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
 }
 
 
@@ -1578,46 +1740,8 @@
 }
 
 /* =============================================================
-   SCROLL SHRUNK GAME FILTER BAR
+   SCROLL SHRUNK GAME FILTER BAR - MERGED WITH UPPER STYLES FOR CONSISTENT 36PX DOCK
    ============================================================= */
-
-/* 스크롤 시 콤팩트 축소 모드 */
-.game-filter-bar.game-filter-bar--shrunk {
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(99, 102, 241, 0.1);
-  background: rgba(15, 23, 42, 0.85); /* 좀 더 깊은 투명도 글래스모피즘 */
-  gap: 0;
-}
-
-[data-theme="light"] .game-filter-bar.game-filter-bar--shrunk {
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__controls,
-.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__right {
-  display: none !important;
-}
-
-.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__left {
-  flex-direction: row;
-  align-items: center;
-  gap: 0;
-  width: 100%;
-  justify-content: center;
-}
-
-.game-filter-bar.game-filter-bar--shrunk .game-filter-bar__buttons {
-  justify-content: center;
-  width: 100%;
-  gap: 0.3rem;
-}
-
-.game-filter-bar.game-filter-bar--shrunk .game-filter-btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.68rem;
-  border-radius: var(--radius-md);
-}
 
 /* =============================================================
    🎟️ Ticket Link Button Styles (DetailModal)

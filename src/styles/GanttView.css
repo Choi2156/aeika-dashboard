@@ -392,6 +392,35 @@
   flex-shrink: 0;
 }
 
+.gantt-game-links {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gantt-game-youtube-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 4px;
+  color: #ff4d4d;
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-sizing: border-box;
+}
+
+.gantt-game-youtube-btn:hover {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: #ff3333;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
 .gantt-chevron {
   color: var(--gantt-text-muted);
   flex-shrink: 0;
@@ -861,6 +890,12 @@
   background: rgba(100, 116, 139, 0.08);
   border: 1px solid var(--text-dim);
   color: var(--text-muted);
+}
+
+.recent-stream-card__status.status-ended {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  color: #f87171;
 }
 
 .recent-stream-card__title {

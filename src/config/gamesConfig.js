@@ -16,7 +16,9 @@ export const GAMES_CONFIG = {
       textOnBar: "#0f172a",
     },
     defaultImg: "./assets/default_genshin.jpg",
+    icon: "./assets/icon_genshin.webp",
     officialUrl: "https://genshin.hoyoverse.com/ko",
+    youtubeUrl: "https://www.youtube.com/@Genshinimpact_KR",
     copyright: "© COGNOSPHERE",
   },
   "붕괴: 스타레일": {
@@ -29,7 +31,9 @@ export const GAMES_CONFIG = {
       textOnBar: "#0f172a",
     },
     defaultImg: "./assets/default_starrail.jpg",
+    icon: "./assets/icon_starrail.webp",
     officialUrl: "https://hsr.hoyoverse.com/ko-kr/",
+    youtubeUrl: "https://www.youtube.com/@Honkaistarrail_kr",
     copyright: "© COGNOSPHERE",
   },
   "젠레스 존 제로": {
@@ -42,7 +46,9 @@ export const GAMES_CONFIG = {
       textOnBar: "#0f172a",
     },
     defaultImg: "./assets/default_zzz.jpg",
+    icon: "./assets/icon_zzz.webp",
     officialUrl: "https://zenless.hoyoverse.com/ko-kr/",
+    youtubeUrl: "https://www.youtube.com/@ZZZ_KO",
     copyright: "© COGNOSPHERE",
   },
   "명조": {
@@ -55,7 +61,9 @@ export const GAMES_CONFIG = {
       textOnBar: "#0f172a",
     },
     defaultImg: "./assets/default_wuthering.jpg",
+    icon: "./assets/icon_wuthering.jpg",
     officialUrl: "https://wutheringwaves.kurogames.com/kr/",
+    youtubeUrl: "https://www.youtube.com/@WW_KR_Official",
     copyright: "© KURO GAMES",
   },
   "명일방주: 엔드필드": {
@@ -68,7 +76,9 @@ export const GAMES_CONFIG = {
       textOnBar: "#0f172a",
     },
     defaultImg: "./assets/default_endfield.jpg",
+    icon: "./assets/icon_endfield.png",
     officialUrl: "https://endfield.gryphline.com/ko-kr/",
+    youtubeUrl: "https://www.youtube.com/@arknightsendfieldKR",
     copyright: "© GRYPHLINE",
   },
 };
