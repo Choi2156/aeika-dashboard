@@ -12,7 +12,7 @@ export default function Header() {
       <div className="header__title-group">
         <h1 className="header__title">
           서브컬쳐 게임 일정 대쉬보드
-          <span className="header__version">v1.1.0</span>
+          <span className="header__version">v1.1.1</span>
         </h1>
         <div className="header__subtitle-container">
           <p className="header__subtitle">
