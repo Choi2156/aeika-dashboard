@@ -85,10 +85,15 @@ export function useScheduleData() {
           }
         });
 
-        // 2. 신규 업데이트 데이터 주입 (기존 ID와 동일하면 자동으로 오버라이드 덮어써서 수정, 다르면 신규 추가)
+        // 2. 신규 업데이트 데이터 주입 (기존 ID와 동일하면 기존 속성을 보존하며 병합, 다르면 신규 추가)
         updateEvents.forEach(evt => {
           if (evt && evt.id) {
-            mergedMap.set(evt.id, evt);
+            const existing = mergedMap.get(evt.id);
+            if (existing) {
+              mergedMap.set(evt.id, { ...existing, ...evt });
+            } else {
+              mergedMap.set(evt.id, evt);
+            }
           }
         });
 
