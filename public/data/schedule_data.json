@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-05-29T23:39:39+09:00",
+    "last_updated": "2026-06-01T13:20:00+09:00",
     "schema_version": "2.0"
   },
   "games_config": {
@@ -188,6 +188,19 @@
       "detail": "공식 방송 5월 22일 20:30(KST)",
       "custom_img": "endfield_1.3_banner.webp",
       "link": "https://youtu.be/GZWh3krEAPk?si=uihoytp5qULDpsOx"
+    },
+    {
+      "id": "EVT_ZZZ_20260606_0001",
+      "game": "젠레스 존 제로",
+      "version": "3.0",
+      "type": "공식방송",
+      "title": "3.0 버전 「꿈속을 헤매는 이의 고백」 특별 방송",
+      "date": "2026-06-06",
+      "time": "20:30",
+      "is_fixed": true,
+      "detail": "시즌 3 신규 도시 로스캘리퍼 전경 및 천공의 연산 중추 최초 공개! 신규 에이전트 벨리나, 노르마, 피로이스 최신 정보 및 방송 중 특별 리딤코드 공개 예정.",
+      "custom_img": "젠존제3.0공방.webp",
+      "link": ""
     }
   ]
 }
