@@ -644,6 +644,39 @@
   flex-wrap: nowrap !important;
 }
 
+/* 모바일 단축 메뉴바: 가로폭 부족 시 일렬 정렬 유지 및 2열 가로 도크 배치 */
+@media (max-width: 768px) {
+  .game-filter-bar--shrunk {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.6rem !important;
+    padding: 0.6rem 1rem !important;
+  }
+  
+  .game-filter-bar--shrunk .game-filter-bar__left {
+    flex: 1 1 100% !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .game-filter-bar--shrunk .game-filter-bar__buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* 모바일 단축 바에서 게임 아이콘들이 절대 세로로 꺾이지 않고 일렬 배치 유지 */
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+  }
+  
+  .game-filter-bar--shrunk .game-filter-bar__right {
+    flex: 1 1 100% !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    margin-top: 0.25rem !important;
+  }
+}
+
 @media (min-width: 1024px) {
   .game-filter-bar {
     flex-direction: row;
