@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-06-01T13:20:00+09:00",
+    "last_updated": "2026-06-01T20:53:00+09:00",
     "schema_version": "2.0"
   },
   "games_config": {
@@ -95,6 +95,34 @@
       "detail": "공식 방송 5/22 19:30 진행 예정",
       "custom_img": "starrail_4.3_stream.jpg",
       "link": "https://www.youtube.com/live/Q2ZxjPxeibw"
+    },
+    {
+      "id": "EVT_HSR_20260603_0001",
+      "game": "붕괴: 스타레일",
+      "version": "4.3",
+      "type": "전반업데이트",
+      "title": "4.3 버전 - 「산 자의 망천에 잠겨」",
+      "date": "2026-06-03",
+      "end_date": "2026-07-14",
+      "time": "",
+      "is_fixed": true,
+      "detail": "전반 6/3 신규 캐릭터 픽업 및 개척 임무 개방. 4.3 버전 「산 자의 망천에 잠겨」 정식 개막!",
+      "custom_img": "starrail_4.3_banner.webp",
+      "link": ""
+    },
+    {
+      "id": "EVT_HSR_20260624_0001",
+      "game": "붕괴: 스타레일",
+      "version": "4.3 후반",
+      "type": "후반업데이트",
+      "title": "4.3 버전 후반부 캐릭터 워프 전환",
+      "date": "2026-06-24",
+      "end_date": "2026-07-14",
+      "time": "",
+      "is_fixed": true,
+      "detail": "후반 6/24 후반부 캐릭터 워프 및 이벤트 개시. 4.3 버전 이벤트 및 워프는 7월 15일 새벽에 조기 종료될 예정입니다.",
+      "custom_img": "starrail_4.3_banner.webp",
+      "link": ""
     },
     {
       "id": "EVT_ZZZ_20260506_0001",
