@@ -27,6 +27,13 @@
     },
     {
       "game": "붕괴: 스타레일",
+      "trigger_version": "4.3",
+      "cycle_override": 44,
+      "half_cycle_override": 21,
+      "note": "4.3 버전 7월 15일 새벽 종료(7월 14일까지 노출)에 맞춘 44일 연장 주기 적용"
+    },
+    {
+      "game": "붕괴: 스타레일",
       "trigger_version": "4.9",
       "next_version_number": "5.0",
       "note": "4.9 피날레 버전 종료 후 5.0 메이저 버전으로 점프 (역대 버전 패턴인 1.6, 2.7, 3.8에 부합하는 4.9 적용)"
