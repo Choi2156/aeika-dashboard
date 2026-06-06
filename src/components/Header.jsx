@@ -25,7 +25,7 @@ export default function Header() {
       </div>
 
       <div className="header__actions">
-        {/* 1. 누적 조회수 */}
+        {/* 1. 누적 방문수 */}
         <VisitorCounter />
 
         {/* 2. 유튜브 채널 구독/홍보 */}
