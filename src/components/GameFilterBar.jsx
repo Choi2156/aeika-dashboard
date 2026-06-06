@@ -96,7 +96,7 @@ export default function GameFilterBar({
             title="모든 게임 표시"
           >
             <CheckSquare size={14} />
-            {!isShrunk && <span>전체 표시</span>}
+            <span className="game-filter-bar__control-label">전체 표시</span>
           </button>
           <button
             className={`game-filter-bar__control-btn ${isShrunk ? 'game-filter-bar__control-btn--icon-only' : ''}`}
@@ -105,7 +105,7 @@ export default function GameFilterBar({
             title="모든 게임 숨기기"
           >
             <Square size={14} />
-            {!isShrunk && <span>전체 해제</span>}
+            <span className="game-filter-bar__control-label">전체 해제</span>
           </button>
         </div>
 
@@ -142,7 +142,7 @@ export default function GameFilterBar({
                     }}
                   />
                 )}
-                {!hideText && <span className="game-filter-btn__label">{gameName}</span>}
+                <span className="game-filter-btn__label">{gameName}</span>
               </button>
             );
           })}
@@ -160,7 +160,7 @@ export default function GameFilterBar({
               id="btn-view-gantt"
             >
               <Monitor size={14} />
-              {!isShrunk && <span className="view-switcher__label">PC</span>}
+              <span className="view-switcher__label">PC</span>
             </button>
             <button
               className={`view-switcher__btn ${currentView === 'list' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
@@ -169,7 +169,7 @@ export default function GameFilterBar({
               id="btn-view-list"
             >
               <Smartphone size={14} />
-              {!isShrunk && <span className="view-switcher__label">Mobile</span>}
+              <span className="view-switcher__label">Mobile</span>
             </button>
           </div>
 
@@ -191,7 +191,7 @@ export default function GameFilterBar({
             title="개인 필터 및 테마 설정 브라우저 자동 보존"
           >
             <Database size={12} />
-            {!isShrunk && <span>설정 저장</span>}
+            <span className="storage-consent-btn-label">설정 저장</span>
           </button>
         </div>
 
@@ -203,7 +203,7 @@ export default function GameFilterBar({
           title="이용 안내 보기"
         >
           <HelpCircle size={14} />
-          {!isShrunk && <span>이용 안내</span>}
+          <span className="game-filter-bar__guide-label">이용 안내</span>
         </button>
       </div>
     </section>
