@@ -230,9 +230,35 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
           const fullVer = getVersionFullTitle(ev.game, ev.version, events);
           titleText = `${ev.game} ${fullVer} 진행 중!`;
         } else if (ev.type === '공식방송') {
-          badgeText = isFixed ? 'STREAMING' : '방송 예정';
-          titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중!`;
-          actionIcon = <Volume2 size={11} />;
+          if (ev.start_date === todayStr) {
+            // 오늘 진행되는 공식 방송인 경우 실시간 시간에 따른 표기 분기
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            if (ev.time) {
+              const [sh, sm] = ev.time.split(':').map(Number);
+              const hasStarted = (currentHour > sh) || (currentHour === sh && currentMinute >= sm);
+              
+              if (hasStarted) {
+                badgeText = isFixed ? 'STREAMING' : '방송 예정';
+                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중!`;
+                actionIcon = <Volume2 size={11} />;
+              } else {
+                badgeText = 'TODAY';
+                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 ${ev.time} 진행 예정!`;
+                actionIcon = <Clock size={11} />;
+              }
+            } else {
+              badgeText = 'TODAY';
+              titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 진행!`;
+              actionIcon = <Clock size={11} />;
+            }
+          } else {
+            badgeText = isFixed ? 'STREAMING' : '방송 예정';
+            titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중!`;
+            actionIcon = <Volume2 size={11} />;
+          }
         } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
           badgeText = isFixed ? 'FESTIVAL' : '행사 예정';
           titleText = `${cleanEventTitle(ev.title)} 진행 중!`;
