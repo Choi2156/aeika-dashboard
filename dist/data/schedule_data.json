@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-06-06T19:42:00+09:00",
+    "last_updated": "2026-06-06T19:49:00+09:00",
     "schema_version": "2.0"
   },
   "games_config": {
@@ -227,7 +227,7 @@
       "time": "20:30",
       "is_fixed": true,
       "detail": "시즌 3 신규 도시 로스캘리퍼 전경 및 천공의 연산 중추 최초 공개! 신규 에이전트 벨리나, 노르마, 피로이스 최신 정보 및 방송 중 특별 리딤코드 공개 예정.",
-      "custom_img": "젠존제3.0공방.webp",
+      "custom_img": "hq720.jpg",
       "link": "https://youtu.be/ktYJvcTpqR8?si=G9WzLnJLVn618p7M"
     }
   ]
