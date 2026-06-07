@@ -133,14 +133,18 @@ export default function App() {
   // 7. [개선] 단일 직렬화 객체 자동 실시간 백업 세션 (모바일/PC 통합 세션 백업 보장)
   useEffect(() => {
     if (isStorageConsentEnabled) {
-      localStorage.setItem('subculture_dashboard_consent', 'true');
-      
-      const settingsObj = {
-        theme,
-        currentView,
-        activeGames
-      };
-      localStorage.setItem('subculture_dashboard_settings', JSON.stringify(settingsObj));
+      try {
+        localStorage.setItem('subculture_dashboard_consent', 'true');
+        
+        const settingsObj = {
+          theme,
+          currentView,
+          activeGames
+        };
+        localStorage.setItem('subculture_dashboard_settings', JSON.stringify(settingsObj));
+      } catch (e) {
+        console.warn('LocalStorage 쓰기 차단 또는 용량 초과:', e);
+      }
     }
   }, [isStorageConsentEnabled, theme, currentView, activeGames]);
 
@@ -150,8 +154,12 @@ export default function App() {
       setIsStorageConsentEnabled(true);
     } else {
       setIsStorageConsentEnabled(false);
-      localStorage.removeItem('subculture_dashboard_consent');
-      localStorage.removeItem('subculture_dashboard_settings');
+      try {
+        localStorage.removeItem('subculture_dashboard_consent');
+        localStorage.removeItem('subculture_dashboard_settings');
+      } catch (e) {
+        console.warn('LocalStorage 삭제 차단:', e);
+      }
     }
   };
 

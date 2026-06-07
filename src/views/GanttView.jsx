@@ -235,7 +235,6 @@ const LONGFORM_VIDEOS = [
    ──────────────────────────────────────────── */
 export default function GanttView({ events, gamesConfig, recommendedVideos, briefingData, activeGames, onToggleGame, onEventClick }) {
   const scrollRef = useRef(null);
-  const [hoveredCol, setHoveredCol] = useState(null);
   const [currentShortIndex, setCurrentShortIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -855,10 +854,8 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
               {dateAxis.map((day, i) => (
                 <div
                   key={day.dateStr}
-                  className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${day.isWeekend ? ' gantt-header-weekend' : ''}${hoveredCol === i ? ' gantt-header-hovered' : ''}`}
+                  className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${day.isWeekend ? ' gantt-header-weekend' : ''}`}
                   style={{ width: `${CELL_WIDTH}px`, minWidth: `${CELL_WIDTH}px` }}
-                  onMouseEnter={() => setHoveredCol(i)}
-                  onMouseLeave={() => setHoveredCol(null)}
                 >
                   <span className="gantt-header-date">{day.label}</span>
                   <span className="gantt-header-day">{day.dayName}</span>
@@ -938,10 +935,8 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
                     {dateAxis.map((day, i) => (
                       <div
                         key={day.dateStr}
-                        className={`gantt-cell${day.isToday ? ' gantt-cell-today' : ''}${day.isWeekend ? ' gantt-cell-weekend' : ''}${hoveredCol === i ? ' gantt-cell-hovered' : ''}`}
+                        className={`gantt-cell${day.isToday ? ' gantt-cell-today' : ''}${day.isWeekend ? ' gantt-cell-weekend' : ''}`}
                         style={{ width: `${CELL_WIDTH}px`, minWidth: `${CELL_WIDTH}px` }}
-                        onMouseEnter={() => setHoveredCol(i)}
-                        onMouseLeave={() => setHoveredCol(null)}
                       />
                     ))}
 

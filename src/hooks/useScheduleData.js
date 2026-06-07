@@ -38,19 +38,31 @@ export function useScheduleData() {
         // 힌트 파일은 없어도 정상 동작해야 함
         let hintsData = { hints: [] };
         if (hintsRes.ok) {
-          hintsData = await hintsRes.json();
+          try {
+            hintsData = await hintsRes.json();
+          } catch (e) {
+            console.error('Failed to parse schedule_hints.json:', e);
+          }
         }
 
         // 추천 비디오 DB 로드 예외 처리
         let recommendedVideos = { shorts: [], longform: [] };
         if (recRes.ok) {
-          recommendedVideos = await recRes.json();
+          try {
+            recommendedVideos = await recRes.json();
+          } catch (e) {
+            console.error('Failed to parse recommended_videos.json:', e);
+          }
         }
 
         // AI 데일리 브리핑 데이터 로드 예외 처리
         let briefingData = { last_checked: '', articles: [] };
         if (briefRes.ok) {
-          briefingData = await briefRes.json();
+          try {
+            briefingData = await briefRes.json();
+          } catch (e) {
+            console.error('Failed to parse briefing_data.json:', e);
+          }
         }
 
         // 신규 스케줄 증분 업데이트 데이터 로드

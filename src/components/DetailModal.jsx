@@ -56,13 +56,30 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
         overlayRef.current.classList.add('modal-visible');
       }
     });
-    return () => cancelAnimationFrame(frame);
+
+    // 브라우저 뒤로가기 시 모달만 닫히도록 히스토리 상태 주입
+    window.history.pushState({ modal: 'detail' }, '');
+    const onPopState = () => {
+      handleClose();
+    };
+    window.addEventListener('popstate', onPopState);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('popstate', onPopState);
+    };
   }, [event]);
 
   /* ── Close with exit animation ── */
   const handleClose = () => {
     if (closingRef.current) return;
     closingRef.current = true;
+
+    // 모달이 직접 닫힐 때(오버레이/X 버튼) 히스토리 상태 제거
+    if (window.history.state && window.history.state.modal === 'detail') {
+      window.history.back();
+    }
+
     const overlay = overlayRef.current;
     if (overlay) {
       overlay.classList.remove('modal-visible');

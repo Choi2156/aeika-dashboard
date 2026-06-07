@@ -1,5 +1,6 @@
 import { Youtube, MessageSquare } from 'lucide-react';
 import VisitorCounter from './VisitorCounter';
+import { version } from '../../package.json';
 
 /**
  * Header 컴포넌트
@@ -12,7 +13,7 @@ export default function Header() {
       <div className="header__title-group">
         <h1 className="header__title">
           서브컬쳐 게임 일정 대쉬보드
-          <span className="header__version">v1.1.1</span>
+          <span className="header__version">v{version}</span>
         </h1>
         <div className="header__subtitle-container">
           <p className="header__subtitle">
