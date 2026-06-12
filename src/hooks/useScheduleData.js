@@ -22,13 +22,15 @@ export function useScheduleData() {
   useEffect(() => {
     async function fetchData() {
       try {
+        // 10분 단위 캐시 키: 같은 10분 구간 내 재방문 시 브라우저 캐시 활용
+        const cacheKey = Math.floor(Date.now() / (10 * 60 * 1000));
         const [dataRes, hintsRes, recRes, briefRes, updatesRes, patchRes] = await Promise.all([
-          fetch('./data/schedule_data.json?t=' + Date.now()),
-          fetch('./data/schedule_hints.json?t=' + Date.now()),
-          fetch('./data/recommended_videos.json?t=' + Date.now()),
-          fetch('./data/briefing_data.json?t=' + Date.now()),
-          fetch('./data/schedule_updates.json?t=' + Date.now()),
-          fetch('./data/patch_notes.json?t=' + Date.now()),
+          fetch('./data/schedule_data.json?t=' + cacheKey),
+          fetch('./data/schedule_hints.json?t=' + cacheKey),
+          fetch('./data/recommended_videos.json?t=' + cacheKey),
+          fetch('./data/briefing_data.json?t=' + cacheKey),
+          fetch('./data/schedule_updates.json?t=' + cacheKey),
+          fetch('./data/patch_notes.json?t=' + cacheKey),
         ]);
 
         if (!dataRes.ok) throw new Error('schedule_data.json 로드 실패');
