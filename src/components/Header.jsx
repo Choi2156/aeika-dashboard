@@ -1,13 +1,13 @@
-import { Youtube, MessageSquare } from 'lucide-react';
+import { Youtube, MessageSquare, Heart } from 'lucide-react';
 import VisitorCounter from './VisitorCounter';
 import { version } from '../../package.json';
 
 /**
  * Header 컴포넌트
  * 대시보드 타이틀과 경고/설명 서브타이틀만 노출하도록 경량화되었습니다.
- * 우측에 유튜브 홍보와 구글 폼 피드백 제보 링크가 그룹화되어 표시됩니다.
+ * 우측에 유튜브 홍보, 구글 폼 피드백 제보 링크 및 후원 버튼이 그룹화되어 표시됩니다.
  */
-export default function Header() {
+export default function Header({ onOpenSupport }) {
   return (
     <header className="header">
       <div className="header__title-group">
@@ -20,7 +20,7 @@ export default function Header() {
             여러 게임의 공식 일정과 주기에 맞춘 예상 일정을 표기합니다.
           </p>
           <span className="header__warning">
-            ⚠️ 공지되지 않은 미래 일정은 과거 주기를 기반으로 한 예상치입니다.
+            ⚠️ 수집 및 연산된 일정(확정/예상)은 오차가 발생할 수 있으며, 모든 저작권은 게임사에 귀속됩니다.
           </span>
         </div>
       </div>
@@ -52,6 +52,16 @@ export default function Header() {
           <MessageSquare size={14} className="header__feedback-icon" />
           <span>제보 및 피드백</span>
         </a>
+
+        {/* 4. 후원하기 */}
+        <button
+          onClick={onOpenSupport}
+          className="header__support-btn"
+          title="대시보드 운영 및 개발 후원하기"
+        >
+          <Heart size={14} className="header__support-icon" />
+          <span>후원하기</span>
+        </button>
       </div>
     </header>
   );

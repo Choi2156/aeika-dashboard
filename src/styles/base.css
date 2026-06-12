@@ -174,6 +174,13 @@ body {
   font-weight: 700;
   display: block;
   margin-top: 4px;
+  font-size: 0.65rem;
+}
+
+@media (min-width: 768px) {
+  .header__warning {
+    font-size: 0.72rem;
+  }
 }
 
 /* 누적 조회수 외곽 그린 강조 박스 */
@@ -189,6 +196,7 @@ body {
 .youtube-promo__btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   font-size: 0.72rem;
   font-weight: 800;
@@ -202,6 +210,7 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 12px rgba(239, 68, 68, 0.3); /* 유튜브 레드 광채 효과 */
   text-decoration: none;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  width: 162px;
 }
 
 .youtube-promo__btn:hover {
@@ -362,6 +371,7 @@ body {
 .header__feedback-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   font-size: 0.72rem;
   font-weight: 800;
@@ -375,6 +385,7 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 12px rgba(99, 102, 241, 0.25);
   text-decoration: none;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  width: 162px;
 }
 
 .header__feedback-btn:hover {
@@ -397,6 +408,48 @@ body {
 .header__feedback-btn:hover .header__feedback-icon {
   transform: scale(1.2);
   filter: drop-shadow(0 0 8px rgba(165, 180, 252, 1));
+}
+
+.header__support-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.25) 0%, rgba(225, 29, 72, 0.35) 100%);
+  border: 1px solid rgba(244, 63, 94, 0.6);
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 12px rgba(244, 63, 94, 0.25);
+  text-decoration: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  width: 162px;
+}
+
+.header__support-btn:hover {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.4) 0%, rgba(225, 29, 72, 0.5) 100%);
+  border-color: rgba(251, 113, 133, 0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(244, 63, 94, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.header__support-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.header__support-icon {
+  color: #fda4af;
+  filter: drop-shadow(0 0 4px rgba(253, 164, 175, 0.8));
+  transition: all var(--transition-fast);
+}
+
+.header__support-btn:hover .header__support-icon {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(253, 164, 175, 1));
 }
 
 /* ─── 실시간 점검 배너 ────────────────────────── */

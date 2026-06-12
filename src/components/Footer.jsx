@@ -89,7 +89,7 @@ export default function Footer({ onOpenLicense }) {
               <span>일정 면책 조항</span>
             </span>
             <p className="disclaimer-text" style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-              공지되지 않은 [예상] 배너 일정 및 D-Day 타이머는 시스템 주기 연산 기반 수치이므로 오차가 있을 수 있습니다. 
+              수동 수집 및 연산 기반의 일정 정보(확정/예상)는 오기입 등 오류 및 오차가 있을 수 있어 신뢰성을 보증하지 않습니다. 
               <button onClick={onOpenLicense} className="footer-detail-trigger-btn" style={{ background: 'none', border: 'none', color: 'var(--accent-indigo-light)', fontWeight: 700, padding: '0 4px', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.68rem' }}>
                 [상세 보기]
               </button>

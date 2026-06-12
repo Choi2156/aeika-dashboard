@@ -10,6 +10,7 @@ import LicenseModal from './components/LicenseModal';
 import LiveBannerBoard from './components/LiveBannerBoard';
 import DashboardInfoBar from './components/DashboardInfoBar';
 import Footer from './components/Footer';
+import SupportModal from './components/SupportModal';
 
 import './styles/variables.css';
 import './styles/base.css';
@@ -50,6 +51,9 @@ export default function App() {
   
   // 3. 로컬 스토리지 보존 동의 상태 (기본값: false)
   const [isStorageConsentEnabled, setIsStorageConsentEnabled] = useState(false);
+
+  // 3.5. 후원 모달 오픈 상태
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   // 4. 스크롤 스파이 훅 탑재: 헤더와 인포바가 다 넘어가는 시점(150px)에 메뉴바 콤팩트 축소
   const [isShrunk, setIsShrunk] = useState(false);
@@ -216,7 +220,7 @@ export default function App() {
         </div>
       )}
 
-      <Header />
+      <Header onOpenSupport={() => setIsSupportOpen(true)} />
 
       <DashboardInfoBar meta={meta} />
 
@@ -302,6 +306,11 @@ export default function App() {
       <LicenseModal
         isOpen={isLicenseOpen}
         onClose={() => setIsLicenseOpen(false)}
+      />
+
+      <SupportModal
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
       />
 
       <Footer onOpenLicense={() => setIsLicenseOpen(true)} />
