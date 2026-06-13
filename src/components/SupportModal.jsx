@@ -140,8 +140,8 @@ export default function SupportModal({ isOpen, onClose }) {
                 <ExternalLink size={14} className="ctee-btn-icon" />
               </a>
               <span className="ctee-action-help">
-                ※ 위 버튼을 누르면 크티 후원(응원하기) 페이지로 안전하게 이동하며,<br />
-                해당 페이지를 통해 자발적인 후원이 가능합니다.
+                ※ 위 버튼을 누르면 크티 후원 페이지로 안전하게 이동하며,<br />
+                해당 페이지의 <strong>[응원하기]</strong> 버튼을 통해 자발적인 후원이 가능합니다.
               </span>
             </div>
           </div>
