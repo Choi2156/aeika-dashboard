@@ -130,7 +130,7 @@ export default function SupportModal({ isOpen, onClose }) {
             {/* Ctee Link Button */}
             <div className="ctee-action-area">
               <a
-                href="https://ctee.kr/place/aeika215" 
+                href="https://ctee.kr/place/aeika215/donation" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ctee-sponsor-btn"
@@ -140,8 +140,8 @@ export default function SupportModal({ isOpen, onClose }) {
                 <ExternalLink size={14} className="ctee-btn-icon" />
               </a>
               <span className="ctee-action-help">
-                ※ 위 버튼을 누르면 크티 플레이스로 안전하게 이동하며,<br />
-                해당 페이지의 <strong>[응원하기]</strong> 메뉴를 통해 후원이 가능합니다.
+                ※ 위 버튼을 누르면 크티 후원(응원하기) 페이지로 안전하게 이동하며,<br />
+                해당 페이지를 통해 자발적인 후원이 가능합니다.
               </span>
             </div>
           </div>
