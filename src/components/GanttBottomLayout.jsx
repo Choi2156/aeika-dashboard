@@ -157,7 +157,7 @@ export default function GanttBottomLayout({ events, gamesConfig, activeGames, on
     [gamesConfig]
   );
 
-  /* ── Recent Streams & Offline Events (±14 days, confirmed only) ── */
+  /* ── Recent Streams & Offline Events ── */
   const recentStreams = useMemo(() => {
     if (!events) return [];
     const rangeStart = formatDateStr(addDays(today, -14));
@@ -166,8 +166,12 @@ export default function GanttBottomLayout({ events, gamesConfig, activeGames, on
       if (ev.type !== '공식방송' && ev.type !== '오프라인이벤트') return false;
       if (ev.is_fixed !== true) return false;
       if (activeGames && activeGames[ev.game] === false) return false;
-      if (ev.date < rangeStart || ev.date > rangeEnd) return false;
-      if (ev.type === '오프라인이벤트') {
+      
+      if (ev.type === '공식방송') {
+        // 공식 방송은 ±14일 기준 유지
+        if (ev.date < rangeStart || ev.date > rangeEnd) return false;
+      } else if (ev.type === '오프라인이벤트') {
+        // 오프라인 행사는 남은 기간 상관없이 종료되지 않은 예정된 것만 표시
         const isEnded = ev.end_date ? ev.end_date < todayStr : ev.date < todayStr;
         if (isEnded) return false;
       }
