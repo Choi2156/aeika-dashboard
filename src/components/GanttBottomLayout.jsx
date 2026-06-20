@@ -143,7 +143,6 @@ export default function GanttBottomLayout({ events, gamesConfig, activeGames, on
   const [isPlayingShort, setIsPlayingShort] = useState(false);
   const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
-  const [currentOtherIndex, setCurrentOtherIndex] = useState(0);
 
   useEffect(() => { setIsPlayingShort(false); }, [currentShortIndex]);
 
@@ -188,13 +187,13 @@ export default function GanttBottomLayout({ events, gamesConfig, activeGames, on
     return allocateVideos(rawShorts, activeGames, 6);
   }, [recommendedVideos, activeGames]);
 
-  const recommendedLongforms = useMemo(() => {
+  const storyVideos = useMemo(() => {
     const rawLongforms = recommendedVideos?.longform?.length > 0 ? recommendedVideos.longform : LONGFORM_VIDEOS;
-    return allocateVideos(rawLongforms, activeGames, 6);
+    const stories = rawLongforms.filter((v) => v.type === 'story');
+    return allocateVideos(stories, activeGames, 6);
   }, [recommendedVideos, activeGames]);
 
-  const storyVideos = useMemo(() => recommendedLongforms.filter((v) => v.type === 'story'), [recommendedLongforms]);
-  const otherVideos = useMemo(() => recommendedLongforms.filter((v) => v.type !== 'story'), [recommendedLongforms]);
+
 
   /* ── Index Bounds Safety ── */
   useEffect(() => {
@@ -212,10 +211,7 @@ export default function GanttBottomLayout({ events, gamesConfig, activeGames, on
     else if (currentStoryIndex >= storyVideos.length) { setCurrentStoryIndex(storyVideos.length - 1); }
   }, [storyVideos.length]);
 
-  useEffect(() => {
-    if (otherVideos.length === 0) { setCurrentOtherIndex(0); }
-    else if (currentOtherIndex >= otherVideos.length) { setCurrentOtherIndex(otherVideos.length - 1); }
-  }, [otherVideos.length]);
+
 
   /* ── Carousel Visible Items ── */
   const visibleCount = isMobile ? 1 : 2;
@@ -232,22 +228,20 @@ export default function GanttBottomLayout({ events, gamesConfig, activeGames, on
 
   const visibleStreams = useMemo(() => getVisibleItems(recentStreams, currentStreamIndex, visibleCount), [recentStreams, currentStreamIndex, visibleCount, getVisibleItems]);
   const visibleStories = useMemo(() => getVisibleItems(storyVideos, currentStoryIndex, visibleCount), [storyVideos, currentStoryIndex, visibleCount, getVisibleItems]);
-  const visibleOthers = useMemo(() => getVisibleItems(otherVideos, currentOtherIndex, visibleCount), [otherVideos, currentOtherIndex, visibleCount, getVisibleItems]);
 
   /* ── Carousel Navigation Handlers ── */
   const handlePrevStream = () => { if (recentStreams.length <= visibleCount) return; setCurrentStreamIndex((prev) => (prev - 1 + recentStreams.length) % recentStreams.length); };
   const handleNextStream = () => { if (recentStreams.length <= visibleCount) return; setCurrentStreamIndex((prev) => (prev + 1) % recentStreams.length); };
   const handlePrevStory = () => { if (storyVideos.length <= visibleCount) return; setCurrentStoryIndex((prev) => (prev - 1 + storyVideos.length) % storyVideos.length); };
   const handleNextStory = () => { if (storyVideos.length <= visibleCount) return; setCurrentStoryIndex((prev) => (prev + 1) % storyVideos.length); };
-  const handlePrevOther = () => { if (otherVideos.length <= visibleCount) return; setCurrentOtherIndex((prev) => (prev - 1 + otherVideos.length) % otherVideos.length); };
-  const handleNextOther = () => { if (otherVideos.length <= visibleCount) return; setCurrentOtherIndex((prev) => (prev + 1) % otherVideos.length); };
+
   const handlePrevShort = () => { setCurrentShortIndex((prev) => (prev - 1 + recommendedShorts.length) % recommendedShorts.length); };
   const handleNextShort = () => { setCurrentShortIndex((prev) => (prev + 1) % recommendedShorts.length); };
 
   /* ── Touch Handlers ── */
   const streamTouch = createTouchHandlers(handleNextStream, handlePrevStream);
   const storyTouch = createTouchHandlers(handleNextStory, handlePrevStory);
-  const otherTouch = createTouchHandlers(handleNextOther, handlePrevOther);
+
   const shortsTouch = createTouchHandlers(handleNextShort, handlePrevShort);
 
   /* ════════════════════════════════════════════
@@ -367,43 +361,6 @@ export default function GanttBottomLayout({ events, gamesConfig, activeGames, on
           </section>
         )}
 
-        {/* 1-3. 기타 기획/공략 롱폼 영상 */}
-        {otherVideos.length > 0 && (
-          <section className="longform-videos-section longform-videos-section--other">
-            <div className="section-header-carousel">
-              <h3 className="longform-videos-section__title">
-                <Youtube size={15} className="longform-videos-section__title-icon" />
-                <span>애이카 아카이브 추천 기획/공략 영상 바로가기</span>
-              </h3>
-              {otherVideos.length > visibleCount && (
-                <div className="carousel-nav-arrows">
-                  <span className="carousel-counter">{currentOtherIndex + 1} / {otherVideos.length}</span>
-                  <button onClick={handlePrevOther} className="carousel-arrow-btn" type="button" title="이전 기획 영상 보기"><ChevronLeft size={16} /></button>
-                  <button onClick={handleNextOther} className="carousel-arrow-btn" type="button" title="다음 기획 영상 보기"><ChevronRight size={16} /></button>
-                </div>
-              )}
-            </div>
-            <div className="longform-videos-grid" {...otherTouch}>
-              {visibleOthers.map((video) => {
-                const color = getGameColor(video.game);
-                const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
-                return (
-                  <a key={video.id} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="longform-video-card" style={{ '--theme-color': color }} title="클릭하여 유튜브에서 스토리 외 기획 영상 감상하기">
-                    <div className="longform-video-card__thumb-wrapper">
-                      <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
-                      <div className="longform-video-card__duration-badge"><span>{video.duration || '추천'}</span></div>
-                      <div className="longform-video-card__game-badge" style={{ backgroundColor: color }}><span>{video.game}</span></div>
-                      {gamesConfig?.[video.game]?.copyright && (<span className="card-copyright-label">{gamesConfig[video.game].copyright}</span>)}
-                    </div>
-                    <div className="longform-video-card__content">
-                      {video.desc && <p className="longform-video-card__desc">{video.desc}</p>}
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </section>
-        )}
       </div>
 
       {/* ═══ 2. 우측 영역: 추천 쇼츠 슬라이더 + AI 브리핑 ═══ */}
