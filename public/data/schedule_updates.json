@@ -267,5 +267,33 @@
     "ticket_links": [],
     "link": "https://game.naver.com/lounge/Arknights_Endfield/board/detail/7819668",
     "custom_img": "엔필위기협약.jpg"
+  },
+  {
+    "id": "EVT_WW_20260710_0001",
+    "game": "명조",
+    "version": "3.5",
+    "type": "전반업데이트",
+    "title": "3.5 버전 - 「남겨진 울림, 검에 기대 꿈속에서 노래하리」",
+    "date": "2026-07-10",
+    "end_date": "2026-08-20",
+    "time": "",
+    "is_fixed": true,
+    "detail": "✦ 신규 지역: 몽주 · 현방 지계\n✦ 신규 캐릭터: 5성 양양·현령(전반), 주인공 방랑자·전도 속성 해금\n✦ 복각 캐릭터: 5성 린네, 루크·헤르센(전반)\n✦ 신규 임무: 조수 임무 제4장 제1막, 제2막 및 에필로그",
+    "custom_img": "명조3.5.webp",
+    "link": ""
+  },
+  {
+    "id": "EVT_WW_20260731_0001",
+    "game": "명조",
+    "version": "3.5 후반",
+    "type": "후반업데이트",
+    "title": "3.5 버전 후반부 캐릭터 튜닝 전환",
+    "date": "2026-07-31",
+    "end_date": "2026-08-20",
+    "time": "",
+    "is_fixed": true,
+    "detail": "✦ 신규 캐릭터: 5성 수수(후반)\n✦ 복각 캐릭터: 5성 에이메스(후반)",
+    "custom_img": "명조3.5.webp",
+    "link": ""
   }
 ]
