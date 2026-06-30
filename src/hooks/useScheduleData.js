@@ -14,6 +14,7 @@ export function useScheduleData() {
     recommendedVideos: null,
     briefingData: null,
     patchNotes: [],
+    notices: [],
     meta: null,
     loading: true,
     error: null,
@@ -24,13 +25,14 @@ export function useScheduleData() {
       try {
         // 10분 단위 캐시 키: 같은 10분 구간 내 재방문 시 브라우저 캐시 활용
         const cacheKey = Math.floor(Date.now() / (10 * 60 * 1000));
-        const [dataRes, hintsRes, recRes, briefRes, updatesRes, patchRes] = await Promise.all([
+        const [dataRes, hintsRes, recRes, briefRes, updatesRes, patchRes, noticeRes] = await Promise.all([
           fetch('./data/schedule_data.json?t=' + cacheKey),
           fetch('./data/schedule_hints.json?t=' + cacheKey),
           fetch('./data/recommended_videos.json?t=' + cacheKey),
           fetch('./data/briefing_data.json?t=' + cacheKey),
           fetch('./data/schedule_updates.json?t=' + cacheKey),
           fetch('./data/patch_notes.json?t=' + cacheKey),
+          fetch('./data/notices.json?t=' + cacheKey),
         ]);
 
         if (!dataRes.ok) throw new Error('schedule_data.json 로드 실패');
@@ -87,6 +89,16 @@ export function useScheduleData() {
           }
         }
 
+        // 공지사항 데이터 로드
+        let notices = [];
+        if (noticeRes && noticeRes.ok) {
+          try {
+            notices = await noticeRes.json();
+          } catch (e) {
+            console.error('Failed to parse notices.json:', e);
+          }
+        }
+
         // ID 기반 중복 제거 및 실시간 대치 (Merge & Override by ID Map)
         const baseEvents = scheduleData.events || [];
         const updateEvents = Array.isArray(updatesData) ? updatesData : [];
@@ -122,6 +134,7 @@ export function useScheduleData() {
           recommendedVideos,
           briefingData,
           patchNotes,
+          notices,
           meta: scheduleData.meta || null,
           loading: false,
           error: null,
