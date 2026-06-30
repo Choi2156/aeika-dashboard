@@ -295,5 +295,19 @@
     "detail": "✦ 신규 캐릭터: 5성 수수(후반)\n✦ 복각 캐릭터: 5성 에이메스(후반)",
     "custom_img": "명조3.5.webp",
     "link": ""
+  },
+  {
+    "id": "EVT_HSR_20260703_0001",
+    "game": "붕괴: 스타레일",
+    "version": "4.4",
+    "type": "공식방송",
+    "title": "4.4 버전 「적막이 깃든 순간, 울리는 경적」 프리뷰 스페셜 프로그램",
+    "date": "2026-07-03",
+    "end_date": "2026-07-03",
+    "time": "20:30",
+    "is_fixed": true,
+    "detail": "붕괴: 스타레일 4.4 버전 프리뷰 스페셜 프로그램 방영 예정. 이번 스페셜 프로그램에서는 히메코•노바의 캐릭터 소개와 함께 〈붕괴: 스타레일〉과 〈Fate/stay night [Unlimited Blade Works]〉의 콜라보 정보도 전해드릴 예정입니다!",
+    "custom_img": "starrail_4.4_stream.jpg",
+    "link": "https://youtube.com/live/nOh8PMAmHYc"
   }
 ]
