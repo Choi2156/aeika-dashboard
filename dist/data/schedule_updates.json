@@ -337,5 +337,26 @@
     "detail": "✦ 신규 캐릭터: 5성 히메코·노바 [버전 종료 전까지 픽업 지속]\n✦ 복각 캐릭터: 5성 케리드라, 아낙사, 어벤츄린 [후반]",
     "custom_img": "starrail_4.4_banner.webp",
     "link": ""
+  },
+  {
+    "id": "EVT_HSR_20260717_0001",
+    "game": "붕괴: 스타레일",
+    "version": "",
+    "type": "오프라인이벤트",
+    "title": "스타레일 X DEEP 몰입형 전시회 <별 사이를 걷는 회고록>",
+    "date": "2026-07-17",
+    "end_date": "2026-08-31",
+    "time": "",
+    "is_fixed": true,
+    "detail": "✦ 행사 내용: 다양한 몰입형 전시 공간 체험 및 굿즈 판매존 운영\n✦ 운영 시간: 매일 11:00 ~ 20:00 (총 9회차)\n✦ 온라인 예매 방식 (계정당 1매 제한):\n  - 1차 오픈(7월분): 7월 8일(수) 18:00\n  - 2차 오픈(8월분): 7월 15일(수) 18:00\n※ 본 전시는 만 14세 이상 관람을 권장하며, 입장 시 신분증 본인 확인이 필수적으로 진행됩니다.",
+    "location": "이머시브 플랫폼 딥 (잠실 롯데월드 아이스링크 B3F 옆)",
+    "ticket_links": [
+      {
+        "name": "멜론티켓",
+        "url": "https://ticket.melon.com/performance/index.htm?prodId=213528"
+      }
+    ],
+    "link": "https://cafe.naver.com/honkaistarrail/785613",
+    "custom_img": "starrail_deep_exhibition.webp"
   }
 ]
