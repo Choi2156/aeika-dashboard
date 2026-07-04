@@ -12,7 +12,7 @@ export default function Header({ onOpenSupport }) {
     <header className="header">
       <div className="header__title-group">
         <h1 className="header__title">
-          서브컬쳐 게임 일정 대쉬보드
+          서브컬쳐 게임 일정 대시보드
           <span className="header__version">v{version}</span>
         </h1>
         <div className="header__subtitle-container">

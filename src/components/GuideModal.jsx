@@ -161,7 +161,7 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                   🌐 1. 서비스 글로벌 기준 (KST)
                 </div>
                 <p className="guide-section-text">
-                  본 대쉬보드는 파편화된 해외 및 글로벌 서브컬쳐 게임들의 주요
+                  본 대시보드는 파편화된 해외 및 글로벌 서브컬쳐 게임들의 주요
                   타임라인을 통합 제공합니다. 서버 시차로 인한 혼선을 원천 방지하기
                   위해 모든 일정의 활성화 및 표기 기준점은 한국 서버(KST)
                   표준시를 절대 원칙으로 삼습니다.
