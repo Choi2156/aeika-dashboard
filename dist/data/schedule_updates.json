@@ -358,5 +358,19 @@
     ],
     "link": "https://cafe.naver.com/honkaistarrail/785613",
     "custom_img": "starrail_deep_exhibition.webp"
+  },
+  {
+    "id": "EVT_AKEF_20260710_0001",
+    "game": "명일방주: 엔드필드",
+    "version": "1.4",
+    "type": "공식방송",
+    "title": "「인연의 축제」 & 「심연으로」 버전 미리보기 특별 방송",
+    "date": "2026-07-10",
+    "end_date": "2026-07-10",
+    "time": "20:30",
+    "is_fixed": true,
+    "detail": "「명일방주: 엔드필드」 인연의 축제 및 「심연으로」 1.4 버전 미리보기 특별 방송이 방영됩니다.\n\n심연으로 향하는 길 위에 펼쳐지는 새로운 서막과 균열의 메아리가 들려오는 1.4 버전의 상세 정보가 공개되니 관리자 여러분의 많은 시청 바랍니다!",
+    "custom_img": "endfield_1.4_stream.jpg",
+    "link": ""
   }
 ]
