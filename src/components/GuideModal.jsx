@@ -165,6 +165,10 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                   타임라인을 통합 제공합니다. 서버 시차로 인한 혼선을 원천 방지하기
                   위해 모든 일정의 활성화 및 표기 기준점은 한국 서버(KST)
                   표준시를 절대 원칙으로 삼습니다.
+                  <br />
+                  <span style={{ color: '#f43f5e', fontWeight: 'bold' }}>[새벽 종료 일정 표기 안내]</span> 점검 및 업데이트가 새벽 시간대(오전 00시 ~ 08시 등)에 진행되는 경우, 사용자 편의를 돕고 이벤트 마감 일정을 직관적으로 파악할 수 있도록 대시보드 일정상에는 점검 당일이 아닌 <strong>그 전날까지</strong>로 마감일을 하루 당겨서 표기합니다.
+                  <br /><br />
+                  <span style={{ color: '#a78bfa', fontWeight: 'bold' }}>[명일방주: 엔드필드 버전 마감 표기 기준]</span> 엔드필드는 버전 종료 점검이 <strong>목요일 새벽</strong>에 진행됩니다. 이에 따라 이전 버전의 마감일은 점검 당일(목요일)이 아닌 <strong>전날인 수요일</strong>로 표기되며, 이는 다음 버전 시작일과 일정이 겹치지 않도록 하는 표기 최적화입니다.
                 </p>
               </div>
 

@@ -194,7 +194,13 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     }
 
     // 최종 미래 기준점으로부터 '바로 다음 버전' 전반업데이트 예상을 생성
-    const nextUpdateDate = addDays(currentBaseDate, currentBaseCycle);
+    let nextUpdateDate = addDays(currentBaseDate, currentBaseCycle);
+
+    // 명일방주: 엔드필드 패치 요일 보정 로직 (금요일 -> 목요일 점검으로 변경됨에 따라 하루 당김)
+    if (game === '명일방주: 엔드필드' && nextUpdateDate.getDay() === 5) {
+      nextUpdateDate = addDays(nextUpdateDate, -1);
+    }
+
     const nextPredId = `${game}_${nextVer}_update_pred`;
     const hasNextPred = allEvents.some(e => e.id === nextPredId || (e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer));
     
@@ -361,7 +367,7 @@ export function getEventDuration(event, allEvents, gamesConfig, hintsData) {
     // 다음 버전의 확정 전반업데이트가 존재하면 그 시작일 전날까지를 기간으로 삼아 자동 단축/연장 대응!
     const nextVer = getNextVersion(cleanVer, gameHints);
     const nextUpdate = allEvents.find(
-      e => e.game === event.game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer && e.is_fixed
+      e => e.game === event.game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer
     );
     if (nextUpdate) {
       const startD = parseDate(event.date);
