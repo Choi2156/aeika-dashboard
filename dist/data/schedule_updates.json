@@ -398,5 +398,26 @@
     "detail": "✦ 신규 오퍼레이터: '리노' 출시 및 헤드헌팅 개시\n✦ 리노 스토리 이벤트 「경계를 넘어가는 유성」 개방",
     "custom_img": "endfield_1.4_banner.jpg",
     "link": ""
+  },
+  {
+    "id": "EVT_AKEF_20260723_0001",
+    "game": "명일방주: 엔드필드",
+    "version": "",
+    "type": "오프라인이벤트",
+    "title": "「명일방주: 엔드필드 X 프랭크버거」 콜라보 이벤트 '엔드필드 부기가 왔다!'",
+    "date": "2026-07-23",
+    "end_date": "2026-08-22",
+    "time": "",
+    "is_fixed": true,
+    "detail": "「명일방주: 엔드필드 X 프랭크버거」 콜라보 이벤트가 진행됩니다. 전국 프랭크버거 매장에서 다양한 콜라보 세트와 증정품 굿즈를 만나볼 수 있습니다.\n\n📍 세미 팝업 오프라인 이벤트\n▪️ 기간: 7월 24일(금) ~ 7월 26일(일), 총 3일\n▪️ 장소: 서울시 마포구 광성로 36-1, 1층 프랭크버거 신촌서강대점\n▪️ 사전 예약: https://booking.naver.com/booking/12/bizes/1679362",
+    "location": "전국 프랭크버거 매장 (팝업: 프랭크버거 신촌서강대점)",
+    "ticket_links": [
+      {
+        "name": "팝업 사전 예약",
+        "url": "https://booking.naver.com/booking/12/bizes/1679362"
+      }
+    ],
+    "link": "https://game.naver.com/lounge/Arknights_Endfield/board/detail/7913183",
+    "custom_img": "endfield_burger_collab.jpg"
   }
 ]
