@@ -128,6 +128,20 @@ export function useScheduleData() {
         // 예측 엔진 가동: 병합된 확정 데이터 + 힌트 → 전체 이벤트 (예상 포함)
         const allEvents = processEvents({ ...scheduleData, events: mergedEvents }, hintsData, GAMES_CONFIG);
 
+        // schedule_updates.json 내 가장 최근 등록 날짜를 last_updated로 자동 산출
+        // → 일정 데이터 업데이트 시 별도 수동 기입 없이 항상 최신 날짜가 표기됨
+        let computedLastUpdated = scheduleData.meta?.last_updated || null;
+        if (updateEvents.length > 0) {
+          const latestUpdateDate = updateEvents
+            .map(evt => evt.date || '')
+            .filter(Boolean)
+            .sort()
+            .at(-1);
+          if (latestUpdateDate && (!computedLastUpdated || latestUpdateDate > computedLastUpdated)) {
+            computedLastUpdated = latestUpdateDate;
+          }
+        }
+
         setState({
           events: allEvents,
           gamesConfig: GAMES_CONFIG,
@@ -135,7 +149,7 @@ export function useScheduleData() {
           briefingData,
           patchNotes,
           notices,
-          meta: scheduleData.meta || null,
+          meta: { ...(scheduleData.meta || {}), last_updated: computedLastUpdated },
           loading: false,
           error: null,
         });
