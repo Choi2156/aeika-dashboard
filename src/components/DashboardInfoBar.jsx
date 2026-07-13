@@ -1,4 +1,4 @@
-import { Calendar, RefreshCw } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import '../styles/components.css';
 
 /**
@@ -18,15 +18,7 @@ export default function DashboardInfoBar({ meta }) {
     return `${year}년 ${month}월 ${date}일 (${day})`;
   };
 
-  // 업데이트 날짜 포맷팅 (YYYY-MM-DD)
-  const getUpdatedFormatted = (lastUpdated) => {
-    if (!lastUpdated) return '데이터 연동 대기 중';
-    const d = new Date(lastUpdated);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const date = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${date}`;
-  };
+
 
   return (
     <div className="dashboard-info-bar">
@@ -37,12 +29,7 @@ export default function DashboardInfoBar({ meta }) {
         <span className="info-bar-value">{getTodayFormatted()}</span>
       </div>
 
-      {/* 🔄 우측: 최근 업데이트 날짜 */}
-      <div className="dashboard-info-bar__item dashboard-info-bar__item--updated">
-        <RefreshCw size={13} className="info-bar-icon info-bar-icon--updated" />
-        <span className="info-bar-label">최종 데이터 업데이트 :</span>
-        <span className="info-bar-value">{getUpdatedFormatted(meta?.last_updated)}</span>
-      </div>
+
     </div>
   );
 }
