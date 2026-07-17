@@ -201,6 +201,23 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
       nextUpdateDate = addDays(nextUpdateDate, -1);
     }
 
+    // 현재 기준 버전에 확정 end_date가 명시된 경우, 다음 버전 시작일이 그보다 이전이 되지 않도록 보정
+    // (반주년·특별 연장 등으로 end_date가 cycle 예측보다 늦을 때 겹침 방지)
+    const currentBaseEvent = allEvents.find(
+      e => e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === currentBaseVer && e.end_date
+    );
+    if (currentBaseEvent?.end_date) {
+      const confirmedEnd = parseDate(currentBaseEvent.end_date);
+      const minNextStart = addDays(confirmedEnd, 1);
+      if (nextUpdateDate <= confirmedEnd) {
+        nextUpdateDate = minNextStart;
+        // 엔드필드 요일 보정 재적용
+        if (game === '명일방주: 엔드필드' && nextUpdateDate.getDay() === 5) {
+          nextUpdateDate = addDays(nextUpdateDate, -1);
+        }
+      }
+    }
+
     const nextPredId = `${game}_${nextVer}_update_pred`;
     const hasNextPred = allEvents.some(e => e.id === nextPredId || (e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer));
     
