@@ -71,6 +71,11 @@ export default function App() {
   useEffect(() => {
     document.body.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // 간트 차트 (PC 뷰) ↔ 리스트 뷰 (모바일 뷰) 전환 시 자동으로 윈도우 스크롤을 최상단으로 복구
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentView]);
   
   // 게임 활성화 상태 관리
   const [activeGames, setActiveGames] = useState({});
