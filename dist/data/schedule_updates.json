@@ -1,5 +1,19 @@
 [
   {
+    "id": "EVT_GNS_20260731_0001",
+    "game": "원신",
+    "version": "7.0",
+    "type": "공식방송",
+    "title": "7.0 버전 특별 방송",
+    "date": "2026-07-31",
+    "end_date": "2026-07-31",
+    "time": "21:00",
+    "is_fixed": true,
+    "detail": "〈원신〉 7.0 버전 특별 방송이 2026년 7월 31일 21:00(KST)에 진행됩니다.\n\n이번 특별 방송에서는 신규 지역 '스네즈나야' 공개와 함께 7.0 버전의 최신 게임 콘텐츠 및 소식이 소개될 예정입니다.\n방송 중 리딤코드 혜택이 공개됩니다.",
+    "custom_img": "genshin_7.0_stream.webp",
+    "link": "https://www.youtube.com/live/sb_7BnOdgrA?si=6M2ErgAhEukuMFtW"
+  },
+  {
     "id": "EVT_ZZZ_20260717_0001",
     "game": "젠레스 존 제로",
     "version": "3.1",
