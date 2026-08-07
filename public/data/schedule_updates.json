@@ -404,7 +404,8 @@
     "location": "고려대학교 화정체육관",
     "ticket_links": [],
     "link": "https://game.naver.com/lounge/WutheringWaves/board/detail/7823821",
-    "custom_img": "kintex_festival_full.webp"
+    "custom_img": "kintex_festival_full.webp",
+    "lane_override": "공식방송"
   },
   {
     "id": "EVT_AKEF_20260704_0001",

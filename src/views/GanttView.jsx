@@ -339,9 +339,10 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
       const displayType = getDisplayTypeName(ev);
       const isStream = ev.type === '공식방송';
 
-      // 해당 게임의 동적 레인 맵에서 본 이벤트 타입의 인덱스 추적
+      // 해당 게임의 동적 레인 맵에서 본 이벤트 타입의 인덱스 추적 (lane_override 속성이 있으면 해당 레인 위치 적용)
       const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송', '오프라인이벤트'];
-      const laneIndex = lanes.indexOf(ev.type) !== -1 ? lanes.indexOf(ev.type) : 0;
+      const targetType = ev.lane_override || ev.type;
+      const laneIndex = lanes.indexOf(targetType) !== -1 ? lanes.indexOf(targetType) : 0;
       const topPos = `${laneIndex * 36 + 6}px`;
 
       if (isCollapsed) {
