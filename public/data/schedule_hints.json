@@ -1,6 +1,13 @@
 {
   "hints": [
     {
+      "game": "붕괴: 스타레일",
+      "trigger_version": "4.5",
+      "cycle_override": 35,
+      "half_cycle_override": 17,
+      "note": "4.5 버전 5주(35일) 단축 주기 적용 (8/26 ~ 9/29)"
+    },
+    {
       "game": "원신",
       "trigger_version": "6.7",
       "next_version_number": "7.0",
