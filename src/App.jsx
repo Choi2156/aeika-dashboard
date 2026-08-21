@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useScheduleData } from './hooks/useScheduleData';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
@@ -11,6 +11,8 @@ import LiveBannerBoard from './components/LiveBannerBoard';
 import DashboardInfoBar from './components/DashboardInfoBar';
 import Footer from './components/Footer';
 import SupportModal from './components/SupportModal';
+import NoticeTickerBanner from './components/NoticeTickerBanner';
+import NoticeModal from './components/NoticeModal';
 
 import './styles/variables.css';
 import './styles/base.css';
@@ -31,7 +33,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function App() {
-  const { events, gamesConfig, recommendedVideos, briefingData, patchNotes, meta, loading, error } = useScheduleData();
+  const { events, gamesConfig, recommendedVideos, briefingData, patchNotes, notices = [], meta, loading, error } = useScheduleData();
   
   // 1. 모바일 기기 최초 접속 시 모바일 직관 뷰('list') 디폴트화 보증을 위한 Lazy Initializer 이식
   const [currentView, setCurrentView] = useState(() => {
@@ -42,6 +44,8 @@ export default function App() {
 
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isLicenseOpen, setIsLicenseOpen] = useState(false); // 신설 면책/라이선스 상세 모달
+  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false); // 공지사항 모달
+  const [selectedNotice, setSelectedNotice] = useState(null); // 선택된 공지사항
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEventTypeName, setSelectedEventTypeName] = useState('');
   const appRef = useRef(null);
@@ -130,53 +134,54 @@ export default function App() {
           }
         }
       }
-
+      
+      // 저장된 설정이 없거나 동의하지 않은 경우 기본 활성화 상태 적용
       const initial = {};
-      Object.keys(gamesConfig).forEach((game) => {
-        initial[game] = true; // 기본값: 모두 활성화
+      Object.keys(gamesConfig).forEach(g => {
+        initial[g] = true;
       });
       setActiveGames(initial);
     }
   }, [gamesConfig]);
 
-  // 7. [개선] 단일 직렬화 객체 자동 실시간 백업 세션 (모바일/PC 통합 세션 백업 보장)
-  useEffect(() => {
-    if (isStorageConsentEnabled) {
-      try {
-        localStorage.setItem('subculture_dashboard_consent', 'true');
-        
-        const settingsObj = {
-          theme,
-          currentView,
-          activeGames
-        };
-        localStorage.setItem('subculture_dashboard_settings', JSON.stringify(settingsObj));
-      } catch (e) {
-        console.warn('LocalStorage 쓰기 차단 또는 용량 초과:', e);
-      }
-    }
-  }, [isStorageConsentEnabled, theme, currentView, activeGames]);
-
-  // 8. 설정 보존 철회 시 로컬 저장소 흔적 100% 소거
-  const handleToggleStorageConsent = (isEnabled) => {
-    if (isEnabled) {
-      setIsStorageConsentEnabled(true);
-    } else {
-      setIsStorageConsentEnabled(false);
-      try {
-        localStorage.removeItem('subculture_dashboard_consent');
-        localStorage.removeItem('subculture_dashboard_settings');
-      } catch (e) {
-        console.warn('LocalStorage 삭제 차단:', e);
-      }
+  // 7. [신규] 통합 저장 헬퍼: 현재 상태를 바탕으로 마스터 직렬화 객체를 안전 갱신
+  const persistSettings = (partialSettings) => {
+    if (!isStorageConsentEnabled) return;
+    try {
+      const savedSettingsStr = localStorage.getItem('subculture_dashboard_settings');
+      const current = savedSettingsStr ? JSON.parse(savedSettingsStr) : { ...DEFAULT_SETTINGS };
+      const updated = {
+        ...current,
+        theme,
+        currentView,
+        activeGames,
+        ...partialSettings
+      };
+      localStorage.setItem('subculture_dashboard_settings', JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to persist dashboard settings:', e);
     }
   };
 
-  const handleToggleGame = (gameName) => {
-    setActiveGames((prev) => ({
-      ...prev,
-      [gameName]: !prev[gameName],
-    }));
+  // 8. 설정 동의 토글 핸들러
+  const handleToggleStorageConsent = (isEnabled) => {
+    setIsStorageConsentEnabled(isEnabled);
+    localStorage.setItem('subculture_dashboard_consent', isEnabled ? 'true' : 'false');
+    if (isEnabled) {
+      // 즉시 현재 상태 전체 스냅샷 저장
+      persistSettings({ theme, currentView, activeGames });
+    } else {
+      localStorage.removeItem('subculture_dashboard_settings');
+    }
+  };
+
+  // 9. 개별 상태 변경 시 자동 직렬화 동기화
+  const handleToggleGame = (game) => {
+    setActiveGames((prev) => {
+      const next = { ...prev, [game]: !prev[game] };
+      persistSettings({ activeGames: next });
+      return next;
+    });
   };
 
   const handleSelectAll = (isActive) => {
@@ -185,14 +190,25 @@ export default function App() {
       Object.keys(prev).forEach((game) => {
         next[game] = isActive;
       });
+      persistSettings({ activeGames: next });
       return next;
     });
   };
 
-  const handleEventClick = (event, displayTypeName) => {
+  const handleEventClick = useCallback((event, displayTypeName) => {
     setSelectedEvent(event);
     setSelectedEventTypeName(displayTypeName);
-  };
+  }, []);
+
+  const handleOpenNotice = useCallback((notice = null) => {
+    setSelectedNotice(notice);
+    setIsNoticeModalOpen(true);
+  }, []);
+
+  const handleCloseNotice = useCallback(() => {
+    setIsNoticeModalOpen(false);
+    setSelectedNotice(null);
+  }, []);
 
   // 초고성능 마우스 무브 네온 안개 트래킹 (리렌더링 0회로 성능 영향도 0%)
   const handleMouseMove = (e) => {
@@ -262,6 +278,13 @@ export default function App() {
 
         {!loading && !error && (
           <div className="main-view">
+            {/* 1. 상단 한 줄 롤링 공지 띠배너 (LiveBannerBoard 바로 위에 배치) */}
+            <NoticeTickerBanner
+              notices={notices}
+              onOpenNotice={handleOpenNotice}
+            />
+
+            {/* 2. 상단 게임 일정 슬라이드 박스 */}
             {currentView === 'gantt' && (
               <LiveBannerBoard
                 events={events}
@@ -278,6 +301,8 @@ export default function App() {
                 recommendedVideos={recommendedVideos}
                 briefingData={briefingData}
                 activeGames={activeGames}
+                notices={notices}
+                onOpenNotice={handleOpenNotice}
                 onToggleGame={handleToggleGame}
                 onEventClick={handleEventClick}
               />
@@ -316,6 +341,14 @@ export default function App() {
       <SupportModal
         isOpen={isSupportOpen}
         onClose={() => setIsSupportOpen(false)}
+      />
+
+      {/* 신규 공지사항 상세 모달 */}
+      <NoticeModal
+        isOpen={isNoticeModalOpen}
+        onClose={handleCloseNotice}
+        notices={notices}
+        selectedNotice={selectedNotice}
       />
 
       <Footer onOpenLicense={() => setIsLicenseOpen(true)} />

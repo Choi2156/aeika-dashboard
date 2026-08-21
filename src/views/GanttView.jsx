@@ -96,7 +96,17 @@ const EVENT_TYPE_LABELS = {
 /* ────────────────────────────────────────────
    GanttView Component
    ──────────────────────────────────────────── */
-export default function GanttView({ events, gamesConfig, recommendedVideos, briefingData, activeGames, onToggleGame, onEventClick }) {
+export default function GanttView({ 
+  events, 
+  gamesConfig, 
+  recommendedVideos, 
+  briefingData, 
+  activeGames, 
+  onToggleGame, 
+  onEventClick,
+  notices = [],
+  onOpenNotice 
+}) {
   const scrollRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -605,6 +615,8 @@ export default function GanttView({ events, gamesConfig, recommendedVideos, brie
         activeGames={activeGames}
         onEventClick={onEventClick}
         recommendedVideos={recommendedVideos}
+        notices={notices}
+        onOpenNotice={onOpenNotice}
         isMobile={isMobile}
       />
     </div>
