@@ -1,5 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import { Megaphone, ChevronRight } from 'lucide-react';
+import NoticeCategoryBadge from './NoticeCategoryBadge';
 import '../styles/NoticeTickerBanner.css';
 
 function NoticeTickerBanner({ notices = [], onOpenNotice }) {
@@ -29,16 +30,16 @@ function NoticeTickerBanner({ notices = [], onOpenNotice }) {
       <div className="notice-ticker-banner__inner">
         <div className="notice-ticker-banner__badge-group">
           <Megaphone size={14} className="notice-ticker-banner__icon" />
-          <span className="notice-ticker-banner__badge">공지</span>
+          <NoticeCategoryBadge
+            category={currentNotice.category}
+            isImportant={currentNotice.is_important}
+          />
         </div>
 
         <div className="notice-ticker-banner__content">
           <span className={`notice-ticker-banner__title ${isTransitioning ? 'notice-ticker-banner__title--sliding' : ''}`}>
             {currentNotice.title}
           </span>
-          {currentNotice.is_important && (
-            <span className="notice-ticker-banner__important-tag">HOT</span>
-          )}
         </div>
 
         <div className="notice-ticker-banner__action">

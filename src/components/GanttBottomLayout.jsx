@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { ChevronLeft, ChevronRight, Radio, Youtube, MapPin, Megaphone, ChevronRight as ChevronRightIcon, Video } from 'lucide-react';
+import NoticeCategoryBadge from './NoticeCategoryBadge';
 
 /* ────────────────────────────────────────────
    Helper Functions
@@ -569,9 +570,10 @@ function GanttBottomLayout({
                     title="클릭하여 상세 공지 보기"
                   >
                     <div className="notice-unified-item__meta">
-                      {n.is_important && (
-                        <span className="notice-badge-important">중요</span>
-                      )}
+                      <NoticeCategoryBadge
+                        category={n.category}
+                        isImportant={n.is_important}
+                      />
                       <span className="notice-unified-item__date">{n.date}</span>
                     </div>
                     <p className="notice-unified-item__title">{n.title}</p>

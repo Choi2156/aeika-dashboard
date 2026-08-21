@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, memo } from 'react';
 import { X, Megaphone, Calendar, ExternalLink, ChevronRight } from 'lucide-react';
+import NoticeCategoryBadge from './NoticeCategoryBadge';
 import '../styles/NoticeModal.css';
 
 function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
@@ -113,9 +114,10 @@ function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
                     onClick={() => setActiveNoticeId(item.id)}
                   >
                     <div className="notice-modal-list__item-header">
-                      {item.is_important && (
-                        <span className="notice-badge-important">중요</span>
-                      )}
+                      <NoticeCategoryBadge
+                        category={item.category}
+                        isImportant={item.is_important}
+                      />
                       <span className="notice-modal-list__item-date">{item.date}</span>
                     </div>
                     <p className="notice-modal-list__item-title">{item.title}</p>
@@ -132,9 +134,10 @@ function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
               <article className="notice-detail-content">
                 <header className="notice-detail-content__header">
                   <div className="notice-detail-content__meta">
-                    {currentActive.is_important && (
-                      <span className="notice-badge-important">중요 공지</span>
-                    )}
+                    <NoticeCategoryBadge
+                      category={currentActive.category}
+                      isImportant={currentActive.is_important}
+                    />
                     <span className="notice-detail-content__date">
                       <Calendar size={13} />
                       {currentActive.date}
