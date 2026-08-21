@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Flame, Sparkles } from 'lucide-react';
+import { Flame } from 'lucide-react';
 
 // 지원 카테고리 3종: 패치, 일반, 홍보
 export const NOTICE_CATEGORIES = {
@@ -12,12 +12,20 @@ function NoticeCategoryBadge({ category = '일반', isImportant = false, classNa
   const catConfig = NOTICE_CATEGORIES[category] || NOTICE_CATEGORIES['일반'];
 
   return (
-    <span className={`notice-category-badge ${catConfig.className} ${isImportant ? 'notice-category-badge--important' : ''} ${className}`}>
+    <div className={`notice-badge-group ${className}`}>
+      {/* 1. 중요 공지일 때만 태그 박스 바깥 왼쪽에 불꽃 아이콘 배치 */}
       {isImportant && (
-        <Flame size={11} className="notice-category-badge__important-icon" />
+        <Flame
+          size={13}
+          className="notice-important-flame-icon"
+          title="중요 공지"
+        />
       )}
-      <span>{catConfig.label}</span>
-    </span>
+      {/* 2. 순수한 카테고리 태그 박스 */}
+      <span className={`notice-category-badge ${catConfig.className}`}>
+        {catConfig.label}
+      </span>
+    </div>
   );
 }
 
