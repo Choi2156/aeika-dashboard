@@ -23,8 +23,8 @@ export function useScheduleData() {
   useEffect(() => {
     async function fetchData() {
       try {
-        // 1분 단위 캐시 키: 브라우저 캐시 방지 및 최신 데이터 즉각 반영 보장
-        const cacheKey = Math.floor(Date.now() / (60 * 1000));
+        // 10분 단위 캐시 키: 브라우저 캐시를 적극 활용하여 네트워크 트래픽 및 서버 부하 최소화
+        const cacheKey = Math.floor(Date.now() / (10 * 60 * 1000));
         const [dataRes, hintsRes, recRes, briefRes, updatesRes, patchRes, noticeRes] = await Promise.all([
           fetch('./data/schedule_data.json?t=' + cacheKey),
           fetch('./data/schedule_hints.json?t=' + cacheKey),
