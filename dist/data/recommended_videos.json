@@ -353,6 +353,60 @@
   ],
   "longform": [
     {
+      "id": "3VFKewKw3iE",
+      "url": "https://youtu.be/3VFKewKw3iE",
+      "game": "원신",
+      "type": "story",
+      "desc": "[원신][마신 임무] 공월의 노래 제10막 -「공허 겁회의 푸라나」(6.6버전)(컷편집)",
+      "addedAt": "2026-07-10T04:54:31Z",
+      "order": 1
+    },
+    {
+      "id": "1WroX8mqhwY",
+      "url": "https://youtu.be/1WroX8mqhwY",
+      "game": "원신",
+      "type": "story",
+      "desc": "[원신][마신 임무] 공월의 노래 제9막 -「멸망 속에서 피어난 지혜」(6.6버전)(컷편집)",
+      "addedAt": "2026-07-10T00:38:21Z",
+      "order": 2
+    },
+    {
+      "id": "0h-1_HlJxq8",
+      "url": "https://youtu.be/0h-1_HlJxq8",
+      "game": "원신",
+      "type": "story",
+      "desc": "[원신]이벤트 스토리 -「파도치는 암초」(6.5버전)(컷편집)",
+      "addedAt": "2026-07-09T11:37:43Z",
+      "order": 3
+    },
+    {
+      "id": "oA3_Fz3BQcU",
+      "url": "https://youtu.be/oA3_Fz3BQcU",
+      "game": "원신",
+      "type": "story",
+      "desc": "[원신] 린네아 전설 임무 - 예언하는 새의 장·제1막「귀환의 날갯짓」(6.5버전)(컷편집)",
+      "addedAt": "2026-04-08T19:09:06Z",
+      "order": 4
+    },
+    {
+      "id": "T7oVJ2WROvQ",
+      "url": "https://youtu.be/T7oVJ2WROvQ",
+      "game": "원신",
+      "type": "story",
+      "desc": "[원신] 이벤트 스토리 - 한 잔의 여유 & 오차의 흔적 (6.4버전)(컷편집)",
+      "addedAt": "2026-04-08T08:52:51Z",
+      "order": 5
+    },
+    {
+      "id": "FFdCEoriWwc",
+      "url": "https://youtu.be/FFdCEoriWwc",
+      "game": "원신",
+      "type": "story",
+      "desc": "[원신] 이벤트 스토리 -「돌아온 바람 잡는 이방인」(6.4버전)(컷편집)",
+      "addedAt": "2026-04-08T06:44:37Z",
+      "order": 6
+    },
+    {
       "id": "WKP2qIoWah8",
       "url": "https://youtu.be/WKP2qIoWah8",
       "game": "원신",
@@ -362,49 +416,49 @@
       "order": 1
     },
     {
-      "id": "3VFKewKw3iE",
-      "url": "https://youtu.be/3VFKewKw3iE",
-      "game": "원신",
+      "id": "glDxdpMvyXg",
+      "url": "https://youtu.be/glDxdpMvyXg",
+      "game": "붕괴: 스타레일",
       "type": "story",
-      "desc": "[원신][마신 임무] 공월의 노래 제10막 -「공허 겁회의 푸라나」(6.6버전)(컷편집)",
-      "addedAt": "2026-07-10T04:54:31Z",
+      "desc": "[스타레일] 개척 후문 -「환조: 성배전쟁」(4.4버전)(컷편집)",
+      "addedAt": "2026-08-25T20:57:12Z",
+      "order": 1
+    },
+    {
+      "id": "MKGK9_rhT4k",
+      "url": "https://youtu.be/MKGK9_rhT4k",
+      "game": "붕괴: 스타레일",
+      "type": "story",
+      "desc": "[스타레일] 개척 임무 5장 제5막  이상 낙원 - 「적막이 깃든 순간, 울리는 경적」(4.4버전)(컷편집)",
+      "addedAt": "2026-07-16T05:23:29Z",
       "order": 2
     },
     {
-      "id": "1WroX8mqhwY",
-      "url": "https://youtu.be/1WroX8mqhwY",
-      "game": "원신",
+      "id": "Hw7Bsodlk74",
+      "url": "https://youtu.be/Hw7Bsodlk74",
+      "game": "붕괴: 스타레일",
       "type": "story",
-      "desc": "[원신][마신 임무] 공월의 노래 제9막 -「멸망 속에서 피어난 지혜」(6.6버전)(컷편집)",
-      "addedAt": "2026-07-10T00:38:21Z",
+      "desc": "[스타레일] 개척 임무 5장 3막  이상 낙원 - 「산 자의 망천에 잠겨」(4.3버전)(컷편집)",
+      "addedAt": "2026-06-18T08:59:54Z",
       "order": 3
     },
     {
-      "id": "0h-1_HlJxq8",
-      "url": "https://youtu.be/0h-1_HlJxq8",
-      "game": "원신",
+      "id": "Fh38s_obFT4",
+      "url": "https://youtu.be/Fh38s_obFT4",
+      "game": "붕괴: 스타레일",
       "type": "story",
-      "desc": "[원신]이벤트 스토리 -「파도치는 암초」(6.5버전)(컷편집)",
-      "addedAt": "2026-07-09T11:37:43Z",
+      "desc": "[스타레일] 개척 임무 5장 제3막 이상 낙원 - 「그리하여, 웃음소리는 멈추지 않으리」(4.2버전)(컷편집)",
+      "addedAt": "2026-04-30T04:36:28Z",
       "order": 4
     },
     {
-      "id": "oA3_Fz3BQcU",
-      "url": "https://youtu.be/oA3_Fz3BQcU",
-      "game": "원신",
+      "id": "ckgf2De1NT4",
+      "url": "https://youtu.be/ckgf2De1NT4",
+      "game": "붕괴: 스타레일",
       "type": "story",
-      "desc": "[원신] 린네아 전설 임무 - 예언하는 새의 장·제1막「귀환의 날갯짓」(6.5버전)(컷편집)",
-      "addedAt": "2026-04-08T19:09:06Z",
+      "desc": "[스타레일] 개척 임무 5장 제2막 이상 낙원 -「새벽에 바치는 폭주」 (4.1버전)(컷편집)",
+      "addedAt": "2026-03-25T22:48:42Z",
       "order": 5
-    },
-    {
-      "id": "T7oVJ2WROvQ",
-      "url": "https://youtu.be/T7oVJ2WROvQ",
-      "game": "원신",
-      "type": "story",
-      "desc": "[원신] 이벤트 스토리 - 한 잔의 여유 & 오차의 흔적 (6.4버전)(컷편집)",
-      "addedAt": "2026-04-08T08:52:51Z",
-      "order": 6
     },
     {
       "id": "uBZDPYvkj3E",
@@ -443,22 +497,13 @@
       "order": 4
     },
     {
-      "id": "glDxdpMvyXg",
-      "url": "https://youtu.be/glDxdpMvyXg",
-      "game": "붕괴: 스타레일",
-      "type": "story",
-      "desc": "[스타레일] 개척 후문 -「환조: 성배전쟁」(4.4버전)(컷편집)",
-      "addedAt": "2026-08-25T20:57:12Z",
-      "order": 5
-    },
-    {
       "id": "-swtShvfCSk",
       "url": "https://youtu.be/-swtShvfCSk",
       "game": "붕괴: 스타레일",
       "type": "other",
       "desc": "[스타레일] 동시 진행된 4.5버전 특별 방송 화면 비교해 보기",
       "addedAt": "2026-08-14T15:27:06Z",
-      "order": 6
+      "order": 5
     },
     {
       "id": "oSRhLqAWS9k",
@@ -533,13 +578,49 @@
       "order": 2
     },
     {
+      "id": "yHXRan1ydd4",
+      "url": "https://youtu.be/yHXRan1ydd4",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][조수 임무] 제4장 · 에필로그 -「신비로운 선율의 서약, 아득히 이어진 인연」+ 후일담 (3.5버전)(컷편집)",
+      "addedAt": "2026-07-15T05:00:46Z",
+      "order": 3
+    },
+    {
+      "id": "nAQOacc-BtQ",
+      "url": "https://youtu.be/nAQOacc-BtQ",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][조수 임무] 제4장 · 제2막 -「골짜기를 뒤흔든 현령, 잠잠해진 물결」(3.5버전)(컷편집)",
+      "addedAt": "2026-07-15T05:00:43Z",
+      "order": 4
+    },
+    {
+      "id": "_aqACQKf3mQ",
+      "url": "https://youtu.be/_aqACQKf3mQ",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][조수 임무] 제4장 · 제1막 -「산비가 내리기 전, 누각을 채운 거센 바람」(3.5버전)(컷편집)",
+      "addedAt": "2026-07-15T05:00:33Z",
+      "order": 5
+    },
+    {
+      "id": "fQ4oXg3clQo",
+      "url": "https://youtu.be/fQ4oXg3clQo",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][조수 임무] 제3장 · 에필로그 -「우리의 선택은 하늘」(3.4버전)(컷편집)",
+      "addedAt": "2026-06-18T20:37:41Z",
+      "order": 6
+    },
+    {
       "id": "fW9MxiM-9AE",
       "url": "https://youtu.be/fW9MxiM-9AE",
       "game": "명조",
       "type": "other",
       "desc": "[명조] 진짜 잠깐 얼굴만 비추는 쇄명 (3.6버전)",
       "addedAt": "2026-08-20T18:25:50Z",
-      "order": 3
+      "order": 1
     },
     {
       "id": "sa8hIFSiwWM",
@@ -548,7 +629,7 @@
       "type": "other",
       "desc": "[명조] 하늘을 뚫는 청초 (3.6버전)",
       "addedAt": "2026-08-20T12:18:28Z",
-      "order": 4
+      "order": 2
     },
     {
       "id": "64GClPdfl0A",
@@ -557,7 +638,7 @@
       "type": "other",
       "desc": "[명조] 청초에게 어검술을 배우는 방랑자 (3.6버전)",
       "addedAt": "2026-08-20T09:00:45Z",
-      "order": 5
+      "order": 3
     },
     {
       "id": "Pcp8Ey9ZtWg",
@@ -566,7 +647,7 @@
       "type": "other",
       "desc": "[명조] 드디어 기어 나온 여우의 별자리 (3.6버전)",
       "addedAt": "2026-08-20T08:50:48Z",
-      "order": 6
+      "order": 4
     },
     {
       "id": "z1_Ureq0INE",
