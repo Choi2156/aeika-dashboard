@@ -1,73 +1,73 @@
 {
   "shorts": [
     {
+      "id": "gnv_feovl10",
+      "url": "https://youtube.com/shorts/gnv_feovl10",
+      "game": "원신",
+      "addedAt": "2026-08-25T13:17:53Z",
+      "order": 1
+    },
+    {
       "id": "XPt8nkkS82I",
       "url": "https://youtube.com/shorts/XPt8nkkS82I",
       "game": "원신",
       "addedAt": "2026-08-23T04:50:37Z",
-      "order": 1
+      "order": 2
     },
     {
       "id": "ct04Y-jJqak",
       "url": "https://youtube.com/shorts/ct04Y-jJqak",
       "game": "원신",
       "addedAt": "2026-08-23T04:30:21Z",
-      "order": 2
+      "order": 3
     },
     {
       "id": "oYNUT-qbCik",
       "url": "https://youtube.com/shorts/oYNUT-qbCik",
       "game": "원신",
       "addedAt": "2026-08-18T04:33:25Z",
-      "order": 3
+      "order": 4
     },
     {
       "id": "SEdAgETUoUM",
       "url": "https://youtube.com/shorts/SEdAgETUoUM",
       "game": "원신",
       "addedAt": "2026-08-17T04:18:33Z",
-      "order": 4
+      "order": 5
     },
     {
       "id": "50ocQwxRDkU",
       "url": "https://youtube.com/shorts/50ocQwxRDkU",
       "game": "원신",
       "addedAt": "2026-08-16T06:41:13Z",
-      "order": 5
+      "order": 6
     },
     {
       "id": "XJ-7SeKU2rk",
       "url": "https://youtube.com/shorts/XJ-7SeKU2rk",
       "game": "원신",
       "addedAt": "2026-08-15T14:23:06Z",
-      "order": 6
+      "order": 7
     },
     {
       "id": "1vov8O1OhGw",
       "url": "https://youtube.com/shorts/1vov8O1OhGw",
       "game": "원신",
       "addedAt": "2026-08-14T09:53:44Z",
-      "order": 7
+      "order": 8
     },
     {
       "id": "twCe7BhZWV8",
       "url": "https://youtube.com/shorts/twCe7BhZWV8",
       "game": "원신",
       "addedAt": "2026-08-14T08:24:27Z",
-      "order": 8
+      "order": 9
     },
     {
       "id": "wmgo4sF-XiE",
       "url": "https://youtube.com/shorts/wmgo4sF-XiE",
       "game": "원신",
       "addedAt": "2026-08-13T14:37:53Z",
-      "order": 9
-    },
-    {
-      "id": "iZVR5RA-dps",
-      "url": "https://youtube.com/shorts/iZVR5RA-dps",
-      "game": "원신",
-      "addedAt": "2026-08-13T14:14:22Z",
       "order": 10
     },
     {
@@ -353,22 +353,13 @@
   ],
   "longform": [
     {
-      "id": "gnv_feovl10",
-      "url": "https://youtu.be/gnv_feovl10",
-      "game": "원신",
-      "type": "other",
-      "desc": "보댜니차와 미탸의 살떨리는 대화 #원신 #미탸",
-      "addedAt": "2026-08-25T13:17:53Z",
-      "order": 1
-    },
-    {
       "id": "WKP2qIoWah8",
       "url": "https://youtu.be/WKP2qIoWah8",
       "game": "원신",
       "type": "other",
       "desc": "[원신] 보댜니차 오페라 공연 씬 (7.0버전)",
       "addedAt": "2026-08-12T17:06:14Z",
-      "order": 2
+      "order": 1
     },
     {
       "id": "3VFKewKw3iE",
@@ -377,7 +368,7 @@
       "type": "story",
       "desc": "[원신][마신 임무] 공월의 노래 제10막 -「공허 겁회의 푸라나」(6.6버전)(컷편집)",
       "addedAt": "2026-07-10T04:54:31Z",
-      "order": 3
+      "order": 2
     },
     {
       "id": "1WroX8mqhwY",
@@ -386,7 +377,7 @@
       "type": "story",
       "desc": "[원신][마신 임무] 공월의 노래 제9막 -「멸망 속에서 피어난 지혜」(6.6버전)(컷편집)",
       "addedAt": "2026-07-10T00:38:21Z",
-      "order": 4
+      "order": 3
     },
     {
       "id": "0h-1_HlJxq8",
@@ -395,15 +386,24 @@
       "type": "story",
       "desc": "[원신]이벤트 스토리 -「파도치는 암초」(6.5버전)(컷편집)",
       "addedAt": "2026-07-09T11:37:43Z",
+      "order": 4
+    },
+    {
+      "id": "oA3_Fz3BQcU",
+      "url": "https://youtu.be/oA3_Fz3BQcU",
+      "game": "원신",
+      "type": "story",
+      "desc": "[원신] 린네아 전설 임무 - 예언하는 새의 장·제1막「귀환의 날갯짓」(6.5버전)(컷편집)",
+      "addedAt": "2026-04-08T19:09:06Z",
       "order": 5
     },
     {
-      "id": "bMXx0g5C_NQ",
-      "url": "https://youtu.be/bMXx0g5C_NQ",
+      "id": "T7oVJ2WROvQ",
+      "url": "https://youtu.be/T7oVJ2WROvQ",
       "game": "원신",
-      "type": "other",
-      "desc": "괜히 미녀회가 아님 #원신 #니콜",
-      "addedAt": "2026-05-14T01:57:40Z",
+      "type": "story",
+      "desc": "[원신] 이벤트 스토리 - 한 잔의 여유 & 오차의 흔적 (6.4버전)(컷편집)",
+      "addedAt": "2026-04-08T08:52:51Z",
       "order": 6
     },
     {
