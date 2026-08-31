@@ -133,7 +133,7 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
         <div className="guide-content">
           {activeTab === 'guide' && (
             <div className="guide-sections">
-              {/* 📺 신설: 동영상 대시보드 튜토리얼 퀵배너 */}
+              {/* 📺 동영상 대시보드 튜토리얼 퀵배너 */}
               <div className="guide-video-banner">
                 <div className="guide-video-banner__body">
                   <div className="guide-video-banner__icon-wrap">
@@ -141,8 +141,8 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                   </div>
                   <div className="guide-video-banner__text-group">
                     <span className="guide-video-banner__label">TUTORIAL VIDEO</span>
-                    <h4 className="guide-video-banner__title">대시보드 200% 활용 가이드 영상</h4>
-                    <p className="guide-video-banner__desc">캘린더 조작법부터 스마트 알림, 예상 일정 알고리즘의 원리까지 한 번에 쉽게 이해하세요!</p>
+                    <h4 className="guide-video-banner__title">가이드 영상</h4>
+                    <p className="guide-video-banner__desc">대시보드 주요 기능 및 활용 방법을 소개하는 영상입니다.</p>
                   </div>
                 </div>
                 <a 
@@ -155,71 +155,49 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                   <ExternalLink size={12} />
                 </a>
               </div>
+
               {/* Section 1 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  🌐 1. 서비스 글로벌 기준 (KST)
+                  1. 시간대 및 버전 마감 표기 기준
                 </div>
-                <p className="guide-section-text">
-                  본 대시보드는 파편화된 해외 및 글로벌 서브컬쳐 게임들의 주요
-                  타임라인을 통합 제공합니다. 서버 시차로 인한 혼선을 원천 방지하기
-                  위해 모든 일정의 활성화 및 표기 기준점은 한국 서버(KST)
-                  표준시를 절대 원칙으로 삼습니다.
-                  <br />
-                  <span style={{ color: '#f43f5e', fontWeight: 'bold' }}>[새벽 종료 일정 표기 안내]</span> 점검 및 업데이트가 새벽 시간대(오전 00시 ~ 08시 등)에 진행되는 경우, 사용자 편의를 돕고 이벤트 마감 일정을 직관적으로 파악할 수 있도록 대시보드 일정상에는 점검 당일이 아닌 <strong>그 전날까지</strong>로 마감일을 하루 당겨서 표기합니다.
-                  <br /><br />
-                  <span style={{ color: '#a78bfa', fontWeight: 'bold' }}>[명일방주: 엔드필드 버전 마감 표기 기준]</span> 엔드필드는 버전 종료 점검이 <strong>목요일 새벽</strong>에 진행됩니다. 이에 따라 이전 버전의 마감일은 점검 당일(목요일)이 아닌 <strong>전날인 수요일</strong>로 표기되며, 이는 다음 버전 시작일과 일정이 겹치지 않도록 하는 표기 최적화입니다.
-                </p>
+                <ul className="guide-bullet-list">
+                  <li>본 대시보드의 모든 일정은 한국 시간(KST)을 기준으로 표기합니다.</li>
+                  <li>버전 마감일은 차기 업데이트 시작일과 겹치지 않도록 '패치 전날'을 기준으로 표기합니다. 서브컬처 게임 특성상 일일 초기화(오전 4~5시)와 점검 및 픽업 종료 시간이 제각각이라, 마감 시점을 직관적으로 파악하기 위한 기준입니다.</li>
+                </ul>
               </div>
 
               {/* Section 2 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  ⚠️ 2. 데이터 출처 및 무결성 공지 (수동 관리 방식)
+                  2. 확정 및 예상 일정 안내
                 </div>
-                <p className="guide-section-text">
-                  차트 내 [확정] 마커가 활성화된 일정은 제조사 오피셜 공지를 확인 후
-                  관리자가 직접 수동으로 데이터를 검증 및 주입하는 방식으로
-                  운영됩니다. 중요 집행 전에는 공식 공지를 반드시 크로스
-                  체크하시기 바랍니다.
-                </p>
+                <ul className="guide-bullet-list">
+                  <li><strong>[확정] 마커:</strong> 공식 공지를 확인한 후 직접 등록한 일정입니다. 다만 공식 공지에서 정확한 버전 종료 시점을 명시하지 않은 경우 이전 버전의 정규 주기를 바탕으로 표기하므로, 실제 일정과 소폭 차이가 발생할 수 있습니다.</li>
+                  <li><strong>[예상] 마커:</strong> 각 게임의 정규 패치 주기를 바탕으로 계산된 일정입니다. 공식 발표나 일정 변동에 따라 변경될 수 있으니 참고용으로 활용하시기 바랍니다.</li>
+                </ul>
               </div>
 
               {/* Section 3 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  🔮 3. 시스템 예측(예상) 스케줄 메커니즘
+                  3. 대시보드 조작 안내
                 </div>
-                <p className="guide-section-text">
-                  [예상] 마커 일정은 시스템 알고리즘 연산 결과입니다. 각 게임 제조사
-                  고유의 정규 패치 사이클 상수를 대입하여 산출하므로, 대형 명절이나
-                  돌발 연기 변수가 생길 경우 실제 공지와 차이가 발생할 수
-                  있습니다.
-                </p>
+                <ul className="guide-bullet-list">
+                  <li>각 버전의 전체 기간(전반 일정) 위에 후반 일정 및 공식 방송 일정이 함께 구분되어 표시됩니다.</li>
+                  <li>게임별 행을 클릭하여 원하는 게임만 펼치거나 접을 수 있습니다.</li>
+                  <li>타임라인의 각 일정을 클릭하면 상세 정보와 관련 이미지를 확인할 수 있습니다.</li>
+                </ul>
               </div>
 
               {/* Section 4 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  📊 4. 간트 차트 및 인터페이스 조작법
+                  4. 설정 저장 및 데이터 관리
                 </div>
                 <ul className="guide-bullet-list">
-                  <li>
-                    버전/후반 업데이트 구조화 — 각 게임의 메이저 버전 업데이트와
-                    후반 업데이트가 타임라인에 구조적으로 구분 표시됩니다.
-                  </li>
-                  <li>
-                    공식 방송 플래그 — 제조사의 공식 특별 방송 일정이 별도 마커로
-                    차트에 표시됩니다.
-                  </li>
-                  <li>
-                    게임 토글 접기 — 게임별 행을 토글하여 관심 있는 게임만
-                    선택적으로 펼치거나 접을 수 있습니다.
-                  </li>
-                  <li>
-                    상세 정보 팝업 및 이미지 복구 — 각 이벤트 막대를 클릭하면 상세
-                    팝업이 열리며 관련 이미지와 메타데이터를 확인할 수 있습니다.
-                  </li>
+                  <li>상단의 '설정 저장'을 켜면 선택한 게임, 뷰 모드, 테마 설정이 현재 사용 중인 브라우저에만 저장됩니다.</li>
+                  <li>'설정 저장'을 끄면 저장된 브라우저 데이터가 삭제되며, 브라우저 설정(쿠키 및 사이트 데이터)에서도 직접 삭제할 수 있습니다.</li>
                 </ul>
               </div>
             </div>
