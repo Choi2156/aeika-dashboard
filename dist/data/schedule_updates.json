@@ -1,5 +1,20 @@
 [
   {
+    "id": "EVT_AKEF_20260911_0001",
+    "game": "명일방주: 엔드필드",
+    "version": "이벤트",
+    "type": "오프라인이벤트",
+    "title": "가을 피크닉 in 삼성스토어 팝업",
+    "date": "2026-09-11",
+    "end_date": "2026-09-20",
+    "time": "",
+    "is_fixed": true,
+    "detail": "✦ 행사명: 「명일방주: 엔드필드」 가을 피크닉 in 삼성스토어 팝업\n✦ 팝업 일정: 2026년 9월 11일(금) ~ 9월 20일(일) (10일간)\n✦ 팝업 장소: 삼성스토어 부천중동 1F\n✦ 내용: 가을 피크닉 액세서리 에디션 2종 출시(9/11) 및 에디션 구매 혜택, 현장 참여 이벤트 진행",
+    "location": "삼성스토어 부천중동 1F",
+    "custom_img": "endfield_samsung_popup.webp",
+    "link": "https://game.naver.com/lounge/Arknights_Endfield/board/detail/8128183"
+  },
+  {
     "id": "EVT_ZZZ_20261002_0001",
     "game": "젠레스 존 제로",
     "version": "이벤트",
