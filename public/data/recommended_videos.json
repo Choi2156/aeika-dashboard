@@ -470,6 +470,15 @@
       "order": 6
     },
     {
+      "id": "ckgf2De1NT4",
+      "url": "https://youtu.be/ckgf2De1NT4",
+      "game": "붕괴: 스타레일",
+      "type": "story",
+      "desc": "[스타레일] 개척 임무 5장 제2막 이상 낙원 -「새벽에 바치는 폭주」 (4.1버전)(컷편집)",
+      "addedAt": "2026-03-25T22:48:42Z",
+      "order": 7
+    },
+    {
       "id": "DIP03K6OsW8",
       "url": "https://youtu.be/DIP03K6OsW8",
       "game": "붕괴: 스타레일",
@@ -632,6 +641,42 @@
       "order": 6
     },
     {
+      "id": "FuY-ue45flI",
+      "url": "https://youtu.be/FuY-ue45flI",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][이문 임무] 제3장 · 외전 「엣지 드림」(3.4버전)(컷편집)",
+      "addedAt": "2026-06-18T09:03:23Z",
+      "order": 7
+    },
+    {
+      "id": "BSRnLcpqCtU",
+      "url": "https://youtu.be/BSRnLcpqCtU",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][조수 임무] 제3장 에필로그 -「녹아내린 밤하늘 아래」(3.3버전)(컷편집)",
+      "addedAt": "2026-06-18T08:58:44Z",
+      "order": 8
+    },
+    {
+      "id": "LNHYjxEm-ek",
+      "url": "https://youtu.be/LNHYjxEm-ek",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조] [조수 임무] 제3장 제5막 - 「어젯밤의 뭇별들」 에필로그/후일담 (3.3버전)(컷편집)",
+      "addedAt": "2026-05-06T00:14:01Z",
+      "order": 9
+    },
+    {
+      "id": "KgZSoIt20Ck",
+      "url": "https://youtu.be/KgZSoIt20Ck",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조] [조수 임무] 제3장 제5막 - 「어젯밤의 뭇별들」(3.3버전)(컷편집)",
+      "addedAt": "2026-05-03T22:30:06Z",
+      "order": 10
+    },
+    {
       "id": "fW9MxiM-9AE",
       "url": "https://youtu.be/fW9MxiM-9AE",
       "game": "명조",
@@ -720,6 +765,24 @@
       "desc": "[엔드필드] 로시 스토리 이벤트 -「적기사」 (1.1버전)(컷편집)",
       "addedAt": "2026-03-30T21:31:00Z",
       "order": 6
+    },
+    {
+      "id": "JqTfxpxR-ks",
+      "url": "https://youtu.be/JqTfxpxR-ks",
+      "game": "명일방주: 엔드필드",
+      "type": "story",
+      "desc": "[엔드필드] 메인 스토리 2장 무릉 #3 『내부 분열』 (하) (1.1))(컷편집)",
+      "addedAt": "2026-03-13T16:38:55Z",
+      "order": 7
+    },
+    {
+      "id": "O0XZ0GaJ-1U",
+      "url": "https://youtu.be/O0XZ0GaJ-1U",
+      "game": "명일방주: 엔드필드",
+      "type": "story",
+      "desc": "[엔드필드] 메인 스토리 2장 무릉 #3 『내부 분열』 (상) (1.1))(컷편집)",
+      "addedAt": "2026-03-12T18:15:31Z",
+      "order": 8
     }
   ]
 }

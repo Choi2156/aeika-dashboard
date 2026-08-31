@@ -72,55 +72,33 @@ function allocateVideosWithShuffle(allVideos, activeGames, targetCount = 6) {
 }
 
 /* ────────────────────────────────────────────
-   Longform Video Allocation (최신순)
+   Longform Video Allocation (최신순 최대 10개)
+   선택된 게임의 롱폼 영상을 100% 최신순으로 정렬하여 최대 targetCount(10개) 추출
+   10개 미만일 경우 있는 만큼만 반환
    ──────────────────────────────────────────── */
-function allocateLongformVideos(allVideos, activeGames, targetCount = 6) {
+function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
   if (!allVideos || allVideos.length === 0) return [];
 
   const activeGameNames = activeGames && Object.keys(activeGames).length > 0
     ? Object.keys(activeGames).filter(name => activeGames[name] !== false)
     : Array.from(new Set(allVideos.map(v => v.game)));
 
-  const n = activeGameNames.length;
-  if (n === 0) return [];
+  if (activeGameNames.length === 0) return [];
 
-  const gameVideoMap = {};
-  activeGameNames.forEach(game => {
-    gameVideoMap[game] = allVideos
-      .filter(v => v.game === game)
-      .sort((a, b) => {
-        const dateA = a.addedAt ? new Date(a.addedAt) : new Date(0);
-        const dateB = b.addedAt ? new Date(b.addedAt) : new Date(0);
-        return dateB - dateA;
-      });
-  });
+  const activeSet = new Set(activeGameNames);
+  
+  // 1. 활성화된 게임의 영상만 필터링
+  const filtered = allVideos.filter(v => activeSet.has(v.game));
 
-  const base = Math.floor(targetCount / n);
-  let remainder = targetCount % n;
-
-  const sortedGamesForBonus = [...activeGameNames].sort((a, b) => {
-    const latestA = gameVideoMap[a]?.[0]?.addedAt || '';
-    const latestB = gameVideoMap[b]?.[0]?.addedAt || '';
-    if (latestA && latestB) return latestB.localeCompare(latestA);
-    if (latestA) return -1;
-    if (latestB) return 1;
-    return 0;
-  });
-
-  const bonusSet = new Set(sortedGamesForBonus.slice(0, remainder));
-
-  const selectedVideos = [];
-  activeGameNames.forEach(game => {
-    const limit = base + (bonusSet.has(game) ? 1 : 0);
-    const sliced = gameVideoMap[game]?.slice(0, limit) || [];
-    selectedVideos.push(...sliced);
-  });
-
-  return selectedVideos.sort((a, b) => {
+  // 2. 100% 최신순(addedAt 내림차순) 정렬
+  const sorted = [...filtered].sort((a, b) => {
     const dateA = a.addedAt ? new Date(a.addedAt) : new Date(0);
     const dateB = b.addedAt ? new Date(b.addedAt) : new Date(0);
     return dateB - dateA;
   });
+
+  // 3. 최신순 최대 targetCount(10개) 반환 (10개 미만 시 있는 만큼 반환)
+  return sorted.slice(0, targetCount);
 }
 
 /* ────────────────────────────────────────────
@@ -231,18 +209,18 @@ function GanttBottomLayout({
     return allocateVideosWithShuffle(rawShorts, activeGames, 6);
   }, [recommendedVideos, activeGamesKey]);
 
-  /* ── 3-1. 스토리 풀버전 롱폼 비디오 데이터 ── */
+  /* ── 3-1. 스토리 풀버전 롱폼 비디오 데이터 (최신순 최대 10개) ── */
   const storyVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
     const stories = rawLongform.filter((v) => v.type === 'story');
-    return allocateLongformVideos(stories, activeGames, 6);
+    return allocateLongformVideos(stories, activeGames, 10);
   }, [recommendedVideos, activeGames]);
 
-  /* ── 3-2. 일반 롱폼 비디오 데이터 (롱폼 추천 영상) ── */
+  /* ── 3-2. 일반 롱폼 비디오 데이터 (롱폼 추천 영상, 최신순 최대 10개) ── */
   const otherVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
     const others = rawLongform.filter((v) => v.type === 'other');
-    return allocateLongformVideos(others, activeGames, 6);
+    return allocateLongformVideos(others, activeGames, 10);
   }, [recommendedVideos, activeGames]);
 
   /* ── Index Bounds Safety ── */
