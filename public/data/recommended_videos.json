@@ -722,22 +722,13 @@
       "order": 1
     },
     {
-      "id": "z1_Ureq0INE",
-      "url": "https://youtu.be/z1_Ureq0INE",
-      "game": "명일방주: 엔드필드",
-      "type": "story",
-      "desc": "[엔드필드] 2장 프로세스 7 - 「페허의 연기」(1.4버전)(컷편집)",
-      "addedAt": "2026-08-18T05:03:05Z",
-      "order": 2
-    },
-    {
       "id": "YOYFRqSUp7Y",
       "url": "https://youtu.be/YOYFRqSUp7Y",
       "game": "명일방주: 엔드필드",
       "type": "story",
       "desc": "[엔드필드] 2장 프로세스 6 - 「천근의 무게」(1.2버전)(컷편집)",
       "addedAt": "2026-05-03T23:45:06Z",
-      "order": 3
+      "order": 2
     },
     {
       "id": "2hdM4jKskIw",
@@ -746,7 +737,7 @@
       "type": "story",
       "desc": "[엔드필드] 2장 프로세스 5 - 「노도」(1.2버전)(컷편집)",
       "addedAt": "2026-05-03T23:30:00Z",
-      "order": 4
+      "order": 3
     },
     {
       "id": "mGLKmmaYWdc",
@@ -755,7 +746,7 @@
       "type": "story",
       "desc": "[엔드필드] 2장 프로세스 4 - 「과거의 이야기」(1.2버전)(컷편집)",
       "addedAt": "2026-05-03T23:15:03Z",
-      "order": 5
+      "order": 4
     },
     {
       "id": "X95YBKKnQ24",
@@ -764,7 +755,7 @@
       "type": "story",
       "desc": "[엔드필드] 로시 스토리 이벤트 -「적기사」 (1.1버전)(컷편집)",
       "addedAt": "2026-03-30T21:31:00Z",
-      "order": 6
+      "order": 5
     },
     {
       "id": "JqTfxpxR-ks",
@@ -773,7 +764,7 @@
       "type": "story",
       "desc": "[엔드필드] 메인 스토리 2장 무릉 #3 『내부 분열』 (하) (1.1))(컷편집)",
       "addedAt": "2026-03-13T16:38:55Z",
-      "order": 7
+      "order": 6
     },
     {
       "id": "O0XZ0GaJ-1U",
@@ -782,7 +773,7 @@
       "type": "story",
       "desc": "[엔드필드] 메인 스토리 2장 무릉 #3 『내부 분열』 (상) (1.1))(컷편집)",
       "addedAt": "2026-03-12T18:15:31Z",
-      "order": 8
+      "order": 7
     }
   ]
 }

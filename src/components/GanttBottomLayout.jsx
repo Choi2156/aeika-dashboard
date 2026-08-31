@@ -87,11 +87,18 @@ function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
 
   const activeSet = new Set(activeGameNames);
   
-  // 1. 활성화된 게임의 영상만 필터링
-  const filtered = allVideos.filter(v => activeSet.has(v.game));
+  // 1. 활성화된 게임의 영상만 필터링 (중복 ID 원천 차단)
+  const seenIds = new Set();
+  const filtered = [];
+  for (const v of allVideos) {
+    if (activeSet.has(v.game) && v.id && !seenIds.has(v.id)) {
+      seenIds.add(v.id);
+      filtered.push(v);
+    }
+  }
 
   // 2. 100% 최신순(addedAt 내림차순) 정렬
-  const sorted = [...filtered].sort((a, b) => {
+  const sorted = filtered.sort((a, b) => {
     const dateA = a.addedAt ? new Date(a.addedAt) : new Date(0);
     const dateB = b.addedAt ? new Date(b.addedAt) : new Date(0);
     return dateB - dateA;
@@ -378,11 +385,11 @@ function GanttBottomLayout({
               )}
             </div>
             <div className="longform-videos-grid" {...storyTouch}>
-              {visibleStories.map((video) => {
+              {visibleStories.map((video, idx) => {
                 const color = getGameColor(video.game);
                 const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
                 return (
-                  <a key={video.id} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="longform-video-card" style={{ '--theme-color': color }} title="클릭하여 유튜브에서 스토리 풀버전 감상하기">
+                  <a key={`${video.id}_${currentStoryIndex}_${idx}`} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="longform-video-card" style={{ '--theme-color': color }} title="클릭하여 유튜브에서 스토리 풀버전 감상하기">
                     <div className="longform-video-card__thumb-wrapper">
                       <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
                       <div className="longform-video-card__duration-badge"><span>{video.duration || '풀버전'}</span></div>
@@ -420,11 +427,11 @@ function GanttBottomLayout({
           </div>
           {otherVideos.length > 0 ? (
             <div className="longform-videos-grid" {...otherTouch}>
-              {visibleOthers.map((video) => {
+              {visibleOthers.map((video, idx) => {
                 const color = getGameColor(video.game);
                 const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
                 return (
-                  <a key={video.id} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="longform-video-card" style={{ '--theme-color': color }} title="클릭하여 유튜브에서 영상 감상하기">
+                  <a key={`${video.id}_${currentOtherIndex}_${idx}`} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="longform-video-card" style={{ '--theme-color': color }} title="클릭하여 유튜브에서 영상 감상하기">
                     <div className="longform-video-card__thumb-wrapper">
                       <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
                       <div className="longform-video-card__duration-badge"><span>영상</span></div>
