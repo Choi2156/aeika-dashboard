@@ -1112,79 +1112,99 @@
   background: var(--bg-card);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
+  padding: 0.6rem 0.5rem 0.75rem 0.5rem; /* 좌우 여백을 최소화하여 영상 화면 크기 극대화 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.65rem;
   box-shadow: var(--shadow-lg);
   box-sizing: border-box;
 }
 
-/* 화살표 + 플레이어 + 화살표 3단 가로 연계 */
+/* 플레이어 가로 래퍼 (가로폭 100% 최적화) */
 .shorts-slider-main {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
   width: 100%;
 }
 
-/* 터치 반응형 둥근 화살표 버튼 */
-.shorts-slider-arrow {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* 9:16 플레이어를 감싸는 가로폭 안전 제어 (박스 좌우 테두리 끝까지 100% 꽉 채움) */
+.shorts-player-container {
+  width: 100%;
+  max-width: 100%; /* 양옆 비움 없이 박스 너비를 꽉 채우도록 설정 */
+  aspect-ratio: 9 / 16;
+  border-radius: calc(var(--radius-lg) - 2px);
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  background: #000000;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  position: relative;
+}
+
+/* 옵션 A: 영상 위 플로팅 오버레이 넘기기 버튼 */
+.shorts-overlay-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 8;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms);
-  box-shadow: var(--shadow-md);
-  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  opacity: 0.85;
 }
 
-[data-theme="light"] .shorts-slider-arrow {
-  background: var(--bg-secondary);
-  border-color: var(--border-primary);
-  color: var(--text-primary);
+.shorts-overlay-arrow:hover {
+  opacity: 1;
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.08);
 }
 
-.shorts-slider-arrow:hover {
-  background: rgba(99, 102, 241, 0.2);
-  border-color: rgba(99, 102, 241, 0.5);
-  color: #a5b4fc;
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
-  transform: scale(1.05);
+.shorts-overlay-arrow:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
-.shorts-slider-arrow:active {
-  transform: scale(0.95);
+.shorts-overlay-arrow--left {
+  left: 8px;
 }
 
-/* 9:16 플레이어를 감싸는 가로폭 안전 제어 (쇼츠 밀착 고정) */
-.shorts-player-container {
-  width: 290px; /* 더욱 웅장하고 거대한 290px 가로폭으로 극대화 */
-  min-width: 290px;
-  aspect-ratio: 9 / 16;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--border-primary);
-  background: #000000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
-  margin: 0;
+.shorts-overlay-arrow--right {
+  right: 8px;
 }
 
-/* 점형 페이지네이션 인디케이터 (대강의 쇼츠 개수 인지용) */
+[data-theme="light"] .shorts-overlay-arrow {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .shorts-overlay-arrow:hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+/* 점형 페이지네이션 인디케이터 */
 .shorts-dot-indicators {
   display: flex;
   gap: 6px;
   justify-content: center;
   align-items: center;
-  margin-top: 0.25rem;
+  margin-top: 0.1rem;
 }
 
 .shorts-dot {
@@ -1214,6 +1234,14 @@
   box-shadow: 0 0 8px var(--theme-color, #6366f1);
 }
 
+/* 하단 버튼 액션 그룹: 채널 바로가기 + 셔플 버튼 */
+.shorts-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
 /* 최하단 채널 바로가기 버튼 */
 .shorts-channel-direct-btn {
   display: inline-flex;
@@ -1223,30 +1251,85 @@
   font-size: 0.72rem;
   font-weight: 800;
   color: #ffffff !important;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.45) 0%, rgba(185, 28, 28, 0.55) 100%);
-  border: 1px solid rgba(239, 68, 68, 0.6);
-  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.5) 0%, rgba(185, 28, 28, 0.65) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.65);
+  padding: 8px 14px;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
   text-decoration: none;
-  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-  width: 100%;
-  max-width: 290px; /* 플레이어 가로폭에 맞춰 290px로 일치화 */
+  flex: 1;
   text-align: center;
   box-sizing: border-box;
 }
 
 .shorts-channel-direct-btn:hover {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.6) 0%, rgba(185, 28, 28, 0.7) 100%);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.7) 0%, rgba(185, 28, 28, 0.8) 100%);
   border-color: rgba(255, 120, 120, 0.95);
-  box-shadow: 0 6px 15px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
   transform: translateY(-1px);
 }
 
 .shorts-channel-direct-btn:active {
   transform: translateY(0);
+}
+
+/* 스마트 쇼츠 셔플 버튼 (시인성 및 고급스러움 대폭 강화) */
+.shorts-shuffle-btn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.shorts-shuffle-btn:hover {
+  color: #ffffff;
+  border-color: rgba(239, 68, 68, 0.8);
+  background: rgba(239, 68, 68, 0.25);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+.shorts-shuffle-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.shorts-shuffle-btn--spinning svg {
+  animation: spin-shuffle 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes spin-shuffle {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+[data-theme="light"] .shorts-shuffle-btn {
+  background: #ffffff;
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .shorts-shuffle-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
 /* 쇼츠 추천 비디오 부재 시 예외 카드 스타일 */

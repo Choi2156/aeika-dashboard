@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
-import { ChevronLeft, ChevronRight, Radio, Youtube, MapPin, Megaphone, ChevronRight as ChevronRightIcon, Video } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Radio, Youtube, MapPin, Megaphone, ChevronRight as ChevronRightIcon, Video, Shuffle } from 'lucide-react';
 import NoticeCategoryBadge from './NoticeCategoryBadge';
 
 /* ────────────────────────────────────────────
@@ -166,6 +166,8 @@ function GanttBottomLayout({
   const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [currentOtherIndex, setCurrentOtherIndex] = useState(0);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   useEffect(() => { setIsPlayingShort(false); }, [currentShortIndex]);
 
@@ -210,11 +212,21 @@ function GanttBottomLayout({
     return Object.keys(activeGames).filter(k => activeGames[k] !== false).sort().join(',');
   }, [activeGames]);
 
-  /* ── 2. 추천 쇼츠 데이터 (새로고침 시 및 활성 게임 변경 시에만 1회 스마트 셔플) ── */
+  /* ── 2. 추천 쇼츠 데이터 (새로고침 시, 활성 게임 변경 시, 셔플 클릭 시 스마트 셔플) ── */
   const recommendedShorts = useMemo(() => {
     const rawShorts = recommendedVideos?.shorts || [];
     return allocateVideosWithShuffle(rawShorts, activeGames, 6);
-  }, [recommendedVideos, activeGamesKey]);
+  }, [recommendedVideos, activeGamesKey, shuffleSeed]);
+
+  const handleShuffleShorts = useCallback(() => {
+    setIsShuffling(true);
+    setShuffleSeed((prev) => prev + 1);
+    setCurrentShortIndex(0);
+    setIsPlayingShort(false);
+    setTimeout(() => {
+      setIsShuffling(false);
+    }, 500);
+  }, []);
 
   /* ── 3-1. 스토리 풀버전 롱폼 비디오 데이터 (최신순 최대 10개) ── */
   const storyVideos = useMemo(() => {
@@ -465,9 +477,6 @@ function GanttBottomLayout({
             {recommendedShorts.length > 0 ? (
               <>
                 <div className="shorts-slider-main">
-                  <button onClick={handlePrevShort} className="shorts-slider-arrow shorts-slider-arrow--left" type="button" title="이전 쇼츠 보기">
-                    <ChevronLeft size={20} />
-                  </button>
                   <div className="shorts-player-container">
                     {isPlayingShort ? (
                       <iframe
@@ -490,10 +499,27 @@ function GanttBottomLayout({
                         </div>
                       </div>
                     )}
+
+                    {/* 옵션 A: 영상 위 플로팅 오버레이 넘기기 버튼 */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handlePrevShort(); }}
+                      className="shorts-overlay-arrow shorts-overlay-arrow--left"
+                      type="button"
+                      title="이전 쇼츠 보기"
+                      aria-label="이전 쇼츠 보기"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleNextShort(); }}
+                      className="shorts-overlay-arrow shorts-overlay-arrow--right"
+                      type="button"
+                      title="다음 쇼츠 보기"
+                      aria-label="다음 쇼츠 보기"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
                   </div>
-                  <button onClick={handleNextShort} className="shorts-slider-arrow shorts-slider-arrow--right" type="button" title="다음 쇼츠 보기">
-                    <ChevronRight size={20} />
-                  </button>
                 </div>
 
                 <div className="shorts-dot-indicators">
@@ -520,10 +546,21 @@ function GanttBottomLayout({
               </div>
             )}
 
-            <a href="https://www.youtube.com/@AEIKA215" target="_blank" rel="noopener noreferrer" className="shorts-channel-direct-btn" title="유튜브 채널 방문하여 더 많은 영상보기">
-              <Youtube size={13} />
-              <span>애이카 아카이브 바로가기</span>
-            </a>
+            <div className="shorts-bottom-actions">
+              <a href="https://www.youtube.com/@AEIKA215" target="_blank" rel="noopener noreferrer" className="shorts-channel-direct-btn" title="유튜브 채널 방문하여 더 많은 영상보기">
+                <Youtube size={14} />
+                <span>채널 바로가기</span>
+              </a>
+              <button
+                onClick={handleShuffleShorts}
+                className={`shorts-shuffle-btn ${isShuffling ? 'shorts-shuffle-btn--spinning' : ''}`}
+                type="button"
+                title="추천 쇼츠 다시 섞기"
+                aria-label="추천 쇼츠 다시 섞기"
+              >
+                <Shuffle size={14} />
+              </button>
+            </div>
           </div>
         </section>
 
