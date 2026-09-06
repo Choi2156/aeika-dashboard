@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서브컬처 게임 일정 대시보드 2026년 누적 성적 결산 보고서</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --bg: #0b0f19;
+            --card: #151d30;
+            --accent: #38bdf8;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --purple: #a855f7;
+            --rose: #f43f5e;
+        }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: #f1f5f9;
+            line-height: 1.6;
+        }
+        .glass-card {
+            background: rgba(21, 29, 48, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            transition: all 0.25s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .badge-sky { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .tab-btn.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 lg:p-12 min-h-screen">
+    <div class="max-w-7xl mx-auto space-y-10">
+
+        <!-- Top Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-800/80 pb-8">
+            <div>
+                <div class="flex items-center gap-2 text-sky-400 mb-2">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span class="font-bold tracking-wider text-xs uppercase bg-sky-950/60 text-sky-400 px-3 py-1 rounded-full border border-sky-800/50">
+                        GA4 Empirical Performance Report (All-Time)
+                    </span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold gradient-text tracking-tight">
+                    서브컬처 대시보드 2026 누적 성적 결산
+                </h1>
+                <p class="text-slate-400 mt-2 text-sm sm:text-base">
+                    도메인: <a href="https://aeika.site" target="_blank" class="text-sky-400 hover:underline">aeika.site</a> · 운영 기간: 2026-05-28부터 2026-09-06까지 (총 102일간 실측)
+                </p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 text-left md:text-right">
+                <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
+                    <p class="text-slate-500 text-xs font-semibold">REPORT DATE</p>
+                    <p class="text-slate-200 font-bold text-lg">2026. 09. 06</p>
+                    <span class="badge badge-emerald mt-1">Status: Healthy Operation</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Executive Summary Callout -->
+        <div class="glass-card p-6 md:p-8 bg-gradient-to-r from-sky-950/40 via-slate-900/60 to-purple-950/40 border-sky-500/20">
+            <div class="flex items-start gap-4">
+                <div class="p-3 bg-sky-500/15 text-sky-400 rounded-xl mt-1 hidden sm:block">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <span>전기간 마스터 결산 요약 (Executive Summary)</span>
+                        <span class="badge badge-sky">102일간 누적</span>
+                    </h2>
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+                        • <strong>누적 순 방문자 2,054명 돌파:</strong> 유튜브 채널 구독자(1,003명)의 약 2배에 달하는 순 게이머층이 대시보드를 방문했으며, 총 5,228회 페이지뷰와 4,889회 방문 세션을 기록했습니다.<br>
+                        • <strong>정기 재방문자(충성 단골) 체질 전환 (0.0% ➔ 47.3%):</strong> 론칭 초기 신규 일회성 방문자 중심에서, 최근 주간(W35)에는 방문자의 <strong>47.3%(매주 52명)</strong>가 일정을 정기 확인하러 다시 들어오는 코어 이용자로 안착했습니다.<br>
+                        • <strong>정보 압축형 SPA 레이아웃의 고효율성:</strong> 접속 즉시 오늘 기준선(Today Line)으로 D-day를 파악하는 특성상 사용자당 <strong>24초 - 36초</strong>의 이상적인 목적 달성형(Task-Oriented) 체류를 보이고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Key Master KPI Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Card 1 -->
+            <div class="glass-card p-6 relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-slate-400 text-xs font-semibold tracking-wide">누적 순 방문자</span>
+                    <div class="p-2 bg-sky-500/10 text-sky-400 rounded-lg"><i data-lucide="users" class="w-5 h-5"></i></div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold text-white">2,054</span>
+                    <span class="text-slate-400 text-xs font-medium">명</span>
+                </div>
+                <p class="text-slate-400 text-xs mt-3 flex items-center gap-1">
+                    <span class="text-emerald-400 font-semibold">신규 방문 2,052명</span> (채널 구독자 2배 규모)
+                </p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="glass-card p-6 relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-slate-400 text-xs font-semibold tracking-wide">누적 총 세션 / 페이지뷰</span>
+                    <div class="p-2 bg-purple-500/10 text-purple-400 rounded-lg"><i data-lucide="layers" class="w-5 h-5"></i></div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold text-white">4,889</span>
+                    <span class="text-slate-400 text-xs font-medium">세션</span>
+                </div>
+                <p class="text-slate-400 text-xs mt-3 flex items-center gap-1">
+                    <span class="text-purple-400 font-semibold">5,228회 PV</span> (1인당 2.38회 재방문)
+                </p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="glass-card p-6 relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-slate-400 text-xs font-semibold tracking-wide">역대 최고 기록 (Peak)</span>
+                    <div class="p-2 bg-amber-500/10 text-amber-400 rounded-lg"><i data-lucide="trophy" class="w-5 h-5"></i></div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold text-amber-300">977</span>
+                    <span class="text-slate-400 text-xs font-medium">최고 MAU</span>
+                </div>
+                <p class="text-slate-400 text-xs mt-3 flex items-center gap-2">
+                    <span class="text-amber-400 font-semibold">최고 DAU 62명</span> · <span class="text-slate-400">최고 WAU 330명</span>
+                </p>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="glass-card p-6 relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-slate-400 text-xs font-semibold tracking-wide">최근 주간 단골 재방문율</span>
+                    <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg"><i data-lucide="repeat" class="w-5 h-5"></i></div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold text-emerald-400">47.3%</span>
+                    <span class="text-slate-400 text-xs font-medium">(W35 주간)</span>
+                </div>
+                <p class="text-slate-400 text-xs mt-3 flex items-center gap-1">
+                    <span class="text-emerald-300 font-semibold">매주 52명</span> 코어 유저 고정 정착
+                </p>
+            </div>
+        </section>
+
+        <!-- Charts Section (Grid: 2 Columns) -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Chart 1: Monthly Traffic & Peak MAU -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5 text-sky-400"></i>
+                            <span>월별 일평균 DAU 및 월말 MAU 추이</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">5월 론칭 ➔ 6월 전성기 ➔ 7-8월 성숙 안정기</p>
+                    </div>
+                    <span class="badge badge-sky">시즌별 변화</span>
+                </div>
+                <div class="h-64 sm:h-72 w-full">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Weekly Retention Transformation -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="trending-up" class="w-5 h-5 text-emerald-400"></i>
+                            <span>주차별 신규 vs 재방문 유저 및 재방문율(%)</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">W21(0%) ➔ W26(33%) ➔ W35(47.3%) 상승 곡선</p>
+                    </div>
+                    <span class="badge badge-emerald">체질 전환</span>
+                </div>
+                <div class="h-64 sm:h-72 w-full">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Season by Season Progression Table -->
+        <section class="glass-card p-6 md:p-8">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="git-commit" class="w-5 h-5 text-sky-400"></i>
+                <span>대시보드 릴리즈 기반 4대 시즌별 실측 성적 진단</span>
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="text-xs uppercase bg-slate-900/60 text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4">운영 시즌</th>
+                            <th class="py-3 px-4">기간</th>
+                            <th class="py-3 px-4 text-center">운영일</th>
+                            <th class="py-3 px-4 text-center">일평균 DAU</th>
+                            <th class="py-3 px-4 text-center">최고 DAU</th>
+                            <th class="py-3 px-4 text-center">월말 MAU</th>
+                            <th class="py-3 px-4">사이트 개발 및 릴리즈 팩트</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60">
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-3 px-4 font-bold text-sky-400">1. 론칭기</td>
+                            <td class="py-3 px-4 font-mono text-xs">05/28 - 05/31</td>
+                            <td class="py-3 px-4 text-center">4일</td>
+                            <td class="py-3 px-4 text-center font-bold text-white">31.5명</td>
+                            <td class="py-3 px-4 text-center text-amber-300">48명</td>
+                            <td class="py-3 px-4 text-center">119명</td>
+                            <td class="py-3 px-4 text-xs">v1.0.0 정식 오픈(5/26) 및 v1.1.0 대규모 UI 개편(5/30)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30 bg-sky-950/20">
+                            <td class="py-3 px-4 font-bold text-amber-400">2. 전성기 (골든에이지)</td>
+                            <td class="py-3 px-4 font-mono text-xs">06/01 - 06/30</td>
+                            <td class="py-3 px-4 text-center">30일</td>
+                            <td class="py-3 px-4 text-center font-bold text-white text-base">37.6명</td>
+                            <td class="py-3 px-4 text-center text-amber-300 font-bold">62명 (역대 최고)</td>
+                            <td class="py-3 px-4 text-center text-amber-300 font-bold">936명 (피크 977명)</td>
+                            <td class="py-3 px-4 text-xs">v1.1.2 모바일 개선(6/7), v1.2.0 리스트 뷰 신규 모드 도입(6/12)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-3 px-4 font-bold text-slate-300">3. 안정기</td>
+                            <td class="py-3 px-4 font-mono text-xs">07/01 - 07/31</td>
+                            <td class="py-3 px-4 text-center">31일</td>
+                            <td class="py-3 px-4 text-center font-bold text-white">25.5명</td>
+                            <td class="py-3 px-4 text-center text-amber-300">51명</td>
+                            <td class="py-3 px-4 text-center">589명</td>
+                            <td class="py-3 px-4 text-xs">v1.2.1 특별 방송 표기(7/11), v1.2.2 간트 레이아웃 안정화(7/21)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30 bg-emerald-950/20">
+                            <td class="py-3 px-4 font-bold text-emerald-400">4. 성숙·단골기</td>
+                            <td class="py-3 px-4 font-mono text-xs">08/01 - 09/06</td>
+                            <td class="py-3 px-4 text-center">37일</td>
+                            <td class="py-3 px-4 text-center font-bold text-white">22.5명</td>
+                            <td class="py-3 px-4 text-center text-amber-300">53명</td>
+                            <td class="py-3 px-4 text-center text-emerald-300 font-bold">505명</td>
+                            <td class="py-3 px-4 text-xs text-emerald-300 font-semibold">v1.2.3 추천영상 풀 확장(8/21), 재방문율 47.3% 최고치 돌파</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Behavioral Analysis & UI Structure Alignment -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Behavior 1 -->
+            <div class="glass-card p-6 space-y-3">
+                <div class="flex items-center gap-2 text-sky-400 font-bold text-base">
+                    <i data-lucide="user-check" class="w-5 h-5"></i>
+                    <h4>1. 단골 전환 체질 변화</h4>
+                </div>
+                <div class="text-xs text-slate-300 space-y-2 leading-relaxed">
+                    <p>• <strong>실측 데이터:</strong> W21 주간 재방문율 0.0%에서 W35 주간 <strong>47.3%(52명)</strong>로 급성장했습니다.</p>
+                    <p>• <strong>분석 의미:</strong> 채널 링크를 보고 1회성으로 둘러보던 시청자들이 사이트를 주기적으로 찾는 <strong>실제 재방문 사용자(Returning Users)</strong>로 안착했습니다.</p>
+                    <p class="text-slate-400 text-[11px] bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+                        *참고: 북마크 직접 유입(Direct)과 유튜브 재클릭(Referral) 분리는 GA4 트래픽 획득 소스 데이터로 추가 확인 가능
+                    </p>
+                </div>
+            </div>
+
+            <!-- Behavior 2 -->
+            <div class="glass-card p-6 space-y-3">
+                <div class="flex items-center gap-2 text-purple-400 font-bold text-base">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
+                    <h4>2. 체류시간(24초 - 36초)의 구조적 의미</h4>
+                </div>
+                <div class="text-xs text-slate-300 space-y-2 leading-relaxed">
+                    <p>• <strong>고밀도 SPA 구조:</strong> 접속 즉시 중앙의 <strong>오늘 날짜 붉은선(Today Line)</strong>을 중심으로 배너 잔여일(D-day)이 한눈에 파악됩니다.</p>
+                    <p>• <strong>목적 달성형(Task-Oriented):</strong> 유저가 헤맬 필요 없이 <strong>"오늘 무슨 이벤트가 남았는지"</strong> 10초 - 20초 만에 확인하고 종료하는 <strong>극도의 고효율 이용 패턴</strong>을 방증합니다.</p>
+                </div>
+            </div>
+
+            <!-- Behavior 3 -->
+            <div class="glass-card p-6 space-y-3">
+                <div class="flex items-center gap-2 text-amber-400 font-bold text-base">
+                    <i data-lucide="arrow-down-circle" class="w-5 h-5"></i>
+                    <h4>3. 스크롤(62.7%)의 보수적 평가</h4>
+                </div>
+                <div class="text-xs text-slate-300 space-y-2 leading-relaxed">
+                    <p>• <strong>화면 특성 감안:</strong> 본 사이트는 상하 길이가 짧아 <strong>마우스 휠 2 - 3회면 하단 끝까지 닿는 컴팩트한 구조</strong>입니다.</p>
+                    <p>• <strong>보수적 해석:</strong> 62.7%(1,288명)의 높은 도달률을 "정독했다"고 과대평가하기보다는, <strong>"짧은 페이지 구조상 자연스럽게 하단까지 시선이 닿은 단순 이동 가능성"을 감안해 보수적으로 판정</strong>합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top 10 All-Time Peak Days Table -->
+        <section class="glass-card p-6 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i data-lucide="award" class="w-5 h-5 text-amber-400"></i>
+                        <span>역대 일일 트래픽 피크 TOP 10 (All-Time Peak Days)</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">대시보드 기능 업데이트 및 채널 연계 일정이 맞물렸던 최고 트래픽 기록</p>
+                </div>
+                <span class="badge badge-amber">역대 순위</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="text-xs uppercase bg-slate-900/60 text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4 text-center">순위</th>
+                            <th class="py-3 px-4">일자</th>
+                            <th class="py-3 px-4 text-center">요일</th>
+                            <th class="py-3 px-4 text-center">활성 유저 (DAU)</th>
+                            <th class="py-3 px-4 text-center">주간 활성 (WAU)</th>
+                            <th class="py-3 px-4 text-center">월간 활성 (MAU)</th>
+                            <th class="py-3 px-4">사이트 패치 및 주요 연계 이벤트</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 text-xs">
+                        <tr class="hover:bg-slate-800/30 bg-amber-950/10">
+                            <td class="py-2.5 px-4 text-center font-bold text-amber-400">🥇 1위</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-white">2026-06-03</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">수</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-amber-300 text-sm">62명</td>
+                            <td class="py-2.5 px-4 text-center">230명</td>
+                            <td class="py-2.5 px-4 text-center">230명</td>
+                            <td class="py-2.5 px-4">대시보드 론칭 1주차 초기 집중 바이럴기</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30 bg-amber-950/10">
+                            <td class="py-2.5 px-4 text-center font-bold text-amber-400">🥇 1위</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-white">2026-06-04</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">목</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-amber-300 text-sm">62명</td>
+                            <td class="py-2.5 px-4 text-center">266명</td>
+                            <td class="py-2.5 px-4 text-center">289명</td>
+                            <td class="py-2.5 px-4">이틀 연속 62명 최고치 연속 달성</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30 bg-amber-950/5">
+                            <td class="py-2.5 px-4 text-center font-bold text-slate-300">🥉 3위</td>
+                            <td class="py-2.5 px-4 font-mono text-white">2026-06-15</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">월</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300">61명</td>
+                            <td class="py-2.5 px-4 text-center">258명</td>
+                            <td class="py-2.5 px-4 text-center">693명</td>
+                            <td class="py-2.5 px-4">v1.2.0 리스트 뷰 도입 직후 첫 주초 유입 피크</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-2.5 px-4 text-center font-bold text-slate-400">4위</td>
+                            <td class="py-2.5 px-4 font-mono text-white">2026-06-07</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">일</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300">59명</td>
+                            <td class="py-2.5 px-4 text-center">305명</td>
+                            <td class="py-2.5 px-4 text-center">417명</td>
+                            <td class="py-2.5 px-4">v1.1.2 모바일 환경 개선 패치일 (WAU 300명 돌파)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30 bg-sky-950/20">
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-400">5위</td>
+                            <td class="py-2.5 px-4 font-mono text-white font-bold">2026-08-22</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">토</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300 text-sm">53명</td>
+                            <td class="py-2.5 px-4 text-center">141명</td>
+                            <td class="py-2.5 px-4 text-center">443명</td>
+                            <td class="py-2.5 px-4 text-sky-300">v1.2.3 추천영상 확장 직후 8월 최고 주말 피크</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-2.5 px-4 text-center font-bold text-slate-400">6위</td>
+                            <td class="py-2.5 px-4 font-mono text-white">2026-07-07</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">화</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300">51명</td>
+                            <td class="py-2.5 px-4 text-center">150명</td>
+                            <td class="py-2.5 px-4 text-center">778명</td>
+                            <td class="py-2.5 px-4">7월 초반 일정 탐색 집중기</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-2.5 px-4 text-center font-bold text-slate-400">7위</td>
+                            <td class="py-2.5 px-4 font-mono text-white">2026-06-25</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">목</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300">50명</td>
+                            <td class="py-2.5 px-4 text-center">208명</td>
+                            <td class="py-2.5 px-4 text-center">954명</td>
+                            <td class="py-2.5 px-4">6월 하순 일정 확인 집중일 (MAU 954명 도달)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-2.5 px-4 text-center font-bold text-slate-400">8위</td>
+                            <td class="py-2.5 px-4 font-mono text-white">2026-08-26</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">수</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300">49명</td>
+                            <td class="py-2.5 px-4 text-center">215명</td>
+                            <td class="py-2.5 px-4 text-center">477명</td>
+                            <td class="py-2.5 px-4">채널 신규 영상 집중 업로드 및 수요일 일정 갱신 피크</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-2.5 px-4 text-center font-bold text-slate-400">9위</td>
+                            <td class="py-2.5 px-4 font-mono text-white">2026-05-30</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">토</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300">48명</td>
+                            <td class="py-2.5 px-4 text-center">91명</td>
+                            <td class="py-2.5 px-4 text-center">91명</td>
+                            <td class="py-2.5 px-4">v1.1.0 대규모 UI 개편 패치일 (론칭 첫 주말)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-800/30">
+                            <td class="py-2.5 px-4 text-center font-bold text-slate-400">10위</td>
+                            <td class="py-2.5 px-4 font-mono text-white">2026-06-10</td>
+                            <td class="py-2.5 px-4 text-center text-slate-400">수</td>
+                            <td class="py-2.5 px-4 text-center font-bold text-sky-300">48명</td>
+                            <td class="py-2.5 px-4 text-center">314명</td>
+                            <td class="py-2.5 px-4 text-center">530명</td>
+                            <td class="py-2.5 px-4">6월 중순 주간 일정 확인 피크일</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Strategy & v1.2.4 Roadmap Section -->
+        <section class="glass-card p-6 md:p-8 bg-gradient-to-br from-slate-900 via-slate-900 to-sky-950/30">
+            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="compass" class="w-5 h-5 text-sky-400"></i>
+                <span>향후 성장을 위한 3대 운영 전략 및 v1.2.4 액션 플랜</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-300">
+                <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                    <span class="badge badge-sky">액션 1</span>
+                    <h4 class="font-bold text-white text-base">v1.2.4 신규 전환율 실측 개시</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        9월 6일 탑재된 <code class="text-sky-300">recommended_video_click</code> 이벤트를 통해 대시보드에서 유튜브 채널로 되돌려보내는 실제 전환율을 이번 달부터 정량 측정합니다.
+                    </p>
+                </div>
+                <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                    <span class="badge badge-emerald">액션 2</span>
+                    <h4 class="font-bold text-white text-base">모바일 환경설정 보존 효과 모니터링</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        모바일 사용자 편의를 위한 <code class="text-emerald-300">LocalStorage</code> 설정 저장이 적용됨에 따라, 모바일 방문자의 정기 재방문 빈도와 세션 지속 시간을 추적합니다.
+                    </p>
+                </div>
+                <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                    <span class="badge badge-purple">액션 3</span>
+                    <h4 class="font-bold text-white text-base">듀얼 포맷 정기 보고서 체계 정착</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        향후 모든 분석은 <strong>마크다운(.md)</strong>과 <strong>인터랙티브 웹(.html)</strong> 2가지 포맷으로 동시 산출하여 Git 버전 관리와 시각적 열람을 완벽히 양립합니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 text-xs py-8 border-t border-slate-800/60">
+            <p>서브컬처 게임 일정 대시보드 (AEIKA Archive) · Powered by Google Analytics 4 Empirical Data</p>
+            <p class="mt-1">Generated on 2026-09-06 · Document Classification: Executive Performance Review</p>
+        </footer>
+
+    </div>
+
+    <!-- Chart.js Rendering Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. Monthly Chart
+        const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+        new Chart(ctxMonthly, {
+            type: 'bar',
+            data: {
+                labels: ['5월 (론칭)', '6월 (전성기)', '7월 (안정기)', '8월 (성숙기)', '9월 (진행중)'],
+                datasets: [
+                    {
+                        label: '일평균 DAU (명)',
+                        data: [31.5, 37.6, 25.5, 23.5, 17.2],
+                        backgroundColor: 'rgba(56, 189, 248, 0.65)',
+                        borderColor: '#38bdf8',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '월말/최고 MAU (명)',
+                        data: [119, 936, 589, 503, 505],
+                        type: 'line',
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#fbbf24',
+                        pointRadius: 4,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { labels: { color: '#94a3b8', font: { family: 'Pretendard', size: 11 } } },
+                    tooltip: { backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#cbd5e1' }
+                },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        ticks: { color: '#38bdf8' },
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        title: { display: true, text: '일평균 DAU', color: '#38bdf8', font: { size: 10 } }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        ticks: { color: '#fbbf24' },
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: '월말 MAU', color: '#fbbf24', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // 2. Weekly Chart
+        const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+        new Chart(ctxWeekly, {
+            type: 'line',
+            data: {
+                labels: ['W21', 'W22', 'W23', 'W24', 'W25', 'W26', 'W27', 'W28', 'W29', 'W30', 'W31', 'W32', 'W33', 'W34', 'W35'],
+                datasets: [
+                    {
+                        label: '재방문율 (%)',
+                        data: [0.0, 1.8, 8.1, 10.9, 14.8, 33.3, 16.2, 19.4, 23.2, 40.2, 27.0, 25.5, 28.4, 25.5, 47.3],
+                        borderColor: '#34d399',
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#34d399',
+                        pointRadius: 4,
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '재방문 유저수 (명)',
+                        data: [0, 5, 21, 26, 31, 35, 29, 33, 48, 41, 27, 35, 40, 48, 52],
+                        borderColor: '#818cf8',
+                        borderWidth: 2,
+                        borderDash: [4, 4],
+                        pointRadius: 3,
+                        pointBackgroundColor: '#818cf8',
+                        tension: 0.2,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { labels: { color: '#94a3b8', font: { family: 'Pretendard', size: 11 } } },
+                    tooltip: { backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#cbd5e1' }
+                },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                    y: {
+                        ticks: { color: '#34d399', callback: value => value + '%' },
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        title: { display: true, text: '재방문율 (%)', color: '#34d399', font: { size: 10 } }
+                    },
+                    y1: {
+                        position: 'right',
+                        ticks: { color: '#818cf8' },
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: '재방문자수 (명)', color: '#818cf8', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
