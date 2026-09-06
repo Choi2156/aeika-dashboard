@@ -4,7 +4,7 @@
 
 ![React](https://img.shields.io/badge/React-19.1.0-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-6.3.0-646CFF?style=flat-square&logo=vite&logoColor=white)
-![Version](https://img.shields.io/badge/Version-v1.2.3-818CF8?style=flat-square)
+![Version](https://img.shields.io/badge/Version-v1.2.4-818CF8?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 **원신 · 붕괴: 스타레일 · 젠레스 존 제로 · 명조 · 명일방주: 엔드필드**  
