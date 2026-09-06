@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useScheduleData } from './hooks/useScheduleData';
+import { trackModalOpen } from './utils/analytics';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
 import GanttView from './views/GanttView';
@@ -179,7 +180,7 @@ export default function App() {
   const handleToggleGame = (game) => {
     setActiveGames((prev) => {
       const next = { ...prev, [game]: !prev[game] };
-      persistSettings({ activeGames: next });
+      setTimeout(() => persistSettings({ activeGames: next }), 0);
       return next;
     });
   };
@@ -190,17 +191,19 @@ export default function App() {
       Object.keys(prev).forEach((game) => {
         next[game] = isActive;
       });
-      persistSettings({ activeGames: next });
+      setTimeout(() => persistSettings({ activeGames: next }), 0);
       return next;
     });
   };
 
   const handleEventClick = useCallback((event, displayTypeName) => {
+    trackModalOpen('detail');
     setSelectedEvent(event);
     setSelectedEventTypeName(displayTypeName);
   }, []);
 
   const handleOpenNotice = useCallback((notice = null) => {
+    trackModalOpen('notice');
     setSelectedNotice(notice);
     setIsNoticeModalOpen(true);
   }, []);
@@ -210,14 +213,22 @@ export default function App() {
     setSelectedNotice(null);
   }, []);
 
-  // 초고성능 마우스 무브 네온 안개 트래킹 (리렌더링 0회로 성능 영향도 0%)
+  // requestAnimationFrame 기반 마우스 무브 네온 안개 트래킹 (Layout Thrashing 및 버벅임 원천 차단)
+  const mouseRafRef = useRef(null);
   const handleMouseMove = (e) => {
     if (!appRef.current) return;
-    const rect = appRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    appRef.current.style.setProperty('--mouse-x', `${x}px`);
-    appRef.current.style.setProperty('--mouse-y', `${y}px`);
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    if (mouseRafRef.current) return;
+    mouseRafRef.current = requestAnimationFrame(() => {
+      mouseRafRef.current = null;
+      if (!appRef.current) return;
+      const rect = appRef.current.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      appRef.current.style.setProperty('--mouse-x', `${x}px`);
+      appRef.current.style.setProperty('--mouse-y', `${y}px`);
+    });
   };
 
   return (
@@ -241,7 +252,7 @@ export default function App() {
         </div>
       )}
 
-      <Header onOpenSupport={() => setIsSupportOpen(true)} />
+      <Header onOpenSupport={() => { trackModalOpen('support'); setIsSupportOpen(true); }} />
 
       <DashboardInfoBar meta={meta} />
 
@@ -252,7 +263,7 @@ export default function App() {
         onSelectAll={handleSelectAll}
         currentView={currentView}
         onViewChange={setCurrentView}
-        onOpenGuide={() => setIsGuideOpen(true)}
+        onOpenGuide={() => { trackModalOpen('guide'); setIsGuideOpen(true); }}
         meta={meta}
         theme={theme}
         onThemeChange={setTheme}
@@ -351,7 +362,7 @@ export default function App() {
         selectedNotice={selectedNotice}
       />
 
-      <Footer onOpenLicense={() => setIsLicenseOpen(true)} />
+      <Footer onOpenLicense={() => { trackModalOpen('license'); setIsLicenseOpen(true); }} />
     </div>
   );
 }

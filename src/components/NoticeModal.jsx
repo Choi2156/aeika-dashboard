@@ -152,7 +152,7 @@ function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
                 {currentActive.image && (
                   <div className="notice-detail-content__image-wrapper">
                     <img
-                      src={currentActive.image.startsWith('http') ? currentActive.image : `/assets/${currentActive.image}`}
+                      src={currentActive.image.startsWith('http') ? currentActive.image : `./assets/${currentActive.image}`}
                       alt={currentActive.title}
                       className="notice-detail-content__image"
                     />

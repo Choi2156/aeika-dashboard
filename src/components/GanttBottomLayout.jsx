@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { ChevronLeft, ChevronRight, Radio, Youtube, MapPin, Megaphone, ChevronRight as ChevronRightIcon, Video, Shuffle } from 'lucide-react';
 import NoticeCategoryBadge from './NoticeCategoryBadge';
+import { trackVideoClick, trackChannelClick, trackShuffleClick } from '../utils/analytics';
 
 /* ────────────────────────────────────────────
    Helper Functions
@@ -401,7 +402,16 @@ function GanttBottomLayout({
                 const color = getGameColor(video.game);
                 const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
                 return (
-                  <a key={`${video.id}_${currentStoryIndex}_${idx}`} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="longform-video-card" style={{ '--theme-color': color }} title="클릭하여 유튜브에서 스토리 풀버전 감상하기">
+                  <a
+                    key={`${video.id}_${currentStoryIndex}_${idx}`}
+                    href={`https://www.youtube.com/watch?v=${video.id}`}
+                    onClick={() => trackVideoClick('story', video.game, video.title || video.desc, video.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="longform-video-card"
+                    style={{ '--theme-color': color }}
+                    title="클릭하여 유튜브에서 스토리 풀버전 감상하기"
+                  >
                     <div className="longform-video-card__thumb-wrapper">
                       <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
                       <div className="longform-video-card__duration-badge"><span>{video.duration || '풀버전'}</span></div>
@@ -443,7 +453,16 @@ function GanttBottomLayout({
                 const color = getGameColor(video.game);
                 const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
                 return (
-                  <a key={`${video.id}_${currentOtherIndex}_${idx}`} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="longform-video-card" style={{ '--theme-color': color }} title="클릭하여 유튜브에서 영상 감상하기">
+                  <a
+                    key={`${video.id}_${currentOtherIndex}_${idx}`}
+                    href={`https://www.youtube.com/watch?v=${video.id}`}
+                    onClick={() => trackVideoClick('other', video.game, video.title || video.desc, video.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="longform-video-card"
+                    style={{ '--theme-color': color }}
+                    title="클릭하여 유튜브에서 영상 감상하기"
+                  >
                     <div className="longform-video-card__thumb-wrapper">
                       <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
                       <div className="longform-video-card__duration-badge"><span>영상</span></div>
@@ -490,7 +509,13 @@ function GanttBottomLayout({
                     ) : (
                       <div
                         className="shorts-player-thumbnail-overlay"
-                        onClick={() => setIsPlayingShort(true)}
+                        onClick={() => {
+                          const currentShort = recommendedShorts[currentShortIndex];
+                          if (currentShort) {
+                            trackVideoClick('shorts', currentShort.game, currentShort.title || currentShort.desc, currentShort.id);
+                          }
+                          setIsPlayingShort(true);
+                        }}
                         title="클릭하여 쇼츠 감상하기"
                         style={{ backgroundImage: `url(https://img.youtube.com/vi/${recommendedShorts[currentShortIndex]?.id}/hqdefault.jpg)` }}
                       >
@@ -547,12 +572,22 @@ function GanttBottomLayout({
             )}
 
             <div className="shorts-bottom-actions">
-              <a href="https://www.youtube.com/@AEIKA215" target="_blank" rel="noopener noreferrer" className="shorts-channel-direct-btn" title="유튜브 채널 방문하여 더 많은 영상보기">
+              <a
+                href="https://www.youtube.com/@AEIKA215"
+                onClick={() => trackChannelClick('bottom_shorts')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shorts-channel-direct-btn"
+                title="유튜브 채널 방문하여 더 많은 영상보기"
+              >
                 <Youtube size={14} />
                 <span>채널 바로가기</span>
               </a>
               <button
-                onClick={handleShuffleShorts}
+                onClick={() => {
+                  trackShuffleClick();
+                  handleShuffleShorts();
+                }}
                 className={`shorts-shuffle-btn ${isShuffling ? 'shorts-shuffle-btn--spinning' : ''}`}
                 type="button"
                 title="추천 쇼츠 다시 섞기"

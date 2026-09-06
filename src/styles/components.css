@@ -2005,6 +2005,213 @@
   margin: 0;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE VISIBILITY OVERRIDES (components.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1. 게임 필터 버튼 가시성 (활성화 vs 비활성화 대비 명확화) */
+[data-theme="light"] .game-filter-btn--active {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 2px solid var(--filter-color) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--filter-color) !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .game-filter-btn--inactive {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  border: 1px solid #cbd5e1 !important;
+  opacity: 0.55 !important;
+}
+
+[data-theme="light"] .game-filter-btn--inactive:hover {
+  opacity: 0.9 !important;
+  background: #ffffff !important;
+  border-color: var(--filter-color) !important;
+}
+
+/* 2. 전체 제어 및 유틸 버튼 */
+[data-theme="light"] .game-filter-bar__control-btn {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+[data-theme="light"] .game-filter-bar__control-btn:hover {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4f46e5 !important;
+}
+
+[data-theme="light"] .theme-switcher-btn {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .theme-switcher-btn:hover {
+  background: #e0e7ff !important;
+  color: #4338ca !important;
+  border-color: #818cf8 !important;
+}
+
+[data-theme="light"] .storage-consent-btn {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .storage-consent-btn:hover {
+  background: #e0e7ff !important;
+  color: #4338ca !important;
+  border-color: #818cf8 !important;
+}
+
+[data-theme="light"] .storage-consent-btn--active {
+  background: #eef2ff !important;
+  color: #4338ca !important;
+  border-color: #6366f1 !important;
+}
+
+[data-theme="light"] .game-filter-bar__guide-btn {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .game-filter-bar__guide-btn:hover {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4f46e5 !important;
+}
+
+[data-theme="light"] .view-switcher {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .view-switcher__btn {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .view-switcher__btn--active {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+}
+
+/* 3. 라이브 배너 보드 가시성 */
+[data-theme="light"] .live-banner-board {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
+}
+
+[data-theme="light"] .live-banner-slide {
+  background: #ffffff !important;
+}
+
+[data-theme="light"] .live-banner-slide__img-mask {
+  background: linear-gradient(
+    to right, 
+    #ffffff 0%, 
+    rgba(255, 255, 255, 0.9) 35%, 
+    rgba(255, 255, 255, 0.3) 70%, 
+    transparent 100%
+  ) !important;
+}
+
+[data-theme="light"] .live-banner-game-badge {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .live-banner-title {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+
+[data-theme="light"] .live-banner-detail {
+  color: #334155 !important;
+  text-shadow: none !important;
+}
+
+[data-theme="light"] .live-banner-nav {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .live-banner-nav:hover {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4f46e5 !important;
+}
+
+[data-theme="light"] .live-banner-dot {
+  background: rgba(15, 23, 42, 0.2) !important;
+}
+
+[data-theme="light"] .live-banner-dot--active {
+  background: #4f46e5 !important;
+}
+
+[data-theme="light"] .welcome-badge {
+  background: #e0e7ff !important;
+  color: #4338ca !important;
+  border-color: #c7d2fe !important;
+}
+
+[data-theme="light"] .welcome-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .welcome-subtitle {
+  color: #475569 !important;
+}
+
+/* 4. 정보 바 및 푸터 */
+[data-theme="light"] .dashboard-info-bar {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .dashboard-info-bar__item {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .info-bar-label {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .dashboard-footer {
+  background: #f1f5f9 !important;
+  border-top-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .footer-brand-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .footer-brand-desc,
+[data-theme="light"] .footer-disclaimer-text,
+[data-theme="light"] .footer-bottom-text {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .footer-link-btn {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .footer-link-btn:hover {
+  color: #4f46e5 !important;
+}
+
+
 
 
 

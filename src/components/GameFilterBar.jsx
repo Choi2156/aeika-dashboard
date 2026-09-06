@@ -1,4 +1,5 @@
 import { CheckSquare, Square, Monitor, Smartphone, HelpCircle, Sun, Moon, Database } from 'lucide-react';
+import { trackGameFilterToggle, trackGameFilterAll, trackViewModeChange, trackThemeToggle, trackModalOpen } from '../utils/analytics';
 
 function getShortGameName(gameName) {
   const mapping = {
@@ -37,27 +38,22 @@ export default function GameFilterBar({
 }) {
   const handleToggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    trackThemeToggle(nextTheme);
     if (onThemeChange) {
       onThemeChange(nextTheme);
     }
   };
 
   const handleToggleStorage = () => {
-    const isMobileDevice = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobileDevice) {
-      alert("⚠️ PC 웹 전용 기능 안내\n\n설정 자동 저장 기능은 안정성을 위해 PC 웹 브라우저 환경에서만 완벽히 지원됩니다. 모바일 기기 및 인앱 브라우저 환경에서는 기기별 보안 정책상 저장 데이터가 사전 예고 없이 자동 소거될 수 있어 사용이 차단됩니다.");
-      return;
-    }
-    
     if (isStorageConsentEnabled) {
-      if (confirm("⚙️ 설정 저장 비활성화 안내\n\n설정 자동 저장을 비활성화하시겠습니까? 해제 시 브라우저 내부(로컬스토리지)에 백업된 모든 게임 필터링 토글 및 테마 환경 설정이 즉각 흔적 없이 영구 소거됩니다.")) {
+      if (confirm("⚙️ 설정 저장 비활성화 안내\n\n설정 자동 저장을 비활성화하시겠습니까? 해제 시 브라우저 내부(로컬스토리지)에 저장된 모든 게임 필터링 토글 및 테마 환경 설정이 즉시 삭제됩니다.")) {
         onToggleStorageConsent(false);
-        alert("✨ 로컬 보존 설정이 완전히 해제되었으며, 브라우저 저장소 데이터가 무결하게 강제 소거 완료되었습니다!");
+        alert("✨ 로컬 보존 설정이 해제되었으며, 브라우저 저장소 데이터가 삭제되었습니다.");
       }
     } else {
-      if (confirm("💾 설정 자동 저장 동의 안내\n\n동의 시 사용하시는 게임 필터 토글, 뷰(PC/모바일), 다크/라이트 테마 환경 설정 값이 브라우저의 전용 로컬 저장소에 안전하게 백업되어 재접속 시에도 완벽히 동기화 유지됩니다.\n\n* 본 사이트는 정적 웹페이지로 그 어떠한 개인화 정보도 외부 서버로 전송하지 않으며, 오직 이 브라우저 격리 저장소 내부 영역에만 안전히 보관됩니다. 활성화하시겠습니까?")) {
+      if (confirm("💾 설정 자동 저장 동의 안내\n\n동의 시 선택하신 게임 필터, 뷰(PC/모바일), 다크/라이트 테마 환경 설정이 현재 브라우저의 전용 로컬 저장소에 안전하게 보관되어 재접속 시에도 그대로 유지됩니다.\n\n* 본 대시보드는 서버가 없는 정적 웹페이지로 어떤 개인정보도 외부로 전송하지 않으며, 오직 사용 중이신 브라우저 내부에만 안전히 보관됩니다. 활성화하시겠습니까?")) {
         onToggleStorageConsent(true);
-        alert("💾 설정 자동 저장 기능이 성공적으로 활성화되었습니다! 이후의 변경 사항은 실시간으로 저장 장치에 즉각 자동 보존됩니다.");
+        alert("💾 설정 자동 저장 기능이 활성화되었습니다! 이후의 변경 사항은 현재 브라우저에 자동 보존됩니다.");
       }
     }
   };
@@ -68,6 +64,7 @@ export default function GameFilterBar({
 
   const handleViewChange = (view) => {
     console.log('handleViewChange Clicked! View Target:', view);
+    trackViewModeChange(view);
     if (onViewChange) {
       onViewChange(view);
     } else {
@@ -77,6 +74,7 @@ export default function GameFilterBar({
 
   const handleOpenGuide = () => {
     console.log('handleOpenGuide Clicked!');
+    trackModalOpen('guide');
     if (onOpenGuide) {
       onOpenGuide();
     } else {
@@ -91,7 +89,10 @@ export default function GameFilterBar({
         <div className="game-filter-bar__controls">
           <button
             className={`game-filter-bar__control-btn ${isShrunk ? 'game-filter-bar__control-btn--icon-only' : ''}`}
-            onClick={() => onSelectAll(true)}
+            onClick={() => {
+              trackGameFilterAll('select_all');
+              onSelectAll(true);
+            }}
             type="button"
             title="모든 게임 표시"
           >
@@ -100,7 +101,10 @@ export default function GameFilterBar({
           </button>
           <button
             className={`game-filter-bar__control-btn ${isShrunk ? 'game-filter-bar__control-btn--icon-only' : ''}`}
-            onClick={() => onSelectAll(false)}
+            onClick={() => {
+              trackGameFilterAll('deselect_all');
+              onSelectAll(false);
+            }}
             type="button"
             title="모든 게임 숨기기"
           >
@@ -114,13 +118,17 @@ export default function GameFilterBar({
             const isActive = activeGames[gameName] !== false;
             const color = gamesConfig[gameName]?.theme?.color || '#818cf8';
             const iconUrl = gamesConfig[gameName]?.icon;
+
             const hideText = !isActive || isShrunk;
 
             return (
               <button
                 key={gameName}
                 className={`game-filter-btn ${isActive ? 'game-filter-btn--active' : 'game-filter-btn--inactive'} ${hideText ? 'game-filter-btn--icon-only' : ''}`}
-                onClick={() => onToggleGame(gameName)}
+                onClick={() => {
+                  trackGameFilterToggle(gameName, !isActive);
+                  onToggleGame(gameName);
+                }}
                 type="button"
                 style={{
                   '--filter-color': color,

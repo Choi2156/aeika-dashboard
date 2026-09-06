@@ -700,4 +700,87 @@
   color: #6d28d9 !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE VISIBILITY OVERRIDES (ListView.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .list-view__date {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .list-view__time {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="light"] .list-view__dot {
+  background: #cbd5e1 !important;
+  border-color: #94a3b8 !important;
+}
+
+[data-theme="light"] .list-view__row--today .list-view__dot {
+  background: #4f46e5 !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 10px rgba(79, 70, 229, 0.4) !important;
+}
+
+[data-theme="light"] .list-view__card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .list-view__card:hover {
+  background: #ffffff !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .list-view__card--today {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(99, 102, 241, 0.08) !important;
+}
+
+[data-theme="light"] .list-view__title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .list-view__detail {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .list-view__version {
+  color: #475569 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .list-view__status-badge--confirmed {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .list-view__status-badge--predicted {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .list-view__today-marker-card {
+  background: #ffffff !important;
+  border-color: #818cf8 !important;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1) !important;
+}
+
+[data-theme="light"] .list-view__today-marker-label {
+  background: linear-gradient(135deg, #4338ca, #6366f1) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="light"] .list-view__today-marker-date {
+  color: #475569 !important;
+}
+
+
 

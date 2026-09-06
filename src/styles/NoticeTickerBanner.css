@@ -132,3 +132,46 @@
     font-size: 0.78rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE VISIBILITY OVERRIDES (NoticeTickerBanner.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .notice-ticker-banner__inner {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+}
+
+[data-theme="light"] .notice-ticker-banner:hover .notice-ticker-banner__inner {
+  border-color: #818cf8 !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.1) !important;
+}
+
+[data-theme="light"] .notice-ticker-banner__badge {
+  background: #e0e7ff !important;
+  color: #4338ca !important;
+  border-color: #c7d2fe !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .notice-ticker-banner__important-tag {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border-color: #fca5a5 !important;
+  font-weight: 900 !important;
+}
+
+[data-theme="light"] .notice-ticker-banner__title {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="light"] .notice-ticker-banner__action {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .notice-ticker-banner:hover .notice-ticker-banner__action {
+  color: #4f46e5 !important;
+}
+

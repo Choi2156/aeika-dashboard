@@ -232,15 +232,23 @@ export default function GanttView({
     scrollRef.current.scrollLeft = Math.max(0, scrollTarget);
   }, [dateAxis, gameColWidth]);
 
-  /* ── PC 뷰: 마우스 휠 세로 스크롤을 가로 스크롤로 치환 ── */
+  /* ── PC 뷰: 마우스 휠 가로 스크롤 (경계면 도달 시 수직 스크롤 자연 통과) ── */
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
 
     const handleWheel = (e) => {
       if (e.deltaY !== 0) {
-        e.preventDefault();
-        container.scrollLeft += e.deltaY;
+        const isAtStart = container.scrollLeft <= 0;
+        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+        const scrollingRight = e.deltaY > 0;
+        const scrollingLeft = e.deltaY < 0;
+
+        // 차트 가로 스크롤 여유가 있을 때만 가로로 넘기고, 끝에 도달하면 페이지 수직 스크롤 허용
+        if ((scrollingRight && !isAtEnd) || (scrollingLeft && !isAtStart)) {
+          e.preventDefault();
+          container.scrollLeft += e.deltaY * 0.85;
+        }
       }
     };
 
@@ -388,11 +396,9 @@ export default function GanttView({
               transform: 'none',
               height: '28px',
               '--bar-color': color,
-              backgroundColor: `rgba(${hexToRgb(color)}, 0.06)`,
+              backgroundColor: `rgba(${hexToRgb(color)}, 0.08)`,
               border: `1.5px solid ${color}`,
               boxShadow: `0 0 10px rgba(${hexToRgb(color)}, 0.15)`,
-              color: '#ffffff',
-              fontWeight: 700,
             }}
             onClick={(e) => {
               e.stopPropagation();

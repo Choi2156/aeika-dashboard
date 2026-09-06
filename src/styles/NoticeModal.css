@@ -351,3 +351,107 @@
     font-size: 0.85rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE VISIBILITY OVERRIDES (NoticeModal.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .notice-modal-container {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15) !important;
+}
+
+[data-theme="light"] .notice-modal-header {
+  background: #f8fafc !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .notice-modal-header__title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .notice-modal-close-btn {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .notice-modal-close-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .notice-modal-sidebar {
+  background: #f8fafc !important;
+  border-right-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .notice-modal-sidebar__header {
+  color: #475569 !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .notice-modal-list__item:hover {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .notice-modal-list__item--active {
+  background: #eef2ff !important;
+  border-color: #818cf8 !important;
+}
+
+[data-theme="light"] .notice-modal-list__item-date {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .notice-modal-list__item-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .notice-category-badge--패치 {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-color: #bfdbfe !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .notice-category-badge--일반 {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .notice-category-badge--홍보 {
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .notice-modal-detail {
+  background: #ffffff !important;
+}
+
+[data-theme="light"] .notice-detail-content__title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .notice-detail-content__date {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .notice-detail-content__body {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .notice-detail-link-btn {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4338ca !important;
+}
+
+[data-theme="light"] .notice-detail-link-btn:hover {
+  background: #4338ca !important;
+}
+

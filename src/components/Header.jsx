@@ -1,6 +1,7 @@
 import { Youtube, MessageSquare, Heart } from 'lucide-react';
 import VisitorCounter from './VisitorCounter';
 import { version } from '../../package.json';
+import { trackChannelClick, trackEvent } from '../utils/analytics';
 
 /**
  * Header 컴포넌트
@@ -32,6 +33,7 @@ export default function Header({ onOpenSupport }) {
         {/* 2. 유튜브 채널 구독/홍보 */}
         <a
           href="https://www.youtube.com/@AEIKA215"
+          onClick={() => trackChannelClick('header')}
           target="_blank"
           rel="noopener noreferrer"
           className="youtube-promo__btn"
@@ -44,6 +46,7 @@ export default function Header({ onOpenSupport }) {
         {/* 3. 제보 및 피드백 */}
         <a
           href="https://docs.google.com/forms/d/e/1FAIpQLSfETPGku14-e4MI8iXNxZ7WkazTopwkLduHNK5d3MAz-5VhIQ/viewform?usp=publish-editor"
+          onClick={() => trackEvent('click_feedback_form')}
           target="_blank"
           rel="noopener noreferrer"
           className="header__feedback-btn"

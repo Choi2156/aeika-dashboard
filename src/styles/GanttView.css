@@ -1773,6 +1773,105 @@
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE VISIBILITY OVERRIDES (GanttView.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1. 간트 차트 이벤트 바 가시성 */
+[data-theme="light"] .gantt-bar-offline {
+  color: #0f172a !important;
+  text-shadow: none !important;
+  font-weight: 800 !important;
+  border-width: 1.5px !important;
+}
+
+[data-theme="light"] .gantt-bar-predicted {
+  background: #f1f5f9 !important;
+  border: 1.5px dashed #94a3b8 !important;
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .gantt-bar-confirmed {
+  font-weight: 800 !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.15) !important;
+}
+
+[data-theme="light"] .gantt-stream-flag {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 2. 하단 롱폼 추천 카드 가시성 */
+[data-theme="light"] .longform-video-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+}
+
+[data-theme="light"] .longform-video-card:hover {
+  border-color: #818cf8 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1) !important;
+}
+
+[data-theme="light"] .longform-video-card__title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .longform-video-card__desc {
+  color: #334155 !important;
+}
+
+/* 3. 하단 통합 공지사항 박스 가시성 */
+[data-theme="light"] .notice-unified-box__title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .notice-unified-box__body {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+}
+
+[data-theme="light"] .notice-unified-item {
+  border-bottom-color: #f1f5f9 !important;
+}
+
+[data-theme="light"] .notice-unified-item:hover {
+  background: #f8fafc !important;
+}
+
+[data-theme="light"] .notice-unified-item__title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .notice-unified-item__date {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .notice-unified-box__all-btn {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .notice-unified-box__all-btn:hover {
+  color: #4f46e5 !important;
+  background: #eef2ff !important;
+}
+
+/* 4. 하단 쇼츠 위젯 가시성 */
+[data-theme="light"] .shorts-channel-direct-btn {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  border: 1px solid #b91c1c !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="light"] .shorts-channel-direct-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35) !important;
+}
+
+
 
 
 
