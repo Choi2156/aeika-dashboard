@@ -13,7 +13,7 @@ export default function CalendarModal({ isOpen, onClose, meta }) {
 
   useEffect(() => {
     if (!isOpen) return;
-    fetch('./data/calendar_meta.json')
+    fetch('./data/calendar_meta.json?t=' + Math.floor(Date.now() / 60000))
       .then(res => res.ok ? res.json() : null)
       .then(data => { if (data) setCalendarMeta(data); })
       .catch(() => {});
@@ -95,7 +95,9 @@ export default function CalendarModal({ isOpen, onClose, meta }) {
     }
   };
 
-  const handleDownloadClick = () => {
+  const handleDownloadClick = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
     trackCalendarDownload({
       source: 'modal',
       format: 'png',
@@ -103,6 +105,28 @@ export default function CalendarModal({ isOpen, onClose, meta }) {
       month: calendarMeta?.month || 9,
       updatedAt: lastUpdated,
     });
+
+    try {
+      // 이미지 Blob 생성 후 브라우저가 지정된 파일명으로 즉시 저장하도록 강제
+      const res = await fetch(pngSrc);
+      const blob = await res.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = downloadFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+    } catch (err) {
+      console.warn('Blob download fallback:', err);
+      const link = document.createElement('a');
+      link.href = pngSrc;
+      link.download = downloadFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const handleOpenFull = () => {
@@ -186,16 +210,15 @@ export default function CalendarModal({ isOpen, onClose, meta }) {
               <span>새 탭으로 열기</span>
             </a>
 
-            <a
-              href={pngSrc}
-              download={downloadFileName}
+            <button
+              type="button"
               className="calendar-modal__btn-download"
               onClick={handleDownloadClick}
               title="고해상도 무손실 PNG 이미지 다운로드"
             >
               <Download size={14} />
               <span>고해상도 다운로드</span>
-            </a>
+            </button>
           </div>
         </footer>
       </div>
