@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Info, Video, ExternalLink } from 'lucide-react';
+import { trackOutboundLink, trackGuideTabSwitch } from '../utils/analytics';
 import '../styles/components.css';
 
 /**
@@ -117,13 +118,19 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
         <div className="guide-modal__tabs">
           <button 
             className={`guide-modal__tab ${activeTab === 'guide' ? 'guide-modal__tab--active' : ''}`}
-            onClick={() => setActiveTab('guide')}
+            onClick={() => {
+              trackGuideTabSwitch('guide');
+              setActiveTab('guide');
+            }}
           >
             이용 안내
           </button>
           <button 
             className={`guide-modal__tab ${activeTab === 'patches' ? 'guide-modal__tab--active' : ''}`}
-            onClick={() => setActiveTab('patches')}
+            onClick={() => {
+              trackGuideTabSwitch('patches');
+              setActiveTab('patches');
+            }}
           >
             패치 노트
           </button>
@@ -150,6 +157,14 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="guide-video-banner__btn"
+                  onClick={() => {
+                    trackOutboundLink({
+                      linkCategory: 'guide_video',
+                      platform: 'youtube',
+                      targetUrl: 'https://youtu.be/YrVYqVkYFs8',
+                      title: '대시보드 튜토리얼 가이드 영상',
+                    });
+                  }}
                 >
                   <span>영상 보러가기</span>
                   <ExternalLink size={12} />

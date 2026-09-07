@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useScheduleData } from './hooks/useScheduleData';
-import { trackModalOpen } from './utils/analytics';
+import { trackModalOpen, trackScheduleEventClick, trackNoticeTickerClick } from './utils/analytics';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
 import GanttView from './views/GanttView';
@@ -196,13 +196,17 @@ export default function App() {
     });
   };
 
-  const handleEventClick = useCallback((event, displayTypeName) => {
+  const handleEventClick = useCallback((event, displayTypeName, source = 'unknown') => {
+    trackScheduleEventClick(event, displayTypeName, source);
     trackModalOpen('detail');
     setSelectedEvent(event);
     setSelectedEventTypeName(displayTypeName);
   }, []);
 
   const handleOpenNotice = useCallback((notice = null) => {
+    if (notice) {
+      trackNoticeTickerClick(notice);
+    }
     trackModalOpen('notice');
     setSelectedNotice(notice);
     setIsNoticeModalOpen(true);

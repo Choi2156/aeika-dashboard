@@ -227,13 +227,13 @@ export default function ListView({ events, gamesConfig, activeGames, onEventClic
               <div className="list-view__right">
                 <div
                   className={`list-view__card ${isToday ? 'list-view__card--today' : ''} ${event.type === '공식방송' ? 'list-view__card--stream' : ''} ${event.type === '오프라인이벤트' ? 'list-view__card--offline' : ''}`}
-                  onClick={() => onEventClick && onEventClick(event, displayTypeName)}
+                  onClick={() => onEventClick && onEventClick(event, displayTypeName, 'list')}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      onEventClick && onEventClick(event, displayTypeName);
+                      onEventClick && onEventClick(event, displayTypeName, 'list');
                     }
                   }}
                 >

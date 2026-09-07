@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { X, ExternalLink } from 'lucide-react';
+import { trackOutboundLink } from '../utils/analytics';
 import '../styles/components.css';
 
 // 원신 6.x 정식 버전 명칭 포맷터 헬퍼
@@ -267,6 +268,15 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
                     target="_blank"
                     rel="noopener noreferrer"
                     className="ticket-link-btn"
+                    onClick={() => {
+                      trackOutboundLink({
+                        linkCategory: 'ticket',
+                        platform: linkObj.name || 'ticket_vendor',
+                        targetUrl: linkObj.url,
+                        game: event.game || '',
+                        title: event.title || '',
+                      });
+                    }}
                   >
                     <span>{linkObj.name || `예매처 ${idx + 1}`}</span>
                   </a>
@@ -283,6 +293,15 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
             href={event.link}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => {
+              trackOutboundLink({
+                linkCategory: 'official_notice',
+                platform: 'official_site',
+                targetUrl: event.link,
+                game: event.game || '',
+                title: event.title || '',
+              });
+            }}
           >
             <ExternalLink size={16} />
             공식 공지 / 사이트 열기

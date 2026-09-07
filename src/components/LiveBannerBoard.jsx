@@ -333,7 +333,7 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
             <div
               key={ev.id || `slide-${idx}`}
               className="live-banner-slide"
-              onClick={() => onEventClick?.(ev, displayType)}
+              onClick={() => onEventClick?.(ev, displayType, 'live_banner')}
               style={{
                 '--banner-theme-color': color,
               }}

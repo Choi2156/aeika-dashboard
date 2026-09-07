@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { X, Heart, Coffee, ExternalLink } from 'lucide-react';
+import { trackOutboundLink } from '../utils/analytics';
 import '../styles/components.css';
 
 /**
@@ -135,6 +136,14 @@ export default function SupportModal({ isOpen, onClose }) {
                 rel="noopener noreferrer"
                 className="ctee-sponsor-btn"
                 title="크티(Ctee) 페이지로 이동하여 후원하기"
+                onClick={() => {
+                  trackOutboundLink({
+                    linkCategory: 'donation',
+                    platform: 'ctee',
+                    targetUrl: 'https://ctee.kr/place/aeika215/donation',
+                    title: '크티 후원 페이지 바로가기',
+                  });
+                }}
               >
                 <span>크티 후원 페이지 바로가기</span>
                 <ExternalLink size={14} className="ctee-btn-icon" />

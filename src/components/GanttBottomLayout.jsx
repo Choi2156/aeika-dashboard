@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { ChevronLeft, ChevronRight, Radio, Youtube, MapPin, Megaphone, ChevronRight as ChevronRightIcon, Video, Shuffle } from 'lucide-react';
 import NoticeCategoryBadge from './NoticeCategoryBadge';
-import { trackVideoClick, trackChannelClick, trackShuffleClick } from '../utils/analytics';
+import { trackVideoClick, trackChannelClick, trackShuffleClick, trackCarouselNavigation, trackShortsInlinePlay } from '../utils/analytics';
 
 /* ────────────────────────────────────────────
    Helper Functions
@@ -286,14 +286,14 @@ function GanttBottomLayout({
   const handlePrevStream = () => { if (recentStreams.length <= visibleCount) return; setCurrentStreamIndex((prev) => (prev - 1 + recentStreams.length) % recentStreams.length); };
   const handleNextStream = () => { if (recentStreams.length <= visibleCount) return; setCurrentStreamIndex((prev) => (prev + 1) % recentStreams.length); };
   
-  const handlePrevStory = () => { if (storyVideos.length <= visibleCount) return; setCurrentStoryIndex((prev) => (prev - 1 + storyVideos.length) % storyVideos.length); };
-  const handleNextStory = () => { if (storyVideos.length <= visibleCount) return; setCurrentStoryIndex((prev) => (prev + 1) % storyVideos.length); };
+  const handlePrevStory = () => { if (storyVideos.length <= visibleCount) return; trackCarouselNavigation('story', 'prev'); setCurrentStoryIndex((prev) => (prev - 1 + storyVideos.length) % storyVideos.length); };
+  const handleNextStory = () => { if (storyVideos.length <= visibleCount) return; trackCarouselNavigation('story', 'next'); setCurrentStoryIndex((prev) => (prev + 1) % storyVideos.length); };
 
-  const handlePrevOther = () => { if (otherVideos.length <= visibleCount) return; setCurrentOtherIndex((prev) => (prev - 1 + otherVideos.length) % otherVideos.length); };
-  const handleNextOther = () => { if (otherVideos.length <= visibleCount) return; setCurrentOtherIndex((prev) => (prev + 1) % otherVideos.length); };
+  const handlePrevOther = () => { if (otherVideos.length <= visibleCount) return; trackCarouselNavigation('other', 'prev'); setCurrentOtherIndex((prev) => (prev - 1 + otherVideos.length) % otherVideos.length); };
+  const handleNextOther = () => { if (otherVideos.length <= visibleCount) return; trackCarouselNavigation('other', 'next'); setCurrentOtherIndex((prev) => (prev + 1) % otherVideos.length); };
 
-  const handlePrevShort = () => { setCurrentShortIndex((prev) => (prev - 1 + recommendedShorts.length) % recommendedShorts.length); };
-  const handleNextShort = () => { setCurrentShortIndex((prev) => (prev + 1) % recommendedShorts.length); };
+  const handlePrevShort = () => { trackCarouselNavigation('shorts', 'prev'); setCurrentShortIndex((prev) => (prev - 1 + recommendedShorts.length) % recommendedShorts.length); };
+  const handleNextShort = () => { trackCarouselNavigation('shorts', 'next'); setCurrentShortIndex((prev) => (prev + 1) % recommendedShorts.length); };
 
   /* ── Touch Handlers ── */
   const streamTouch = useMemo(() => createTouchHandlers(handleNextStream, handlePrevStream), [handleNextStream, handlePrevStream]);
@@ -335,7 +335,7 @@ function GanttBottomLayout({
                   <div
                     key={ev.id || `recent-stream-${ev.date}`}
                     className="recent-stream-card"
-                    onClick={() => onEventClick?.(ev, isOffline ? '오프라인이벤트' : '공식방송')}
+                    onClick={() => onEventClick?.(ev, isOffline ? '오프라인이벤트' : '공식방송', 'bottom_stream')}
                     style={{ '--theme-color': color }}
                     title="클릭하여 상세 정보 팝업 보기"
                   >
@@ -513,6 +513,7 @@ function GanttBottomLayout({
                           const currentShort = recommendedShorts[currentShortIndex];
                           if (currentShort) {
                             trackVideoClick('shorts', currentShort.game, currentShort.title || currentShort.desc, currentShort.id);
+                            trackShortsInlinePlay(currentShort.game, currentShort.id, currentShort.title || currentShort.desc);
                           }
                           setIsPlayingShort(true);
                         }}

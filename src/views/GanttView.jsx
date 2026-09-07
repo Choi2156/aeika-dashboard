@@ -402,7 +402,7 @@ export default function GanttView({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              onEventClick?.(ev, displayType);
+              onEventClick?.(ev, displayType, 'gantt');
             }}
             title={`${ev.title} (장소: ${ev.location || '—'})`}
           >
@@ -430,7 +430,7 @@ export default function GanttView({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              onEventClick?.(ev, displayType);
+              onEventClick?.(ev, displayType, 'gantt');
             }}
           >
             <div className="gantt-stream-flag" style={{ backgroundColor: flagBgColor, border: isFixed ? 'none' : '1px solid #64748b' }}>
@@ -470,7 +470,7 @@ export default function GanttView({
           }}
           onClick={(e) => {
             e.stopPropagation();
-            onEventClick?.(ev, displayType);
+            onEventClick?.(ev, displayType, 'gantt');
           }}
           title={label}
         >
