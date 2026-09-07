@@ -1,19 +1,21 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useScheduleData } from './hooks/useScheduleData';
 import { trackModalOpen, trackScheduleEventClick, trackNoticeTickerClick } from './utils/analytics';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
 import GanttView from './views/GanttView';
 import ListView from './views/ListView';
-import DetailModal from './components/DetailModal';
-import GuideModal from './components/GuideModal';
-import LicenseModal from './components/LicenseModal';
 import LiveBannerBoard from './components/LiveBannerBoard';
 import DashboardInfoBar from './components/DashboardInfoBar';
 import Footer from './components/Footer';
-import SupportModal from './components/SupportModal';
 import NoticeTickerBanner from './components/NoticeTickerBanner';
-import NoticeModal from './components/NoticeModal';
+
+// 코드 스플리팅: 초기 번들 용량 절감을 위해 5대 팝업 모달을 온디맨드 lazy 로딩
+const DetailModal = lazy(() => import('./components/DetailModal'));
+const GuideModal = lazy(() => import('./components/GuideModal'));
+const LicenseModal = lazy(() => import('./components/LicenseModal'));
+const SupportModal = lazy(() => import('./components/SupportModal'));
+const NoticeModal = lazy(() => import('./components/NoticeModal'));
 
 import './styles/variables.css';
 import './styles/base.css';
@@ -334,37 +336,49 @@ export default function App() {
         )}
       </main>
 
-      <DetailModal
-        event={selectedEvent}
-        events={events}
-        displayTypeName={selectedEventTypeName}
-        gamesConfig={gamesConfig}
-        onClose={() => setSelectedEvent(null)}
-      />
+      <Suspense fallback={null}>
+        {selectedEvent && (
+          <DetailModal
+            event={selectedEvent}
+            events={events}
+            displayTypeName={selectedEventTypeName}
+            gamesConfig={gamesConfig}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
 
-      <GuideModal
-        isOpen={isGuideOpen}
-        onClose={() => setIsGuideOpen(false)}
-        patchNotes={patchNotes}
-      />
+        {isGuideOpen && (
+          <GuideModal
+            isOpen={isGuideOpen}
+            onClose={() => setIsGuideOpen(false)}
+            patchNotes={patchNotes}
+          />
+        )}
 
-      <LicenseModal
-        isOpen={isLicenseOpen}
-        onClose={() => setIsLicenseOpen(false)}
-      />
+        {isLicenseOpen && (
+          <LicenseModal
+            isOpen={isLicenseOpen}
+            onClose={() => setIsLicenseOpen(false)}
+          />
+        )}
 
-      <SupportModal
-        isOpen={isSupportOpen}
-        onClose={() => setIsSupportOpen(false)}
-      />
+        {isSupportOpen && (
+          <SupportModal
+            isOpen={isSupportOpen}
+            onClose={() => setIsSupportOpen(false)}
+          />
+        )}
 
-      {/* 신규 공지사항 상세 모달 */}
-      <NoticeModal
-        isOpen={isNoticeModalOpen}
-        onClose={handleCloseNotice}
-        notices={notices}
-        selectedNotice={selectedNotice}
-      />
+        {/* 신규 공지사항 상세 모달 */}
+        {isNoticeModalOpen && (
+          <NoticeModal
+            isOpen={isNoticeModalOpen}
+            onClose={handleCloseNotice}
+            notices={notices}
+            selectedNotice={selectedNotice}
+          />
+        )}
+      </Suspense>
 
       <Footer onOpenLicense={() => { trackModalOpen('license'); setIsLicenseOpen(true); }} />
     </div>
