@@ -1,5 +1,19 @@
 [
   {
+    "id": "EVT_GNS_20260912_0001",
+    "game": "원신",
+    "version": "7.1",
+    "type": "공식방송",
+    "title": "7.1 버전 특별 방송",
+    "date": "2026-09-12",
+    "end_date": "2026-09-12",
+    "time": "21:00",
+    "is_fixed": true,
+    "detail": "〈원신〉 7.1 버전 특별 방송이 2026년 9월 12일 21:00(한국 시간)에 공식 YouTube 채널에서 진행될 예정입니다.\n\n이번 특별 방송에선 7.1 버전의 게임 콘텐츠와 최신 소식을 소개할 예정입니다.\n방송 중에 리딤 코드 등 혜택도 공개됩니다.",
+    "custom_img": "genshin_7.1_stream.webp",
+    "link": "https://www.youtube.com/live/woqqdemMAgQ?si=hk023ouv2hnLFvj5"
+  },
+  {
     "id": "EVT_AKEF_20260911_0001",
     "game": "명일방주: 엔드필드",
     "version": "이벤트",
