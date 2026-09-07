@@ -71,8 +71,8 @@ export const trackGameFilterAll = (action) => {
 };
 
 /**
- * 뷰 모드 전환 추적 (PC 간트 vs 모바일 리스트)
- * @param {'gantt' | 'list'} viewMode
+ * 뷰 모드 전환 추적 (PC 간트 vs 모바일 리스트 vs 종합 캘린더 뷰)
+ * @param {'gantt' | 'list' | 'calendar'} viewMode
  */
 export const trackViewModeChange = (viewMode) => {
   trackEvent('change_view_mode', {
@@ -213,4 +213,88 @@ export const trackStorageConsentToggle = (isConsent) => {
     consent_state: isConsent ? 'enabled' : 'disabled',
   });
 };
+
+/**
+ * 캘린더 모달 열기 또는 캘린더 화면 진입 추적
+ * @param {object} options
+ * @param {'modal' | 'calendar_view'} [options.type='modal'] - 진입 형태 (이미지 모달 vs 향후 네이티브 캘린더 뷰)
+ * @param {string} [options.source='infobar'] - 유입 경로 ('infobar' | 'nav_button' | 'filter_bar')
+ * @param {number} [options.year] - 대상 연도
+ * @param {number} [options.month] - 대상 월
+ */
+export const trackCalendarOpen = ({
+  type = 'modal',
+  source = 'infobar',
+  year = 2026,
+  month = 9,
+} = {}) => {
+  trackEvent('view_calendar', {
+    calendar_type: type,
+    open_source: source,
+    target_year: year,
+    target_month: month,
+  });
+};
+
+/**
+ * 캘린더 이미지 다운로드 추적 (모달 및 향후 캘린더 뷰 공용)
+ * @param {object} options
+ * @param {'modal' | 'calendar_view'} [options.source='modal'] - 다운로드 트리거 위치
+ * @param {'png' | 'webp'} [options.format='png'] - 이미지 포맷
+ * @param {number} [options.year] - 대상 연도
+ * @param {number} [options.month] - 대상 월
+ * @param {string} [options.updatedAt] - 기준 반영일자
+ */
+export const trackCalendarDownload = ({
+  source = 'modal',
+  format = 'png',
+  year = 2026,
+  month = 9,
+  updatedAt = '',
+} = {}) => {
+  trackEvent('download_calendar_image', {
+    download_source: source,
+    image_format: format,
+    target_year: year,
+    target_month: month,
+    schedule_updated_at: updatedAt,
+  });
+};
+
+/**
+ * 캘린더 원본 이미지 전체화면(새 탭) 열람 추적
+ * @param {object} options
+ * @param {'modal' | 'calendar_view'} [options.source='modal']
+ * @param {number} [options.year]
+ * @param {number} [options.month]
+ */
+export const trackCalendarFullView = ({
+  source = 'modal',
+  year = 2026,
+  month = 9,
+} = {}) => {
+  trackEvent('view_calendar_image_full', {
+    view_source: source,
+    target_year: year,
+    target_month: month,
+  });
+};
+
+/**
+ * 향후 네이티브 캘린더 뷰에서 월 이동(이전달/다음달) 인터랙션 추적
+ * @param {object} options
+ * @param {number} options.fromYear
+ * @param {number} options.fromMonth
+ * @param {number} options.toYear
+ * @param {number} options.toMonth
+ */
+export const trackCalendarMonthChange = ({ fromYear, fromMonth, toYear, toMonth }) => {
+  trackEvent('change_calendar_month', {
+    from_year: fromYear,
+    from_month: fromMonth,
+    to_year: toYear,
+    to_month: toMonth,
+  });
+};
+
 

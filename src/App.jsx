@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useScheduleData } from './hooks/useScheduleData';
-import { trackModalOpen, trackScheduleEventClick, trackNoticeTickerClick } from './utils/analytics';
+import { trackModalOpen, trackScheduleEventClick, trackNoticeTickerClick, trackCalendarOpen } from './utils/analytics';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
 import GanttView from './views/GanttView';
@@ -16,6 +16,7 @@ const GuideModal = lazy(() => import('./components/GuideModal'));
 const LicenseModal = lazy(() => import('./components/LicenseModal'));
 const SupportModal = lazy(() => import('./components/SupportModal'));
 const NoticeModal = lazy(() => import('./components/NoticeModal'));
+const CalendarModal = lazy(() => import('./components/CalendarModal'));
 
 import './styles/variables.css';
 import './styles/base.css';
@@ -61,6 +62,9 @@ export default function App() {
 
   // 3.5. 후원 모달 오픈 상태
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+
+  // 3.6. 이달의 캘린더 이미지 모달 오픈 상태
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   // 4. 스크롤 스파이 훅 탑재: 헤더와 인포바가 다 넘어가는 시점(150px)에 메뉴바 콤팩트 축소
   const [isShrunk, setIsShrunk] = useState(false);
@@ -260,7 +264,14 @@ export default function App() {
 
       <Header onOpenSupport={() => { trackModalOpen('support'); setIsSupportOpen(true); }} />
 
-      <DashboardInfoBar meta={meta} />
+      <DashboardInfoBar
+        meta={meta}
+        onOpenCalendar={() => {
+          trackModalOpen('calendar');
+          trackCalendarOpen({ type: 'modal', source: 'infobar', year: 2026, month: 9 });
+          setIsCalendarOpen(true);
+        }}
+      />
 
       <GameFilterBar
         activeGames={activeGames}
@@ -376,6 +387,15 @@ export default function App() {
             onClose={handleCloseNotice}
             notices={notices}
             selectedNotice={selectedNotice}
+          />
+        )}
+
+        {/* 📅 이달의 종합 캘린더 이미지 팝업 모달 */}
+        {isCalendarOpen && (
+          <CalendarModal
+            isOpen={isCalendarOpen}
+            onClose={() => setIsCalendarOpen(false)}
+            meta={meta}
           />
         )}
       </Suspense>
