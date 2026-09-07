@@ -25,7 +25,7 @@ export default function CalendarModal({ isOpen, onClose, meta }) {
       ? (meta.last_updated.includes('T') ? meta.last_updated.split('T')[0] : meta.last_updated) 
       : '2026-09-08'
   );
-  const calendarTitle = calendarMeta?.title || "2026년 9월 서브컬쳐 종합 스케줄 캘린더";
+  const calendarTitle = calendarMeta?.title || "2026년 9월 서브컬쳐 게임 일정 캘린더";
   const webpSrc = "./assets/calendar/calendar_current.webp";
   const pngSrc = "./assets/calendar/calendar_current.png";
   const downloadFileName = calendarMeta?.download_name || "게임일정_26년9월.png";
