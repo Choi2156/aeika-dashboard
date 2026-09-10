@@ -73,9 +73,9 @@ function allocateVideosWithShuffle(allVideos, activeGames, targetCount = 6) {
 }
 
 /* ────────────────────────────────────────────
-   Longform Video Allocation (최신순 최대 10개)
-   선택된 게임의 롱폼 영상을 100% 최신순으로 정렬하여 최대 targetCount(10개) 추출
-   10개 미만일 경우 있는 만큼만 반환
+   Longform Video Allocation with Moderate Shuffle (스마트 셔플 & 최신순 최대 10개)
+   선택된 게임의 롱폼 영상 중 최신순 상위 영상(최대 targetCount개)을 선별한 뒤,
+   새로고침(또는 활성 게임 변경) 시마다 영상 순서를 자연스럽게 셔플(Fisher-Yates)하여 반환
    ──────────────────────────────────────────── */
 function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
   if (!allVideos || allVideos.length === 0) return [];
@@ -98,15 +98,18 @@ function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
     }
   }
 
-  // 2. 100% 최신순(addedAt 내림차순) 정렬
+  // 2. 최신순(addedAt 내림차순) 정렬
   const sorted = filtered.sort((a, b) => {
     const dateA = a.addedAt ? new Date(a.addedAt) : new Date(0);
     const dateB = b.addedAt ? new Date(b.addedAt) : new Date(0);
     return dateB - dateA;
   });
 
-  // 3. 최신순 최대 targetCount(10개) 반환 (10개 미만 시 있는 만큼 반환)
-  return sorted.slice(0, targetCount);
+  // 3. 최신순 상위 targetCount(10개) 추출
+  const topCandidates = sorted.slice(0, targetCount);
+
+  // 4. 새로고침 기준 셔플 (순서 무작위 혼합)
+  return shuffleArray(topCandidates);
 }
 
 /* ────────────────────────────────────────────
@@ -229,19 +232,19 @@ function GanttBottomLayout({
     }, 500);
   }, []);
 
-  /* ── 3-1. 스토리 풀버전 롱폼 비디오 데이터 (최신순 최대 10개) ── */
+  /* ── 3-1. 스토리 풀버전 롱폼 비디오 데이터 (새로고침 시 스마트 셔플, 최대 10개) ── */
   const storyVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
     const stories = rawLongform.filter((v) => v.type === 'story');
     return allocateLongformVideos(stories, activeGames, 10);
-  }, [recommendedVideos, activeGames]);
+  }, [recommendedVideos, activeGamesKey]);
 
-  /* ── 3-2. 일반 롱폼 비디오 데이터 (롱폼 추천 영상, 최신순 최대 10개) ── */
+  /* ── 3-2. 일반 롱폼 비디오 데이터 (롱폼 추천 영상, 새로고침 시 스마트 셔플, 최대 10개) ── */
   const otherVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
     const others = rawLongform.filter((v) => v.type === 'other');
     return allocateLongformVideos(others, activeGames, 10);
-  }, [recommendedVideos, activeGames]);
+  }, [recommendedVideos, activeGamesKey]);
 
   /* ── Index Bounds Safety ── */
   useEffect(() => {
