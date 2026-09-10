@@ -64,10 +64,10 @@
       "order": 9
     },
     {
-      "id": "iZVR5RA-dps",
-      "url": "https://youtube.com/shorts/iZVR5RA-dps",
+      "id": "wmgo4sF-XiE",
+      "url": "https://youtube.com/shorts/wmgo4sF-XiE",
       "game": "원신",
-      "addedAt": "2026-08-13T14:14:22Z",
+      "addedAt": "2026-08-13T14:37:53Z",
       "order": 10
     },
     {
@@ -659,40 +659,13 @@
       "order": 2
     },
     {
-      "id": "sa8hIFSiwWM",
-      "url": "https://youtu.be/sa8hIFSiwWM",
-      "game": "명조",
-      "type": "story",
-      "desc": "[명조] 하늘을 뚫는 청초 (3.6버전)",
-      "addedAt": "2026-08-20T12:18:28Z",
-      "order": 3
-    },
-    {
-      "id": "64GClPdfl0A",
-      "url": "https://youtu.be/64GClPdfl0A",
-      "game": "명조",
-      "type": "story",
-      "desc": "[명조] 청초에게 어검술을 배우는 방랑자 (3.6버전)",
-      "addedAt": "2026-08-20T09:00:45Z",
-      "order": 4
-    },
-    {
-      "id": "Pcp8Ey9ZtWg",
-      "url": "https://youtu.be/Pcp8Ey9ZtWg",
-      "game": "명조",
-      "type": "story",
-      "desc": "[명조] 드디어 기어 나온 여우의 별자리 (3.6버전)",
-      "addedAt": "2026-08-20T08:50:48Z",
-      "order": 5
-    },
-    {
       "id": "yHXRan1ydd4",
       "url": "https://youtu.be/yHXRan1ydd4",
       "game": "명조",
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 에필로그 -「신비로운 선율의 서약, 아득히 이어진 인연」+ 후일담 (3.5버전)(컷편집)",
       "addedAt": "2026-07-15T05:00:46Z",
-      "order": 6
+      "order": 3
     },
     {
       "id": "nAQOacc-BtQ",
@@ -701,7 +674,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 제2막 -「골짜기를 뒤흔든 현령, 잠잠해진 물결」(3.5버전)(컷편집)",
       "addedAt": "2026-07-15T05:00:43Z",
-      "order": 7
+      "order": 4
     },
     {
       "id": "_aqACQKf3mQ",
@@ -710,7 +683,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 제1막 -「산비가 내리기 전, 누각을 채운 거센 바람」(3.5버전)(컷편집)",
       "addedAt": "2026-07-15T05:00:33Z",
-      "order": 8
+      "order": 5
     },
     {
       "id": "fQ4oXg3clQo",
@@ -719,7 +692,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제3장 · 에필로그 -「우리의 선택은 하늘」(3.4버전)(컷편집)",
       "addedAt": "2026-06-18T20:37:41Z",
-      "order": 9
+      "order": 6
     },
     {
       "id": "FuY-ue45flI",
@@ -728,6 +701,33 @@
       "type": "story",
       "desc": "[명조][이문 임무] 제3장 · 외전 「엣지 드림」(3.4버전)(컷편집)",
       "addedAt": "2026-06-18T09:03:23Z",
+      "order": 7
+    },
+    {
+      "id": "BSRnLcpqCtU",
+      "url": "https://youtu.be/BSRnLcpqCtU",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][조수 임무] 제3장 에필로그 -「녹아내린 밤하늘 아래」(3.3버전)(컷편집)",
+      "addedAt": "2026-06-18T08:58:44Z",
+      "order": 8
+    },
+    {
+      "id": "LNHYjxEm-ek",
+      "url": "https://youtu.be/LNHYjxEm-ek",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조] [조수 임무] 제3장 제5막 - 「어젯밤의 뭇별들」 에필로그/후일담 (3.3버전)(컷편집)",
+      "addedAt": "2026-05-06T00:14:01Z",
+      "order": 9
+    },
+    {
+      "id": "KgZSoIt20Ck",
+      "url": "https://youtu.be/KgZSoIt20Ck",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조] [조수 임무] 제3장 제5막 - 「어젯밤의 뭇별들」(3.3버전)(컷편집)",
+      "addedAt": "2026-05-03T22:30:06Z",
       "order": 10
     },
     {
@@ -738,6 +738,33 @@
       "desc": "[명조] 진짜 잠깐 얼굴만 비추는 쇄명 (3.6버전)",
       "addedAt": "2026-08-20T18:25:50Z",
       "order": 1
+    },
+    {
+      "id": "sa8hIFSiwWM",
+      "url": "https://youtu.be/sa8hIFSiwWM",
+      "game": "명조",
+      "type": "other",
+      "desc": "[명조] 하늘을 뚫는 청초 (3.6버전)",
+      "addedAt": "2026-08-20T12:18:28Z",
+      "order": 2
+    },
+    {
+      "id": "64GClPdfl0A",
+      "url": "https://youtu.be/64GClPdfl0A",
+      "game": "명조",
+      "type": "other",
+      "desc": "[명조] 청초에게 어검술을 배우는 방랑자 (3.6버전)",
+      "addedAt": "2026-08-20T09:00:45Z",
+      "order": 3
+    },
+    {
+      "id": "Pcp8Ey9ZtWg",
+      "url": "https://youtu.be/Pcp8Ey9ZtWg",
+      "game": "명조",
+      "type": "other",
+      "desc": "[명조] 드디어 기어 나온 여우의 별자리 (3.6버전)",
+      "addedAt": "2026-08-20T08:50:48Z",
+      "order": 4
     },
     {
       "id": "z1_Ureq0INE",

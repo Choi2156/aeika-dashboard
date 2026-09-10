@@ -235,14 +235,30 @@ function GanttBottomLayout({
   /* ── 3-1. 스토리 풀버전 롱폼 비디오 데이터 (새로고침 시 스마트 셔플, 최대 10개) ── */
   const storyVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
-    const stories = rawLongform.filter((v) => v.type === 'story');
+    // 2중 방어선: 제목/설명에 '컷편집' 또는 '풀버전'이 없는 짧은 하이라이트 영상은 풀버전 큐에서 원천 배제
+    const stories = rawLongform.filter((v) => {
+      if (v.type !== 'story') return false;
+      const text = v.desc || v.title || '';
+      if (text && !text.includes('컷편집') && !text.includes('풀버전')) {
+        return false;
+      }
+      return true;
+    });
     return allocateLongformVideos(stories, activeGames, 10);
   }, [recommendedVideos, activeGamesKey]);
 
   /* ── 3-2. 일반 롱폼 비디오 데이터 (롱폼 추천 영상, 새로고침 시 스마트 셔플, 최대 10개) ── */
   const otherVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
-    const others = rawLongform.filter((v) => v.type === 'other');
+    // 2중 방어선: 하이라이트 클립이 혹시라도 story로 잘못 마킹된 경우에도 롱폼 추천 큐로 안전 수용
+    const others = rawLongform.filter((v) => {
+      if (v.type === 'other') return true;
+      const text = v.desc || v.title || '';
+      if (v.type === 'story' && text && !text.includes('컷편집') && !text.includes('풀버전')) {
+        return true;
+      }
+      return false;
+    });
     return allocateLongformVideos(others, activeGames, 10);
   }, [recommendedVideos, activeGamesKey]);
 
