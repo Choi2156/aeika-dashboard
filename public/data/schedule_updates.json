@@ -1,5 +1,19 @@
 [
   {
+    "id": "EVT_WW_20260919_0001",
+    "game": "명조",
+    "version": "3.7",
+    "type": "공식방송",
+    "title": "3.7 버전 프리뷰 특별 방송",
+    "date": "2026-09-19",
+    "end_date": "2026-09-19",
+    "time": "20:00",
+    "is_fixed": true,
+    "detail": "『명조:워더링 웨이브』 3.7 버전 프리뷰 특별 방송이 2026년 9월 19일(토) 20:00에 공개됩니다.\n\n이번 방송은 『명조:워더링 웨이브』 공식 라이브 채널에서 진행되니, 방랑자 여러분의 많은 시청 바랍니다!",
+    "custom_img": "wuthering_3.7_stream.webp",
+    "link": "https://youtube.com/live/fY7pOAzNwq4"
+  },
+  {
     "id": "EVT_GNS_20260912_0001",
     "game": "원신",
     "version": "7.1",
