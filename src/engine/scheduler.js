@@ -311,8 +311,14 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
 
   // 모든 이벤트에 start_date와 end_date 주입 (간트 차트 렌더링용)
   const processedEvents = allEvents.map((ev) => {
-    // 1. 이미 데이터 상에 end_date가 명시적으로 기재되어 있으면 새로 연산하지 않고 보존
-    if (ev.end_date) {
+    const isUpdateType = ev.type === '전반업데이트' || ev.type === '후반업데이트';
+    const duration = getEventDuration(ev, allEvents, gamesConfig, hintsData);
+    const startD = parseDate(ev.date);
+    const calculatedEndD = addDays(startD, duration - 1);
+    const calculatedEndStr = formatDate(calculatedEndD);
+
+    // 1. 오프라인 행사나 기타 이벤트는 수동 end_date를 그대로 보존
+    if (!isUpdateType && ev.end_date) {
       return {
         ...ev,
         start_date: ev.date,
@@ -320,13 +326,29 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
       };
     }
 
-    const duration = getEventDuration(ev, allEvents, gamesConfig, hintsData);
-    const startD = parseDate(ev.date);
-    const endD = addDays(startD, duration - 1);
+    // 2. 전반/후반 업데이트의 경우:
+    // - 수동 end_date가 없으면 -> 계산된 마감일(차기 버전 시작 전날) 주입
+    // - 수동 end_date가 있더라도 차기 버전 시작일 이상으로 잘못 겹쳐 기입된 경우 -> 차기 버전 시작 전날로 자동 정제(Sanitize)
+    if (ev.end_date) {
+      const manualEnd = parseDate(ev.end_date);
+      if (manualEnd > calculatedEndD && isUpdateType) {
+        return {
+          ...ev,
+          start_date: ev.date,
+          end_date: calculatedEndStr,
+        };
+      }
+      return {
+        ...ev,
+        start_date: ev.date,
+        end_date: ev.end_date,
+      };
+    }
+
     return {
       ...ev,
       start_date: ev.date,
-      end_date: formatDate(endD),
+      end_date: calculatedEndStr,
     };
   });
 
@@ -381,11 +403,23 @@ export function getEventDuration(event, allEvents, gamesConfig, hintsData) {
   }
 
   if (event.type === '전반업데이트') {
-    // 다음 버전의 확정 전반업데이트가 존재하면 그 시작일 전날까지를 기간으로 삼아 자동 단축/연장 대응!
+    // 다음 버전의 확정/예상 전반업데이트가 존재하면 그 시작일 전날까지를 기간으로 삼아 자동 단축/연장 대응!
     const nextVer = getNextVersion(cleanVer, gameHints);
-    const nextUpdate = allEvents.find(
+    // 1차: 버전 번호 일치하는 차기 업데이트 탐색
+    let nextUpdate = allEvents.find(
       e => e.game === event.game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer
     );
+    // 2차: 버전 명칭이 상이하더라도 시간 순으로 다음에 오는 전반업데이트 탐색 (안전망)
+    if (!nextUpdate) {
+      const curD = parseDate(event.date);
+      const futureUpdates = allEvents.filter(
+        e => e.game === event.game && e.type === '전반업데이트' && parseDate(e.date) > curD
+      );
+      if (futureUpdates.length > 0) {
+        futureUpdates.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+        nextUpdate = futureUpdates[0];
+      }
+    }
     if (nextUpdate) {
       const startD = parseDate(event.date);
       const nextStartD = parseDate(nextUpdate.date);
