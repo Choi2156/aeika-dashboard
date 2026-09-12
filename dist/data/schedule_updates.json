@@ -78,10 +78,16 @@
     "end_date": "2026-10-05",
     "time": "",
     "is_fixed": true,
-    "detail": "🎪 [HoYoverse] Welcome to 호요랜드 2026 | 「구름 너머로 내려앉은 시」\n\n✦ 기간: 2026년 10월 2일(금) ~ 10월 5일(월) (4일간)\n✦ 장소: KINTEX 제2전시장 7-8홀\n✦ 내용: 호요버스코리아가 매년 개최하는 종합 문화 행사. 젠레스 존 제로 단독 테마 부스 및 체험 이벤트, 크리에이터 사인회, 한정 굿즈 판매 진행",
+    "detail": "🎪 [HoYoverse] Welcome to 호요랜드 2026 | 「구름 너머로 내려앉은 시」\n\n✦ 기간: 2026년 10월 2일(금) - 10월 5일(월) (4일간)\n✦ 장소: KINTEX 제2전시장 7-8홀\n✦ 내용: 호요버스코리아가 매년 개최하는 종합 문화 행사. 젠레스 존 제로 단독 테마 부스 및 체험 이벤트, 크리에이터 사인회, 한정 굿즈 판매 진행\n\n🎟️ [티켓 예매 안내]\n✦ 예매 일정: 2026년 9월 14일(월) 19:00 - 10월 5일(월) 17:00 (매진 시까지)\n✦ 예매처: 티켓링크 (단독 예매)",
     "location": "KINTEX 제2전시장 7-8홀",
     "custom_img": "hoyoland_2026_zzz.webp",
-    "link": "https://game.naver.com/lounge/ZZZ/board/detail/8116696"
+    "ticket_links": [
+      {
+        "name": "티켓링크 예매하기",
+        "url": "https://www.ticketlink.co.kr/product/65564"
+      }
+    ],
+    "link": "https://game.naver.com/lounge/ZZZ/board/detail/8182885"
   },
   {
     "id": "EVT_HSR_20261002_0001",
@@ -93,10 +99,16 @@
     "end_date": "2026-10-05",
     "time": "",
     "is_fixed": true,
-    "detail": "🎪 [HoYoverse] Welcome to 호요랜드 2026 | 🎭 ༻환락, 상상 그 이상으로༺\n\n✦ 기간: 2026년 10월 2일(금) ~ 10월 5일(월) (4일간)\n✦ 장소: KINTEX 제2전시장 7-8홀\n✦ 내용: 호요버스코리아가 매년 개최하는 종합 문화 행사. 붕괴: 스타레일 단독 테마 부스 및 체험 이벤트, 크리에이터 사인회, 한정 굿즈 판매 진행",
+    "detail": "🎪 [HoYoverse] Welcome to 호요랜드 2026 | 🎭 ༻환락, 상상 그 이상으로༺\n\n✦ 기간: 2026년 10월 2일(금) - 10월 5일(월) (4일간)\n✦ 장소: KINTEX 제2전시장 7-8홀\n✦ 내용: 호요버스코리아가 매년 개최하는 종합 문화 행사. 붕괴: 스타레일 단독 테마 부스 및 체험 이벤트, 크리에이터 사인회, 한정 굿즈 판매 진행\n\n🎟️ [티켓 예매 안내]\n✦ 예매 일정: 2026년 9월 14일(월) 19:00 - 10월 5일(월) 17:00 (매진 시까지)\n✦ 예매처: 티켓링크 (단독 예매)",
     "location": "KINTEX 제2전시장 7-8홀",
     "custom_img": "hoyoland_2026_hsr.webp",
-    "link": "https://cafe.naver.com/honkaistarrail/799941"
+    "ticket_links": [
+      {
+        "name": "티켓링크 예매하기",
+        "url": "https://www.ticketlink.co.kr/product/65564"
+      }
+    ],
+    "link": "https://cafe.naver.com/honkaistarrail/802882"
   },
   {
     "id": "EVT_GNS_20261002_0001",
@@ -108,10 +120,16 @@
     "end_date": "2026-10-05",
     "time": "",
     "is_fixed": true,
-    "detail": "🎪 [HoYoverse] Welcome to 호요랜드 2026 | 🌙 달빛에 전하는 세레나데\n\n✦ 기간: 2026년 10월 2일(금) ~ 10월 5일(월) (4일간)\n✦ 장소: KINTEX 제2전시장 7-8홀\n✦ 내용: 호요버스코리아가 매년 개최하는 종합 문화 행사. 원신 단독 테마 부스 및 체험 이벤트, 크리에이터 사인회, 한정 굿즈 판매 진행",
+    "detail": "🎪 [HoYoverse] Welcome to 호요랜드 2026 | 🌙 달빛에 전하는 세레나데\n\n✦ 기간: 2026년 10월 2일(금) - 10월 5일(월) (4일간)\n✦ 장소: KINTEX 제2전시장 7-8홀\n✦ 내용: 호요버스코리아가 매년 개최하는 종합 문화 행사. 원신 단독 테마 부스 및 체험 이벤트, 크리에이터 사인회, 한정 굿즈 판매 진행\n\n🎟️ [티켓 예매 안내]\n✦ 예매 일정: 2026년 9월 14일(월) 19:00 - 10월 5일(월) 17:00 (매진 시까지)\n✦ 예매처: 티켓링크 (단독 예매)",
     "location": "KINTEX 제2전시장 7-8홀",
     "custom_img": "hoyoland_2026_genshin.webp",
-    "link": "https://cafe.naver.com/genshin/6714203"
+    "ticket_links": [
+      {
+        "name": "티켓링크 예매하기",
+        "url": "https://www.ticketlink.co.kr/product/65564"
+      }
+    ],
+    "link": "https://cafe.naver.com/genshin/6723746"
   },
   {
     "id": "EVT_ZZZ_20260909_0001",
