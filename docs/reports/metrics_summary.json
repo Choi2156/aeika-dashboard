@@ -1,0 +1,203 @@
+[
+  {
+    "id": "m1",
+    "name": "대시보드 1달차 (채널 3달차)",
+    "start": "2026-05-28",
+    "end": "2026-06-12",
+    "days": 16,
+    "note": "5/28 론칭 및 GA4 개시로 16일간 실측 집계 (15일 미집계 예외 고려)",
+    "dau_sum": 653,
+    "normalized_dau_sum_30d": 1224.4,
+    "dau_avg": 40.81,
+    "dau_max": 62,
+    "dau_max_dates": [
+      "2026-06-03",
+      "2026-06-04"
+    ],
+    "dau_min": 23,
+    "dau_min_dates": [
+      "2026-05-29"
+    ],
+    "wau_avg": 218.25,
+    "wau_max": 330,
+    "wau_end": 275,
+    "mau_avg": 302.81,
+    "mau_max": 582,
+    "mau_end": 582,
+    "dau_mau_avg": 24.48,
+    "dau_mau_end": 5.5,
+    "dau_wau_avg": 26.9,
+    "dau_wau_end": 11.64,
+    "wau_mau_avg": 82.8,
+    "wau_mau_end": 47.25,
+    "weekday_avg": {
+      "월": 37.5,
+      "화": 34.0,
+      "수": 55.0,
+      "목": 39.7,
+      "금": 32.3,
+      "토": 47.5,
+      "일": 44.5
+    }
+  },
+  {
+    "id": "m2",
+    "name": "대시보드 2달차 (채널 4달차)",
+    "start": "2026-06-13",
+    "end": "2026-07-12",
+    "days": 30,
+    "note": "정상 30일 완결 집계 (리스트 뷰 배포 및 초기 안정화)",
+    "dau_sum": 877,
+    "normalized_dau_sum_30d": 877,
+    "dau_avg": 29.23,
+    "dau_max": 61,
+    "dau_max_dates": [
+      "2026-06-15"
+    ],
+    "dau_min": 12,
+    "dau_min_dates": [
+      "2026-07-02"
+    ],
+    "wau_avg": 192.87,
+    "wau_max": 269,
+    "wau_end": 168,
+    "mau_avg": 819.17,
+    "mau_max": 977,
+    "mau_end": 688,
+    "dau_mau_avg": 3.66,
+    "dau_mau_end": 3.63,
+    "dau_wau_avg": 15.42,
+    "dau_wau_end": 14.88,
+    "wau_mau_avg": 24.13,
+    "wau_mau_end": 24.42,
+    "weekday_avg": {
+      "월": 34.8,
+      "화": 39.8,
+      "수": 26.8,
+      "목": 24.0,
+      "금": 22.8,
+      "토": 25.2,
+      "일": 31.8
+    }
+  },
+  {
+    "id": "m3",
+    "name": "대시보드 3달차 (채널 5달차)",
+    "start": "2026-07-13",
+    "end": "2026-08-12",
+    "days": 31,
+    "note": "정상 31일 완결 집계 (여름 비수기 조정 및 코어 베이스라인 형성)",
+    "dau_sum": 731,
+    "normalized_dau_sum_30d": 731,
+    "dau_avg": 23.58,
+    "dau_max": 44,
+    "dau_max_dates": [
+      "2026-07-17"
+    ],
+    "dau_min": 10,
+    "dau_min_dates": [
+      "2026-08-06"
+    ],
+    "wau_avg": 144.61,
+    "wau_max": 236,
+    "wau_end": 119,
+    "mau_avg": 600.48,
+    "mau_max": 684,
+    "mau_end": 529,
+    "dau_mau_avg": 3.89,
+    "dau_mau_end": 3.02,
+    "dau_wau_avg": 16.45,
+    "dau_wau_end": 13.45,
+    "wau_mau_avg": 23.81,
+    "wau_mau_end": 22.5,
+    "weekday_avg": {
+      "월": 25.6,
+      "화": 26.8,
+      "수": 18.0,
+      "목": 21.5,
+      "금": 26.2,
+      "토": 23.2,
+      "일": 23.8
+    }
+  },
+  {
+    "id": "m4",
+    "name": "대시보드 4달차 (채널 6달차)",
+    "start": "2026-08-13",
+    "end": "2026-09-12",
+    "days": 31,
+    "note": "정상 31일 완결 집계 (추천영상 확장, 캘린더 다운로드 & 9/8 안내글 기폭제 V자 반등)",
+    "dau_sum": 941,
+    "normalized_dau_sum_30d": 941,
+    "dau_avg": 30.35,
+    "dau_max": 113,
+    "dau_max_dates": [
+      "2026-09-08"
+    ],
+    "dau_min": 9,
+    "dau_min_dates": [
+      "2026-08-16"
+    ],
+    "wau_avg": 162.55,
+    "wau_max": 278,
+    "wau_end": 278,
+    "mau_avg": 507.19,
+    "mau_max": 633,
+    "mau_end": 633,
+    "dau_mau_avg": 5.94,
+    "dau_mau_end": 4.58,
+    "dau_wau_avg": 18.69,
+    "dau_wau_end": 10.43,
+    "wau_mau_avg": 31.73,
+    "wau_mau_end": 43.92,
+    "weekday_avg": {
+      "월": 19.8,
+      "화": 46.0,
+      "수": 39.0,
+      "목": 26.4,
+      "금": 28.0,
+      "토": 29.8,
+      "일": 25.2
+    }
+  },
+  {
+    "id": "total",
+    "name": "전체 누적 기간 (기준 마감 09/12)",
+    "start": "2026-05-28",
+    "end": "2026-09-12",
+    "days": 108,
+    "note": "총 108일간 전수 집계 (기준 마감일 9월 12일까지 엄격 반영)",
+    "dau_sum": 3202,
+    "normalized_dau_sum_30d": 3202,
+    "dau_avg": 29.65,
+    "dau_max": 113,
+    "dau_max_dates": [
+      "2026-09-08"
+    ],
+    "dau_min": 9,
+    "dau_min_dates": [
+      "2026-08-16"
+    ],
+    "wau_avg": 174.07,
+    "wau_max": 330,
+    "wau_end": 278,
+    "mau_avg": 590.35,
+    "mau_max": 977,
+    "mau_end": 633,
+    "dau_mau_avg": 7.46,
+    "dau_mau_end": 4.58,
+    "dau_wau_avg": 18.36,
+    "dau_wau_end": 10.43,
+    "wau_mau_avg": 34.91,
+    "wau_mau_end": 43.92,
+    "weekday_avg": {
+      "월": 28.1,
+      "화": 36.3,
+      "수": 30.9,
+      "목": 27.1,
+      "금": 27.1,
+      "토": 28.9,
+      "일": 29.6
+    }
+  }
+]
