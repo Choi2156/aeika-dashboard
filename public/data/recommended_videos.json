@@ -1,24 +1,24 @@
 {
   "shorts": [
     {
+      "id": "CzGqZ5D5f7Q",
+      "url": "https://youtube.com/shorts/CzGqZ5D5f7Q",
+      "game": "원신",
+      "addedAt": "2026-09-14T07:07:29Z",
+      "order": 1
+    },
+    {
       "id": "TDmvf2DajmE",
       "url": "https://youtube.com/shorts/TDmvf2DajmE",
       "game": "원신",
       "addedAt": "2026-09-12T14:48:18Z",
-      "order": 1
+      "order": 2
     },
     {
       "id": "M_j08hYG1HE",
       "url": "https://youtube.com/shorts/M_j08hYG1HE",
       "game": "원신",
       "addedAt": "2026-09-12T13:25:03Z",
-      "order": 2
-    },
-    {
-      "id": "XHycos1HQRE",
-      "url": "https://youtube.com/shorts/XHycos1HQRE",
-      "game": "원신",
-      "addedAt": "2026-09-12T13:20:23Z",
       "order": 3
     },
     {
@@ -141,38 +141,38 @@
       "order": 10
     },
     {
+      "id": "UoQethlR1Vg",
+      "url": "https://youtube.com/shorts/UoQethlR1Vg",
+      "game": "젠레스 존 제로",
+      "addedAt": "2026-09-13T14:59:25Z",
+      "order": 1
+    },
+    {
       "id": "rbt9HivEtMM",
       "url": "https://youtube.com/shorts/rbt9HivEtMM",
       "game": "젠레스 존 제로",
       "addedAt": "2026-09-12T04:36:02Z",
-      "order": 1
+      "order": 2
     },
     {
       "id": "bdeh_pgU67g",
       "url": "https://youtube.com/shorts/bdeh_pgU67g",
       "game": "젠레스 존 제로",
       "addedAt": "2026-09-12T04:17:52Z",
-      "order": 2
+      "order": 3
     },
     {
       "id": "Q1E1kIDZpbo",
       "url": "https://youtube.com/shorts/Q1E1kIDZpbo",
       "game": "젠레스 존 제로",
       "addedAt": "2026-09-11T14:12:15Z",
-      "order": 3
+      "order": 4
     },
     {
       "id": "Dqm9mck8O60",
       "url": "https://youtube.com/shorts/Dqm9mck8O60",
       "game": "젠레스 존 제로",
       "addedAt": "2026-09-10T22:30:07Z",
-      "order": 4
-    },
-    {
-      "id": "rMRUqF9bKa0",
-      "url": "https://youtube.com/shorts/rMRUqF9bKa0",
-      "game": "젠레스 존 제로",
-      "addedAt": "2026-09-10T12:24:56Z",
       "order": 5
     },
     {
