@@ -1,5 +1,19 @@
 [
   {
+    "id": "EVT_HSR_20260920_0001",
+    "game": "붕괴: 스타레일",
+    "version": "4.6",
+    "type": "공식방송",
+    "title": "4.6 버전 「달 뜨기 전, 괴수와 춤을」 프리뷰 스페셜 프로그램",
+    "date": "2026-09-20",
+    "end_date": "2026-09-20",
+    "time": "20:30",
+    "is_fixed": true,
+    "detail": "〈붕괴: 스타레일〉 4.6 버전 「달 뜨기 전, 괴수와 춤을」 프리뷰 스페셜 프로그램이 2026년 9월 20일(일) 20:30 (한국 시간)에 공개됩니다.\n\n✦ 신규 캐릭터: 스타피스 컴퍼니 전략투자부 10인의 스톤하트 중 한 명인 '펄(Pearl)' 공개 예정\n✦ 방송 링크: https://www.youtube.com/live/QX12OPKr7eg",
+    "custom_img": "hsr_4.6_stream.webp",
+    "link": "https://www.youtube.com/live/QX12OPKr7eg?si=Oyxd6iviezVPDOFa"
+  },
+  {
     "id": "EVT_GNS_20260923_0001",
     "game": "원신",
     "version": "7.1",
