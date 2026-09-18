@@ -1,49 +1,73 @@
 {
   "hints": [
     {
+      "game": "명조",
+      "trigger_version": "3.7",
+      "next_version_number": "4.0",
+      "note": "3.7 버전 현 지역(몽주) 완결 후 4.0 신규 대형 지역으로 메이저 점프"
+    },
+    {
+      "game": "붕괴: 스타레일",
+      "trigger_version": "4.8",
+      "next_version_number": "5.0",
+      "note": "4.8 피날레 버전 종료 후 5.0 메이저 버전으로 점프 (이전 3.8 패턴 준용)"
+    },
+    {
+      "game": "원신",
+      "trigger_version": "7.8",
+      "next_version_number": "8.0",
+      "note": "스네즈나야 7.8 버전 종료 후 8.0 신규 대형 챕터로 메이저 점프 (대형 규모 감안 x.8 적용)"
+    },
+    {
+      "game": "젠레스 존 제로",
+      "trigger_version": "3.8",
+      "next_version_number": "4.0",
+      "note": "3.8 시즌 피날레 종료 후 4.0 메이저 버전으로 점프 (이전 2.8 패턴 준용)"
+    },
+    {
+      "game": "명일방주: 엔드필드",
+      "trigger_version": "1.7",
+      "next_version_number": "2.0",
+      "note": "1.7 버전 종료(2027년 1월 초) 후 연말연시 전환 시점에 맞춘 2.0 메이저 버전 점프"
+    },
+    {
       "game": "붕괴: 스타레일",
       "trigger_version": "4.5",
       "cycle_override": 35,
       "half_cycle_override": 17,
-      "note": "4.5 버전 5주(35일) 단축 주기 적용 (8/26 ~ 9/29)"
+      "note": "4.5 버전 5주(35일) 단축 주기 적용 (8/26 - 9/29)"
     },
     {
       "game": "원신",
       "trigger_version": "6.7",
       "next_version_number": "7.0",
-      "note": "대형 마일스톤 버전 점프 (6.8이 아닌 7.0으로 직행)"
+      "note": "과거 이력: 6.7 종료 후 7.0 스네즈나야 점프"
     },
     {
       "game": "명조",
       "trigger_version": "3.4",
       "cycle_override": 32,
       "half_cycle_override": 5,
-      "note": "3.4 버전 사이버펑크 콜라보로 인한 32일 단축 주기 적용"
+      "note": "과거 이력: 3.4 버전 사이버펑크 콜라보로 인한 32일 단축 주기 적용"
     },
     {
       "game": "명조",
       "trigger_version": "3.5",
       "stream_date_override": "2026-06-26",
-      "note": "3.4 단축 주기에 따라 3.5 시작일(7/10)의 2주 전 금요일인 6/26으로 공식방송 예약 적용 (시나리오 A)"
+      "note": "과거 이력: 3.4 단축 주기에 따라 3.5 시작일(7/10)의 2주 전 금요일인 6/26으로 공식방송 예약 적용"
     },
     {
       "game": "젠레스 존 제로",
       "trigger_version": "2.8",
       "next_version_number": "3.0",
-      "note": "2.8 버전 종료 후 2.9를 건너뛰고 3.0 마일스톤 버전으로 직행"
+      "note": "과거 이력: 2.8 버전 종료 후 2.9를 건너뛰고 3.0 마일스톤 버전으로 직행"
     },
     {
       "game": "붕괴: 스타레일",
       "trigger_version": "4.3",
       "cycle_override": 44,
       "half_cycle_override": 21,
-      "note": "4.3 버전 7월 15일 새벽 종료(7월 14일까지 노출)에 맞춘 44일 연장 주기 적용"
-    },
-    {
-      "game": "붕괴: 스타레일",
-      "trigger_version": "4.9",
-      "next_version_number": "5.0",
-      "note": "4.9 피날레 버전 종료 후 5.0 메이저 버전으로 점프 (역대 버전 패턴인 1.6, 2.7, 3.8에 부합하는 4.9 적용)"
+      "note": "과거 이력: 4.3 버전 7월 15일 새벽 종료(7월 14일까지 노출)에 맞춘 44일 연장 주기 적용"
     }
   ]
 }
