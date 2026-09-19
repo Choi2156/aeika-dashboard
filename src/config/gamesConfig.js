@@ -10,6 +10,7 @@ export const GAMES_CONFIG = {
     cycle: 42,
     halfCycle: 21,
     streamOffset: -12,
+    standardWeekday: 3, // 수요일
     theme: {
       color: "#67dbed",
       colorDark: "#0e7490",
@@ -25,6 +26,7 @@ export const GAMES_CONFIG = {
     cycle: 42,
     halfCycle: 21,
     streamOffset: -12,
+    standardWeekday: 3, // 수요일
     theme: {
       color: "#9ca4f8",
       colorDark: "#4338ca",
@@ -40,6 +42,7 @@ export const GAMES_CONFIG = {
     cycle: 42,
     halfCycle: 21,
     streamOffset: -12,
+    standardWeekday: 3, // 수요일
     theme: {
       color: "#ebd66b",
       colorDark: "#a16207",
@@ -55,6 +58,7 @@ export const GAMES_CONFIG = {
     cycle: 42,
     halfCycle: 21,
     streamOffset: -13,
+    standardWeekday: 4, // 목요일
     theme: {
       color: "#6fe0b6",
       colorDark: "#047857",
@@ -70,6 +74,8 @@ export const GAMES_CONFIG = {
     cycle: 42,
     halfCycle: 21,
     streamOffset: -7,
+    standardWeekday: 4, // 목요일 중심
+    allowedWeekdays: [3, 4, 5], // 수, 목, 금 유동 점검
     theme: {
       color: "#fcae74",
       colorDark: "#c2410c",

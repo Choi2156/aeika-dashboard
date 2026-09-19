@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { processEvents } from '../engine/scheduler';
+import { validateSchedule } from '../engine/validator';
 import { GAMES_CONFIG } from '../config/gamesConfig';
 
 /**
@@ -127,6 +128,14 @@ export function useScheduleData() {
 
         // 예측 엔진 가동: 병합된 확정 데이터 + 힌트 → 전체 이벤트 (예상 포함)
         const allEvents = processEvents({ ...scheduleData, events: mergedEvents }, hintsData, GAMES_CONFIG);
+
+        // 일정 정합성 검증 (개발 모드 및 콘솔 진단용)
+        if (import.meta.env.DEV) {
+          const valResult = validateSchedule(allEvents, GAMES_CONFIG, hintsData);
+          if (valResult.warningCount > 0 || valResult.errorCount > 0) {
+            console.warn('[ScheduleValidator] 일정 정합성 진단 결과:', valResult);
+          }
+        }
 
         // meta.last_updated에서 실제 일정 데이터 최종 수정일자(YYYY-MM-DD) 추출
         let computedLastUpdated = null;

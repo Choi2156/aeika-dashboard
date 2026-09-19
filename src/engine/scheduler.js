@@ -143,7 +143,10 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     const baseVersion = cleanVersion(latestUpdate.version);
 
     const baseHints = gameHints.find(h => h.trigger_version === baseVersion);
-    const baseCycle = baseHints?.cycle_override || serverConfig.cycle || gameConfig.cycle;
+    let baseCycle = baseHints?.cycle_override || serverConfig.cycle || gameConfig.cycle;
+    if (baseHints?.target_date) {
+      baseCycle = getDaysDiff(baseDate, parseDate(baseHints.target_date));
+    }
     const baseHalfCycle = baseHints?.half_cycle_override || serverConfig.halfCycle || gameConfig.halfCycle;
     const streamOffset = serverConfig.streamOffset || gameConfig.streamOffset;
 
@@ -186,6 +189,9 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
       currentBaseDate = parseDate(fixedNext.date);
       const nextHint = gameHints.find(h => h.trigger_version === currentBaseVer);
       currentBaseCycle = nextHint?.cycle_override || serverConfig.cycle || gameConfig.cycle;
+      if (nextHint?.target_date) {
+        currentBaseCycle = getDaysDiff(currentBaseDate, parseDate(nextHint.target_date));
+      }
       
       nextVer = getNextVersion(currentBaseVer, gameHints);
       hasFixedNextUpdate = allEvents.some(
@@ -196,25 +202,17 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     // 최종 미래 기준점으로부터 '바로 다음 버전' 전반업데이트 예상을 생성
     let nextUpdateDate = addDays(currentBaseDate, currentBaseCycle);
 
-    // 명일방주: 엔드필드 패치 요일 보정 로직 (금요일 -> 목요일 점검으로 변경됨에 따라 하루 당김)
-    if (game === '명일방주: 엔드필드' && nextUpdateDate.getDay() === 5) {
-      nextUpdateDate = addDays(nextUpdateDate, -1);
-    }
-
     // 현재 기준 버전에 확정 end_date가 명시된 경우, 다음 버전 시작일이 그보다 이전이 되지 않도록 보정
-    // (반주년·특별 연장 등으로 end_date가 cycle 예측보다 늦을 때 겹침 방지)
+    // 단, 명시적인 힌트(cycle_override 또는 target_date)가 존재하는 경우 힌트를 최우선으로 존중하여 낡은 end_date에 구속되지 않음
     const currentBaseEvent = allEvents.find(
       e => e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === currentBaseVer && e.end_date
     );
-    if (currentBaseEvent?.end_date) {
+    const hasExplicitHint = Boolean(baseHints?.cycle_override || baseHints?.target_date);
+    if (currentBaseEvent?.end_date && !hasExplicitHint) {
       const confirmedEnd = parseDate(currentBaseEvent.end_date);
       const minNextStart = addDays(confirmedEnd, 1);
       if (nextUpdateDate <= confirmedEnd) {
         nextUpdateDate = minNextStart;
-        // 엔드필드 요일 보정 재적용
-        if (game === '명일방주: 엔드필드' && nextUpdateDate.getDay() === 5) {
-          nextUpdateDate = addDays(nextUpdateDate, -1);
-        }
       }
     }
 
