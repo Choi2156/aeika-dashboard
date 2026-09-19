@@ -117,37 +117,65 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
     const dayName = WEEKDAYS[dayOfWeek];
 
     // 요일 검사
+    let isUnusual = false;
+    let weekdayMsg = '';
     if (config.allowedWeekdays && Array.isArray(config.allowedWeekdays)) {
       if (!config.allowedWeekdays.includes(dayOfWeek)) {
         const allowedNames = config.allowedWeekdays.map(d => WEEKDAYS[d]).join('/');
-        warnings.push({
-          type: 'UNUSUAL_WEEKDAY',
-          game: u.game,
-          version: u.version,
-          date: u.date,
-          message: `${u.game} ${u.version} (${u.date} ${dayName}요일): 통상 허용 요일(${allowedNames})을 벗어난 요일입니다.`,
-        });
+        isUnusual = true;
+        weekdayMsg = `${u.game} ${u.version} (${u.date} ${dayName}요일): 통상 허용 요일(${allowedNames})을 벗어난 요일입니다.`;
       }
     } else if (typeof config.standardWeekday === 'number') {
       if (dayOfWeek !== config.standardWeekday) {
         const stdName = WEEKDAYS[config.standardWeekday];
+        isUnusual = true;
+        weekdayMsg = `${u.game} ${u.version} (${u.date} ${dayName}요일): 통상 점검 요일(${stdName}요일)과 상이합니다.`;
+      }
+    }
+
+    const cleanVer = cleanVersion(u.version);
+    const matchingHint = hintsList.find(
+      h => h.game === u.game && h.trigger_version === cleanVer
+    );
+    // 현재 버전의 시작 날짜를 결정한 직전 버전 힌트도 탐색
+    const prevUpdate = majorUpdates
+      .filter(other => other.game === u.game && other.date < u.date)
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+    const prevCleanVer = prevUpdate ? cleanVersion(prevUpdate.version) : null;
+    const prevHint = prevCleanVer ? hintsList.find(h => h.game === u.game && h.trigger_version === prevCleanVer) : null;
+
+    if (isUnusual) {
+      // 1. 공식 확정(is_fixed) 일정이거나 힌트에 사유가 기재되어 있으면 '확인된 예외(KNOWN)'로 분류
+      const hintReason = matchingHint?.note || prevHint?.note;
+      if (u.is_fixed) {
+        infos.push({
+          type: 'KNOWN_WEEKDAY_EXCEPTION',
+          game: u.game,
+          version: u.version,
+          date: u.date,
+          message: `${weekdayMsg} (공식 확정된 일정으로 정상 승인)`,
+        });
+      } else if (hintReason) {
+        infos.push({
+          type: 'KNOWN_WEEKDAY_EXCEPTION',
+          game: u.game,
+          version: u.version,
+          date: u.date,
+          message: `${weekdayMsg} (힌트 확인: ${hintReason})`,
+        });
+      } else {
+        // 별도 사유 없이 비정규 요일로 예측된 경우만 주의 경고(WARNING) 발생
         warnings.push({
           type: 'UNUSUAL_WEEKDAY',
           game: u.game,
           version: u.version,
           date: u.date,
-          message: `${u.game} ${u.version} (${u.date} ${dayName}요일): 통상 점검 요일(${stdName}요일)과 상이합니다.`,
+          message: `${weekdayMsg} (별도 단축/연장 힌트 없이 비정규 요일로 예측됨 -> 검토 필요)`,
         });
       }
     }
 
     // 주기 검사 (다음 버전과의 일수 차이 또는 힌트 확인)
-    const cleanVer = cleanVersion(u.version);
-    const matchingHint = hintsList.find(
-      h => h.game === u.game && h.trigger_version === cleanVer
-    );
-
-    // 다음 버전 찾기
     const nextUpdates = majorUpdates
       .filter(other => other.game === u.game && other.date > u.date)
       .sort((a, b) => a.date.localeCompare(b.date));
@@ -165,13 +193,22 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
             cycleDays,
             message: `${u.game} ${u.version}: 변칙 주기 ${cycleDays}일 적용됨 (힌트: ${matchingHint.note || '사유 등록됨'})`,
           });
+        } else if (u.date < '2026-08-01') {
+          // 과거 히스토리 아카이브 데이터
+          infos.push({
+            type: 'HISTORICAL_CYCLE',
+            game: u.game,
+            version: u.version,
+            cycleDays,
+            message: `${u.game} ${u.version}: 과거 완료된 주기 ${cycleDays}일 (아카이브)`,
+          });
         } else {
           warnings.push({
             type: 'ABNORMAL_CYCLE_WITHOUT_HINT',
             game: u.game,
             version: u.version,
             cycleDays,
-            message: `${u.game} ${u.version}: 주기가 ${cycleDays}일로 산출되었습니다 (별도 힌트 없이 통상 42일 대비 7일 이상 편차).`,
+            message: `${u.game} ${u.version}: 주기가 ${cycleDays}일로 산출되었습니다 (별도 힌트 없이 통상 42일 대비 편차 발생).`,
           });
         }
       }
@@ -201,12 +238,21 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
 
     if (relatedUpdate) {
       if (s.date >= relatedUpdate.date) {
-        warnings.push({
-          type: 'STREAM_AFTER_UPDATE',
-          game: s.game,
-          version: s.version,
-          message: `${s.game} ${s.version} 공식방송일(${s.date})이 업데이트일(${relatedUpdate.date})보다 늦거나 같습니다.`,
-        });
+        if (s.date < '2026-08-01' && relatedUpdate.is_fixed) {
+          infos.push({
+            type: 'HISTORICAL_STREAM',
+            game: s.game,
+            version: s.version,
+            message: `${s.game} ${s.version}: 과거 런칭 당일 동시 방송 이력 (${s.date})`,
+          });
+        } else {
+          warnings.push({
+            type: 'STREAM_AFTER_UPDATE',
+            game: s.game,
+            version: s.version,
+            message: `${s.game} ${s.version} 공식방송일(${s.date})이 업데이트일(${relatedUpdate.date})보다 늦거나 같습니다.`,
+          });
+        }
       }
     }
   }
