@@ -82,6 +82,13 @@
       "cycle_override": 44,
       "half_cycle_override": 21,
       "note": "과거 이력: 4.3 버전 7월 15일 새벽 종료(7월 14일까지 노출)에 맞춘 44일 연장 주기 적용"
+    },
+    {
+      "game": "명일방주: 엔드필드",
+      "trigger_version": "1.4",
+      "cycle_override": 48,
+      "half_cycle_override": 24,
+      "note": "과거 이력: 1.4 버전 48일 연장 주기 (7/16 목 - 9/2 수 점검 전)"
     }
   ]
 }

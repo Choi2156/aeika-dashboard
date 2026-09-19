@@ -3,10 +3,12 @@
  * 
  * 기능:
  * 1. 타 게임 간 동일 날짜 대형 업데이트 동시 발생(충돌) 감지
- * 2. 게임별 통상 점검 요일(수/목/수-금) 이탈 감지
- * 3. 힌트 없는 비정상 주기(35일 미만 / 45일 초과) 감지
- * 4. 배너 마감일(end_date)과 차기 버전 시작일 간격/역전 감지
- * 5. 오프라인 이벤트 및 행사의 날짜 유효성 및 기간 정합성 전수 검증
+ * 2. 동일 게임 내 중복 대형 패치 및 날짜 역전 치명적 오류 감지 (ERROR 승격)
+ * 3. 게임별 통상 점검 요일(수/목/수-금) 이탈 감지 (힌트 객체 기반 유연 판정)
+ * 4. 게임별 설정 기반 비정상 주기(표준 ±7일 초과) 감지
+ * 5. 후반 업데이트 및 배너 마감일 정합성 검증
+ * 6. 공식 방송의 버전 패치 전 방영 정합성 검증
+ * 7. 오프라인 이벤트 및 행사의 날짜 유효성 및 기간 정합성 전수 검증
  */
 
 import { parseDate, cleanVersion, getDaysDiff, formatDate } from './scheduler.js';
@@ -29,6 +31,7 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
 
   const hintsList = hintsData?.hints || [];
   const majorUpdates = allEvents.filter(e => e.type === '전반업데이트');
+  const halfUpdates = allEvents.filter(e => e.type === '후반업데이트');
 
   // ─── [1] 오프라인 이벤트 / 행사 정합성 검증 ──────────────────
   const offlineEvents = allEvents.filter(
@@ -82,9 +85,19 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
   }
 
   // ─── [2] 전반업데이트(메이저 패치) 검증 ─────────────────────────
-  // ① 타 게임 간 동일 날짜 동시 패치 충돌 검사
+  // ① 날짜 포맷 유효성 및 동일 일자 동시 패치 충돌/중복 검사
   const updatesByDate = new Map();
   for (const u of majorUpdates) {
+    if (!u.date || !/^\d{4}-\d{2}-\d{2}$/.test(u.date)) {
+      errors.push({
+        type: 'INVALID_UPDATE_DATE_FORMAT',
+        game: u.game,
+        version: u.version,
+        message: `유효하지 않은 업데이트 날짜 형식입니다: ${u.date}`,
+      });
+      continue;
+    }
+
     if (!updatesByDate.has(u.date)) {
       updatesByDate.set(u.date, []);
     }
@@ -93,6 +106,24 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
 
   for (const [date, updates] of updatesByDate.entries()) {
     if (updates.length > 1) {
+      // 동일 게임 중복 패치 감지 (치명적 오류 ERROR)
+      const gamesMap = new Map();
+      for (const u of updates) {
+        if (!gamesMap.has(u.game)) gamesMap.set(u.game, []);
+        gamesMap.get(u.game).push(u);
+      }
+      for (const [gName, gUpdates] of gamesMap.entries()) {
+        if (gUpdates.length > 1) {
+          errors.push({
+            type: 'DUPLICATE_GAME_UPDATE',
+            game: gName,
+            date,
+            message: `${date}: 동일 게임(${gName})의 전반업데이트가 ${gUpdates.length}건 중복 등록되었습니다.`,
+          });
+        }
+      }
+
+      // 서로 다른 게임 간 대형 업데이트 충돌 (주의 경고 WARNING)
       const distinctGames = new Set(updates.map(u => u.game));
       if (distinctGames.size > 1) {
         const gameListStr = updates
@@ -145,8 +176,9 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
     const prevHint = prevCleanVer ? hintsList.find(h => h.game === u.game && h.trigger_version === prevCleanVer) : null;
 
     if (isUnusual) {
-      // 1. 공식 확정(is_fixed) 일정이거나 힌트에 사유가 기재되어 있으면 '확인된 예외(KNOWN)'로 분류
-      const hintReason = matchingHint?.note || prevHint?.note;
+      // 힌트 객체(matchingHint 또는 prevHint)가 존재하거나 확정 일정이면 '확인된 예외'로 승인
+      const hasReason = Boolean(matchingHint || prevHint);
+      const hintReason = matchingHint?.note || prevHint?.note || '사전 등록된 단축/연장 힌트 확인';
       if (u.is_fixed) {
         infos.push({
           type: 'KNOWN_WEEKDAY_EXCEPTION',
@@ -155,7 +187,7 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
           date: u.date,
           message: `${weekdayMsg} (공식 확정된 일정으로 정상 승인)`,
         });
-      } else if (hintReason) {
+      } else if (hasReason) {
         infos.push({
           type: 'KNOWN_WEEKDAY_EXCEPTION',
           game: u.game,
@@ -184,51 +216,105 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
       const nextU = nextUpdates[0];
       const cycleDays = getDaysDiff(parseDate(u.date), parseDate(nextU.date));
 
-      if (cycleDays < 35 || cycleDays > 45) {
-        if (matchingHint) {
-          infos.push({
-            type: 'KNOWN_IRREGULAR_CYCLE',
-            game: u.game,
-            version: u.version,
-            cycleDays,
-            message: `${u.game} ${u.version}: 변칙 주기 ${cycleDays}일 적용됨 (힌트: ${matchingHint.note || '사유 등록됨'})`,
-          });
-        } else if (u.date < '2026-08-01') {
-          // 과거 히스토리 아카이브 데이터
-          infos.push({
-            type: 'HISTORICAL_CYCLE',
-            game: u.game,
-            version: u.version,
-            cycleDays,
-            message: `${u.game} ${u.version}: 과거 완료된 주기 ${cycleDays}일 (아카이브)`,
-          });
-        } else {
-          warnings.push({
-            type: 'ABNORMAL_CYCLE_WITHOUT_HINT',
-            game: u.game,
-            version: u.version,
-            cycleDays,
-            message: `${u.game} ${u.version}: 주기가 ${cycleDays}일로 산출되었습니다 (별도 힌트 없이 통상 42일 대비 편차 발생).`,
-          });
+      // 날짜 역전 치명적 오류 감지 (ERROR 승격)
+      if (cycleDays <= 0) {
+        errors.push({
+          type: 'DATE_SEQUENCE_INVERTED',
+          game: u.game,
+          version: u.version,
+          message: `${u.game} ${u.version} 시작일(${u.date})이 차기 버전(${nextU.version}) 시작일(${nextU.date}) 이상으로 역전되었습니다.`,
+        });
+      } else {
+        // 게임 설정 기반 동적 주기 허용 범위 (통상 주기 ±7일)
+        const standardCycle = config.cycle || 42;
+        const minCycle = standardCycle - 7;
+        const maxCycle = standardCycle + 7;
+
+        if (cycleDays < minCycle || cycleDays > maxCycle) {
+          if (matchingHint) {
+            infos.push({
+              type: 'KNOWN_IRREGULAR_CYCLE',
+              game: u.game,
+              version: u.version,
+              cycleDays,
+              message: `${u.game} ${u.version}: 변칙 주기 ${cycleDays}일 적용됨 (힌트: ${matchingHint.note || '사유 등록됨'})`,
+            });
+          } else if (u.date < '2026-08-01') {
+            // 과거 히스토리 아카이브 데이터
+            infos.push({
+              type: 'HISTORICAL_CYCLE',
+              game: u.game,
+              version: u.version,
+              cycleDays,
+              message: `${u.game} ${u.version}: 과거 완료된 주기 ${cycleDays}일 (아카이브)`,
+            });
+          } else {
+            warnings.push({
+              type: 'ABNORMAL_CYCLE_WITHOUT_HINT',
+              game: u.game,
+              version: u.version,
+              cycleDays,
+              message: `${u.game} ${u.version}: 주기가 ${cycleDays}일로 산출되었습니다 (별도 힌트 없이 통상 ${standardCycle}일 대비 편차 발생).`,
+            });
+          }
         }
       }
 
       // 배너 종료일 정합성 검사 (u.end_date vs nextU.date)
-      if (u.end_date) {
-        const expectedEndDate = formatDate(parseDate(nextU.date));
-        if (u.end_date >= nextU.date) {
-          warnings.push({
-            type: 'BANNER_OVERLAP_NEXT_UPDATE',
-            game: u.game,
-            version: u.version,
-            message: `${u.game} ${u.version} 배너 종료일(${u.end_date})이 다음 버전 시작일(${nextU.date})과 겹치거나 늦습니다.`,
-          });
-        }
+      if (u.end_date && u.end_date >= nextU.date) {
+        warnings.push({
+          type: 'BANNER_OVERLAP_NEXT_UPDATE',
+          game: u.game,
+          version: u.version,
+          message: `${u.game} ${u.version} 배너 종료일(${u.end_date})이 다음 버전 시작일(${nextU.date})과 겹치거나 늦습니다.`,
+        });
       }
     }
   }
 
-  // ─── [3] 공식 방송 정합성 검사 ────────────────────────────────
+  // ─── [3] 후반업데이트 정합성 검증 ─────────────────────────────
+  for (const half of halfUpdates) {
+    const cleanVer = cleanVersion(half.version);
+    const mainUpdate = majorUpdates.find(
+      u => u.game === half.game && cleanVersion(u.version) === cleanVer
+    );
+
+    if (mainUpdate) {
+      if (half.date < mainUpdate.date) {
+        errors.push({
+          type: 'HALF_UPDATE_BEFORE_MAIN',
+          game: half.game,
+          version: half.version,
+          message: `${half.game} ${half.version} 후반 업데이트 시작일(${half.date})이 전반 업데이트 시작일(${mainUpdate.date})보다 앞서 있습니다.`,
+        });
+      }
+
+      // 차기 전반업데이트가 있는 경우 후반업데이트가 차기 시작일 이상인지 검사
+      const nextMain = majorUpdates
+        .filter(u => u.game === half.game && u.date > mainUpdate.date)
+        .sort((a, b) => a.date.localeCompare(b.date))[0];
+
+      if (nextMain && half.date >= nextMain.date) {
+        errors.push({
+          type: 'HALF_UPDATE_AFTER_NEXT_VERSION',
+          game: half.game,
+          version: half.version,
+          message: `${half.game} ${half.version} 후반 시작일(${half.date})이 차기 버전(${nextMain.version}) 시작일(${nextMain.date})보다 늦거나 같습니다.`,
+        });
+      }
+    }
+
+    if (half.end_date && half.date > half.end_date) {
+      errors.push({
+        type: 'DATE_RANGE_INVERTED',
+        game: half.game,
+        version: half.version,
+        message: `${half.game} ${half.version} 후반 배너 종료일(${half.end_date})이 시작일(${half.date})보다 앞서 있습니다.`,
+      });
+    }
+  }
+
+  // ─── [4] 공식 방송 정합성 검사 ────────────────────────────────
   const streams = allEvents.filter(e => e.type === '공식방송');
   for (const s of streams) {
     const cleanVer = cleanVersion(s.version);
@@ -304,7 +390,7 @@ export function formatValidationReport(result) {
   if (result.errorCount > 0) {
     lines.push(`#### 2. 치명적 오류 (CRITICAL ERRORS) - 즉시 조치 필요`);
     for (const err of result.errors) {
-      lines.push(`- ❌ **[${err.type}]** ${err.game || ''} ${err.title || ''}: ${err.message}`);
+      lines.push(`- ❌ **[${err.type}]** ${err.game || ''} ${err.version || err.title || ''}: ${err.message}`);
     }
     lines.push('');
   }

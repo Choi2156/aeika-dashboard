@@ -181,7 +181,12 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     let hasFixedNextUpdate = allEvents.some(
       e => e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer && e.is_fixed
     );
-    while (hasFixedNextUpdate) {
+    const visitedFixedVersions = new Set([currentBaseVer]);
+    let hopCount = 0;
+    while (hasFixedNextUpdate && hopCount < 10) {
+      if (visitedFixedVersions.has(nextVer)) break;
+      visitedFixedVersions.add(nextVer);
+      hopCount++;
       const fixedNext = allEvents.find(
         e => e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer && e.is_fixed
       );
@@ -207,7 +212,8 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     const currentBaseEvent = allEvents.find(
       e => e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === currentBaseVer && e.end_date
     );
-    const hasExplicitHint = Boolean(baseHints?.cycle_override || baseHints?.target_date);
+    const currentBaseHint = gameHints.find(h => h.trigger_version === currentBaseVer);
+    const hasExplicitHint = Boolean(currentBaseHint?.cycle_override || currentBaseHint?.target_date);
     if (currentBaseEvent?.end_date && !hasExplicitHint) {
       const confirmedEnd = parseDate(currentBaseEvent.end_date);
       const minNextStart = addDays(confirmedEnd, 1);
@@ -269,9 +275,12 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
 
     if (hasFixedStream) {
       const nextNextVer = getNextVersion(streamTargetVer, gameHints);
-      const nextNextHint = gameHints.find(h => h.trigger_version === nextNextVer);
-      const nextNextCycle = nextNextHint?.cycle_override || currentBaseCycle;
-      streamTargetUpdateDate = addDays(streamTargetUpdateDate, nextNextCycle);
+      const streamTargetHint = gameHints.find(h => h.trigger_version === streamTargetVer);
+      let streamTargetCycle = streamTargetHint?.cycle_override || serverConfig.cycle || gameConfig.cycle;
+      if (streamTargetHint?.target_date) {
+        streamTargetCycle = getDaysDiff(streamTargetUpdateDate, parseDate(streamTargetHint.target_date));
+      }
+      streamTargetUpdateDate = addDays(streamTargetUpdateDate, streamTargetCycle);
       streamTargetVer = nextNextVer;
     }
 
@@ -394,7 +403,10 @@ export function getEventDuration(event, allEvents, gamesConfig, hintsData) {
 
   const cleanVer = cleanVersion(event.version);
   const currentHint = gameHints.find(h => h.trigger_version === cleanVer);
-  const cycle = currentHint?.cycle_override || gameConfig?.cycle || 42;
+  let cycle = currentHint?.cycle_override || gameConfig?.cycle || 42;
+  if (currentHint?.target_date && event.date) {
+    cycle = Math.max(1, getDaysDiff(parseDate(event.date), parseDate(currentHint.target_date)));
+  }
 
   if (event.type === '공식방송') {
     return 1;

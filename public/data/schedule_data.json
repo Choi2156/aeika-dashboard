@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-09-13T00:06:00+09:00",
+    "last_updated": "2026-09-19T23:18:00+09:00",
     "schema_version": "2.0"
   },
   "games_config": {
@@ -106,7 +106,7 @@
       "end_date": "2026-07-14",
       "time": "",
       "is_fixed": true,
-      "detail": "전반 6/1 신규 캐릭터 픽업 및 개척 임무 개방. 4.3 버전 「산 자의 망천에 잠겨」 정식 개막!",
+      "detail": "전반 6/1 '천야·블레이드' 출시 및 신규 개척 임무 「이상 낙원」 - 「산 자의 망천에 잠겨」 개방",
       "custom_img": "starrail_4.3_banner.webp",
       "link": ""
     },
@@ -120,7 +120,7 @@
       "end_date": "2026-07-14",
       "time": "",
       "is_fixed": true,
-      "detail": "후반 6/22 후반부 캐릭터 워프 및 이벤트 개시. 4.3 버전 이벤트 및 워프는 7월 15일 새벽에 조기 종료될 예정입니다.",
+      "detail": "후반 6/22 '키레네' 및 '파이논' 복각 워프 개시",
       "custom_img": "starrail_4.3_banner.webp",
       "link": ""
     },
