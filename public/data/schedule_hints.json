@@ -38,6 +38,20 @@
       "note": "4.5 버전 33일 단축 주기 적용 (8/26 - 9/28 점검 전, 4주년 일정 조율)"
     },
     {
+      "game": "붕괴: 스타레일",
+      "trigger_version": "4.6",
+      "cycle_override": 44,
+      "half_cycle_override": 21,
+      "note": "4.6 버전 44일 주기 적용 (9/28 월 - 11/11 수, 수요일 정기 점검 복귀)"
+    },
+    {
+      "game": "명일방주: 엔드필드",
+      "trigger_version": "1.5",
+      "cycle_override": 43,
+      "half_cycle_override": 22,
+      "note": "1.5 버전 43일 주기 적용 (9/2 수 - 10/15 목 점검 전, 인게임 이벤트 잔여 일정 반영)"
+    },
+    {
       "game": "원신",
       "trigger_version": "6.7",
       "next_version_number": "7.0",
