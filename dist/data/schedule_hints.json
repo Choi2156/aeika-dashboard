@@ -41,8 +41,8 @@
       "game": "붕괴: 스타레일",
       "trigger_version": "4.6",
       "cycle_override": 44,
-      "half_cycle_override": 21,
-      "note": "4.6 버전 44일 주기 적용 (9/28 월 - 11/11 수, 수요일 정기 점검 복귀)"
+      "half_cycle_override": 23,
+      "note": "4.6 버전 44일 주기 적용 (9/28 월 - 11/11 수, 후반 10/21 수요일 워프 전환)"
     },
     {
       "game": "명일방주: 엔드필드",
