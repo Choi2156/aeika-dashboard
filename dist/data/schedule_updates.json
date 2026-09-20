@@ -15,6 +15,21 @@
     "link": "https://game.naver.com/lounge/WutheringWaves/board/detail/8212467"
   },
   {
+    "id": "EVT_HSR_20261015_0001",
+    "game": "붕괴: 스타레일",
+    "version": "이벤트",
+    "type": "오프라인이벤트",
+    "title": "〈붕괴: 스타레일〉 × 메가MGC커피 콜라보 - ONE SCRIPT, MEGA TIME☕",
+    "date": "2026-10-15",
+    "end_date": "2026-11-18",
+    "time": "",
+    "is_fixed": true,
+    "detail": "☕ [붕괴: 스타레일 × 메가MGC커피 콜라보] - ONE SCRIPT, MEGA TIME\n\n✦ 행사 기간: 2026년 10월 15일(목) - 11월 18일(수)\n✦ 진행 장소: 전국 메가MGC커피 매장\n✦ 주요 내용:\n  다가오는 10월 15일, 《붕괴: 스타레일》 × 메가MGC커피 콜라보가 시작됩니다!\n  스텔라론 헌터 은랑 LV.999와 천야·블레이드를 테마로 한 콜라보 한정 음료부터 귀여운 은랑LV.999와 멋진 천야·블레이드를 담은 다양한 한정 굿즈까지!\n\n  임무는 「각본」대로, 휴식은 MEGA답게!\n  10월 15일, 메가MGC커피에서 만나요!\n\n※ 공식 이벤트 상세 공지 오픈 시 후속 안내 링크가 업데이트될 예정입니다.",
+    "location": "전국 메가MGC커피 매장",
+    "custom_img": "hsr_megacoffee_collab.webp",
+    "link": "https://youtu.be/oXvH8saqzeE"
+  },
+  {
     "id": "EVT_HSR_20260920_0001",
     "game": "붕괴: 스타레일",
     "version": "4.6",
