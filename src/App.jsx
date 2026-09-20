@@ -66,15 +66,36 @@ export default function App() {
   // 3.6. 이달의 캘린더 이미지 모달 오픈 상태
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  // 4. 스크롤 스파이 훅 탑재: 헤더와 인포바가 다 넘어가는 시점(150px)에 메뉴바 콤팩트 축소
+  // 4. 스크롤 스파이 훅 탑재: 헤더와 인포바가 다 넘어가는 시점에 메뉴바 콤팩트 축소
+  // 이력 현상(Hysteresis): 축소 기준점(Down)과 복원 기준점(Up)을 분리하여 경계면 무한 깜빡임 완벽 차단
   const [isShrunk, setIsShrunk] = useState(false);
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const isMobile = window.innerWidth <= 768;
-      const threshold = isMobile ? 280 : 150; // 모바일에선 더 늦게(280px) 축소되도록 임계치 상향!
-      setIsShrunk(window.scrollY > threshold);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const isMobile = window.innerWidth <= 768;
+          // 축소(Down) 임계치와 복원(Up) 임계치 사이에 데드밴드(여유 간격)를 두어 레이아웃 변동에 따른 루프 차단
+          const shrinkThreshold = isMobile ? 300 : 180;
+          const expandThreshold = isMobile ? 180 : 100;
+          const scrollY = window.scrollY;
+
+          setIsShrunk((prev) => {
+            if (!prev && scrollY > shrinkThreshold) {
+              return true;
+            }
+            if (prev && scrollY < expandThreshold) {
+              return false;
+            }
+            return prev;
+          });
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
