@@ -752,15 +752,23 @@
   .gantt-bottom-right {
     min-width: 100%;
   }
+}
 
-  .shorts-player-container {
-    max-width: 340px;
+/* 태블릿 전용: 중앙 정렬 적정 너비 유지 */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .recommended-shorts-widget--minimal {
+    max-width: 400px;
     margin: 0 auto;
   }
 
+  .shorts-player-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .shorts-bottom-actions {
-    max-width: 340px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -984,7 +992,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 9 / 16;
-  max-width: 250px; /* PC 환경에서 지나치게 길어지는 현상 억제 */
+  max-width: 100%;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border-primary);
@@ -1526,11 +1534,17 @@
   word-break: keep-all;
 }
 
-/* 모바일 최적화: 쇼츠 플레이어 크기 대폭 확장 및 비례 정렬 */
+/* 모바일 최적화: 모든 모바일 기기 화면 폭에 맞춰 100% 꽉 차는 완전 가변 반응형 쇼츠 UI */
 @media (max-width: 640px) {
-  .shorts-slider-main {
-    gap: 0.5rem;
+  .recommended-shorts-widget--minimal {
+    padding: 0.5rem 0.35rem 0.75rem 0.35rem; /* 좌우 여백을 최소화하여 영상 화면 크기 극대화 */
     width: 100%;
+    box-sizing: border-box;
+  }
+
+  .shorts-slider-main {
+    width: 100%;
+    gap: 0;
   }
 
   .shorts-slider-arrow {
@@ -1539,20 +1553,21 @@
   }
 
   .shorts-player-container {
-    width: 100%;
-    max-width: 320px; /* 모바일 세로 길이 대폭 확장 (기존 210px -> 320px로 높이 약 568px 확보하여 가독성 및 시인성 극대화) */
-    min-width: 0;
-    margin: 0 auto;
+    width: 100% !important;
+    max-width: 100% !important; /* 기기 너비에 맞춰 100% 꽉 차게 확장 (화면 크기에 따라 세로 높이 자동 비례 확장) */
+    min-width: 0 !important;
+    margin: 0 !important;
   }
 
   .shorts-bottom-actions {
-    max-width: 320px;
-    margin: 0 auto;
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box;
   }
 
   .shorts-channel-direct-btn {
-    max-width: none;
+    max-width: none !important;
   }
 }
 
