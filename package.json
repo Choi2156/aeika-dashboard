@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "node scripts/validateSchedule.js && vite build",
     "preview": "vite preview",
-    "validate": "node scripts/validateSchedule.js"
+    "validate": "node scripts/validateSchedule.js",
+    "calendar": "node scripts/generateCalendar.js"
   },
   "dependencies": {
     "react": "^19.1.0",

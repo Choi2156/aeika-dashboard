@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { processEvents } from '../src/engine/scheduler.js';
 import { validateSchedule, formatValidationReport } from '../src/engine/validator.js';
 import { GAMES_CONFIG } from '../src/config/gamesConfig.js';
+import { generateCalendar } from './generateCalendar.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,6 +50,14 @@ function runValidation() {
 
   if (!result.isValid) {
     process.exit(1);
+  }
+
+  // Auto-generate milestone calendars after successful validation
+  if (!process.argv.includes('--no-calendar') && !process.argv.includes('--skip-calendar')) {
+    const calOk = generateCalendar();
+    if (!calOk) {
+      console.warn('[Warning] Calendar auto-generation encountered an issue, but schedule validation passed.');
+    }
   }
 }
 
