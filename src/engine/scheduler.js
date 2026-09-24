@@ -34,9 +34,9 @@ export function parseDate(dateStr) {
  * 두 날짜 사이의 일수 차이 (정수)
  */
 export function getDaysDiff(startDate, endDate) {
-  const s = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-  const e = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-  return Math.floor((e - s) / (1000 * 60 * 60 * 24));
+  const utc1 = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const utc2 = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+  return Math.round((utc2 - utc1) / (1000 * 60 * 60 * 24));
 }
 
 /**
@@ -126,8 +126,8 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
   // 각 게임별로 예상 일정 생성
   for (const game of Object.keys(gamesConfig)) {
     const gameConfig = gamesConfig[game];
-    const serverConfig = configs[game];
-    if (!gameConfig || !serverConfig) continue;
+    if (!gameConfig) continue;
+    const serverConfig = configs[game] || {};
 
     const gameHints = hintsByGame[game] || [];
 

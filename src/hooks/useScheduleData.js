@@ -26,79 +26,34 @@ export function useScheduleData() {
       try {
         // 10분 단위 캐시 키: 브라우저 캐시를 적극 활용하여 네트워크 트래픽 및 서버 부하 최소화
         const cacheKey = Math.floor(Date.now() / (10 * 60 * 1000));
-        const [dataRes, hintsRes, recRes, briefRes, updatesRes, patchRes, noticeRes] = await Promise.all([
-          fetch('./data/schedule_data.json?t=' + cacheKey),
-          fetch('./data/schedule_hints.json?t=' + cacheKey),
-          fetch('./data/recommended_videos.json?t=' + cacheKey),
-          fetch('./data/briefing_data.json?t=' + cacheKey),
-          fetch('./data/schedule_updates.json?t=' + cacheKey),
-          fetch('./data/patch_notes.json?t=' + cacheKey),
-          fetch('./data/notices.json?t=' + cacheKey),
-        ]);
 
+        // 부가 JSON용 안전 페치 헬퍼 (네트워크 거절/파싱 에러 시에도 기본값으로 안전 격리)
+        const fetchJsonSafe = async (url, fallback) => {
+          try {
+            const res = await fetch(url);
+            if (res && res.ok) {
+              return await res.json();
+            }
+          } catch (e) {
+            console.warn(`[useScheduleData] Non-critical resource fetch fallback for ${url}:`, e);
+          }
+          return fallback;
+        };
+
+        // 1) 필수 일정 데이터 페치 (실패 시 메인 에러 처리)
+        const dataRes = await fetch('./data/schedule_data.json?t=' + cacheKey);
         if (!dataRes.ok) throw new Error('schedule_data.json 로드 실패');
-
         const scheduleData = await dataRes.json();
-        
-        // 힌트 파일은 없어도 정상 동작해야 함
-        let hintsData = { hints: [] };
-        if (hintsRes.ok) {
-          try {
-            hintsData = await hintsRes.json();
-          } catch (e) {
-            console.error('Failed to parse schedule_hints.json:', e);
-          }
-        }
 
-        // 추천 비디오 DB 로드 예외 처리
-        let recommendedVideos = { shorts: [], longform: [] };
-        if (recRes.ok) {
-          try {
-            recommendedVideos = await recRes.json();
-          } catch (e) {
-            console.error('Failed to parse recommended_videos.json:', e);
-          }
-        }
-
-        // AI 데일리 브리핑 데이터 로드 예외 처리
-        let briefingData = { last_checked: '', articles: [] };
-        if (briefRes.ok) {
-          try {
-            briefingData = await briefRes.json();
-          } catch (e) {
-            console.error('Failed to parse briefing_data.json:', e);
-          }
-        }
-
-        // 신규 스케줄 증분 업데이트 데이터 로드
-        let updatesData = [];
-        if (updatesRes.ok) {
-          try {
-            updatesData = await updatesRes.json();
-          } catch (e) {
-            console.error('Failed to parse schedule_updates.json:', e);
-          }
-        }
-
-        // 패치노트 데이터 로드
-        let patchNotes = [];
-        if (patchRes && patchRes.ok) {
-          try {
-            patchNotes = await patchRes.json();
-          } catch (e) {
-            console.error('Failed to parse patch_notes.json:', e);
-          }
-        }
-
-        // 공지사항 데이터 로드
-        let notices = [];
-        if (noticeRes && noticeRes.ok) {
-          try {
-            notices = await noticeRes.json();
-          } catch (e) {
-            console.error('Failed to parse notices.json:', e);
-          }
-        }
+        // 2) 부가 데이터 6종 병렬 페치 (각각의 실패가 메인 스케줄 로딩을 방해하지 않도록 격리)
+        const [hintsData, recommendedVideos, briefingData, updatesData, patchNotes, notices] = await Promise.all([
+          fetchJsonSafe('./data/schedule_hints.json?t=' + cacheKey, { hints: [] }),
+          fetchJsonSafe('./data/recommended_videos.json?t=' + cacheKey, { shorts: [], longform: [] }),
+          fetchJsonSafe('./data/briefing_data.json?t=' + cacheKey, { last_checked: '', articles: [] }),
+          fetchJsonSafe('./data/schedule_updates.json?t=' + cacheKey, []),
+          fetchJsonSafe('./data/patch_notes.json?t=' + cacheKey, []),
+          fetchJsonSafe('./data/notices.json?t=' + cacheKey, []),
+        ]);
 
         // ID 기반 중복 제거 및 실시간 대치 (Merge & Override by ID Map)
         const baseEvents = scheduleData.events || [];

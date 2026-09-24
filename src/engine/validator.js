@@ -16,6 +16,20 @@ import { parseDate, cleanVersion, getDaysDiff, formatDate } from './scheduler.js
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 /**
+ * YYYY-MM-DD 형식이면서 실제 그레고리력 달력에 존재하는 유효한 날짜인지 검증 (윤년 2월 29일/30일/31일 등 방어)
+ */
+export function isValidCalendarDate(dateStr) {
+  if (!dateStr || typeof dateStr !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dateObj = new Date(Date.UTC(y, m - 1, d));
+  return (
+    dateObj.getUTCFullYear() === y &&
+    dateObj.getUTCMonth() === m - 1 &&
+    dateObj.getUTCDate() === d
+  );
+}
+
+/**
  * 전체 이벤트 목록 및 게임 설정을 기반으로 정합성을 검증하고 진단 결과를 반환
  * 
  * @param {Array} allEvents - 전체 가공된 이벤트 배열
@@ -39,23 +53,23 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
   );
 
   for (const evt of offlineEvents) {
-    if (!evt.date || !/^\d{4}-\d{2}-\d{2}$/.test(evt.date)) {
+    if (!isValidCalendarDate(evt.date)) {
       errors.push({
         type: 'INVALID_DATE_FORMAT',
         game: evt.game,
         title: evt.title,
-        message: `유효하지 않은 시작 날짜 형식입니다: ${evt.date}`,
+        message: `유효하지 않거나 실제 달력에 존재하지 않는 시작 날짜입니다: ${evt.date}`,
       });
       continue;
     }
 
     if (evt.end_date) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(evt.end_date)) {
+      if (!isValidCalendarDate(evt.end_date)) {
         errors.push({
           type: 'INVALID_END_DATE_FORMAT',
           game: evt.game,
           title: evt.title,
-          message: `유효하지 않은 종료 날짜 형식입니다: ${evt.end_date}`,
+          message: `유효하지 않거나 실제 달력에 존재하지 않는 종료 날짜입니다: ${evt.end_date}`,
         });
         continue;
       }
@@ -88,12 +102,12 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
   // ① 날짜 포맷 유효성 및 동일 일자 동시 패치 충돌/중복 검사
   const updatesByDate = new Map();
   for (const u of majorUpdates) {
-    if (!u.date || !/^\d{4}-\d{2}-\d{2}$/.test(u.date)) {
+    if (!isValidCalendarDate(u.date)) {
       errors.push({
         type: 'INVALID_UPDATE_DATE_FORMAT',
         game: u.game,
         version: u.version,
-        message: `유효하지 않은 업데이트 날짜 형식입니다: ${u.date}`,
+        message: `유효하지 않거나 실제 달력에 존재하지 않는 업데이트 날짜입니다: ${u.date}`,
       });
       continue;
     }
@@ -273,7 +287,28 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
   }
 
   // ─── [3] 후반업데이트 정합성 검증 ─────────────────────────────
+  // ─── [3] 후반업데이트 정합성 검증 ─────────────────────────────
   for (const half of halfUpdates) {
+    if (!isValidCalendarDate(half.date)) {
+      errors.push({
+        type: 'INVALID_HALF_UPDATE_DATE_FORMAT',
+        game: half.game,
+        version: half.version,
+        message: `유효하지 않거나 실제 달력에 존재하지 않는 후반 업데이트 날짜입니다: ${half.date}`,
+      });
+      continue;
+    }
+
+    if (half.end_date && !isValidCalendarDate(half.end_date)) {
+      errors.push({
+        type: 'INVALID_HALF_UPDATE_END_DATE_FORMAT',
+        game: half.game,
+        version: half.version,
+        message: `유효하지 않거나 실제 달력에 존재하지 않는 후반 배너 종료 날짜입니다: ${half.end_date}`,
+      });
+      continue;
+    }
+
     const cleanVer = cleanVersion(half.version);
     const mainUpdate = majorUpdates.find(
       u => u.game === half.game && cleanVersion(u.version) === cleanVer
@@ -317,6 +352,15 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
   // ─── [4] 공식 방송 정합성 검사 ────────────────────────────────
   const streams = allEvents.filter(e => e.type === '공식방송');
   for (const s of streams) {
+    if (!isValidCalendarDate(s.date)) {
+      errors.push({
+        type: 'INVALID_STREAM_DATE_FORMAT',
+        game: s.game,
+        version: s.version,
+        message: `유효하지 않거나 실제 달력에 존재하지 않는 공식방송 날짜입니다: ${s.date}`,
+      });
+      continue;
+    }
     const cleanVer = cleanVersion(s.version);
     const relatedUpdate = majorUpdates.find(
       u => u.game === s.game && cleanVersion(u.version) === cleanVer
