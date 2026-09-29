@@ -4,7 +4,7 @@ import { trackOutboundLink } from '../utils/analytics';
 import '../styles/components.css';
 
 /**
- * SupportModal — 대시보드 크티(Ctee) 후원 연동 모달
+ * SupportModal — 대시보드 투네이션(Toonation) 후원 연동 모달
  *
  * Props:
  *   isOpen  – boolean
@@ -90,11 +90,11 @@ export default function SupportModal({ isOpen, onClose }) {
         if (e.target === overlayRef.current) handleClose();
       }}
     >
-      <div className="modal-body modal-body--guide modal-body--support-ctee">
+      <div className="modal-body modal-body--guide modal-body--support-toonation">
         {/* ── Header ── */}
         <div className="guide-header">
           <div className="guide-header-title">
-            <Coffee size={20} className="guide-title-icon" style={{ color: 'var(--accent-purple, #a78bfa)' }} />
+            <Coffee size={20} className="guide-title-icon" style={{ color: 'var(--accent-sky, #38bdf8)' }} />
             <span>개발자에게 커피 사주기</span>
           </div>
           <button
@@ -108,50 +108,72 @@ export default function SupportModal({ isOpen, onClose }) {
 
         {/* ── Content ── */}
         <div className="guide-content">
-          <div className="ctee-sponsor-container">
-            <div className="ctee-sponsor-brand">
-              <Heart size={32} className="ctee-brand-icon" />
+          <div className="toonation-sponsor-container">
+            <div className="toonation-sponsor-brand">
+              <Heart size={30} className="toonation-brand-icon" />
               <h4>애이카 아카이브 응원하기</h4>
-              <span className="ctee-brand-badge">크티 (Ctee)</span>
+              <span className="toonation-brand-badge">투네이션 (Toonation)</span>
             </div>
 
-            <div className="ctee-sponsor-body">
-              <p className="ctee-sponsor-text">
-                여러분의 소중한 후원은 대시보드의 지속적인 <strong>개발 및 유지보수(주로 AI 토큰 비용)</strong>와 개발자의 <strong>카페인 보충</strong>에 소중히 사용됩니다.
+            <div className="toonation-sponsor-body">
+              <p className="toonation-sponsor-text">
+                여러분의 소중한 후원은 대시보드의 지속적인 <strong>개발 및 유지보수(주로 AI 토큰 & 데이터 최신화 비용)</strong>와 개발자의 <strong>카페인 보충</strong>에 소중히 사용됩니다.
               </p>
 
-              <div className="ctee-notice-box">
-                <span className="ctee-notice-title">💡 안내 사항</span>
-                <p className="ctee-notice-text">
+              {/* QR Code Section */}
+              <div className="toonation-qr-card">
+                <div className="toonation-qr-wrapper">
+                  <img
+                    src="./assets/toonation_qr.png"
+                    alt="투네이션 후원 QR 코드"
+                    className="toonation-qr-img"
+                    loading="lazy"
+                  />
+                </div>
+                <span className="toonation-qr-caption">
+                  스마트폰 카메라로 QR 코드를 스캔하면 간편결제 창으로 바로 연결됩니다.
+                </span>
+                <div className="toonation-payment-methods">
+                  <span className="toonation-method-tag">네이버페이</span>
+                  <span className="toonation-method-tag">카카오페이</span>
+                  <span className="toonation-method-tag">토스페이</span>
+                  <span className="toonation-method-tag">신용/체크카드</span>
+                  <span className="toonation-method-tag">휴대폰</span>
+                </div>
+              </div>
+
+              {/* Toonation Link Button */}
+              <div className="toonation-action-area">
+                <a
+                  href="https://toon.at/donate/7Jmmxh-h32zRAHNKPegc0zgJ60v3fKmsfcHJBbisO_M" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="toonation-sponsor-btn"
+                  title="투네이션(Toonation) 페이지로 이동하여 후원하기"
+                  onClick={() => {
+                    trackOutboundLink({
+                      linkCategory: 'donation',
+                      platform: 'toonation',
+                      targetUrl: 'https://toon.at/donate/7Jmmxh-h32zRAHNKPegc0zgJ60v3fKmsfcHJBbisO_M',
+                      title: '투네이션 후원 페이지 바로가기',
+                    });
+                  }}
+                >
+                  <span>투네이션 후원 페이지 바로가기</span>
+                  <ExternalLink size={14} className="toonation-btn-icon" />
+                </a>
+                <span className="toonation-action-help">
+                  ※ 위 버튼을 누르면 투네이션 안전 결제 페이지로 이동하며,<br />
+                  네이버/카카오/토스페이 등 원하시는 수단으로 자발적인 후원이 가능합니다.
+                </span>
+              </div>
+
+              <div className="toonation-notice-box">
+                <span className="toonation-notice-title">💡 안내 사항</span>
+                <p className="toonation-notice-text">
                   어디까지나 원활한 서비스를 위한 후원 기능입니다. 사이트의 모든 기능은 제한 없이 100% 무료로 제공되며, 본 후원 기능은 오직 자발적인 팁의 형태로만 존재합니다.
                 </p>
               </div>
-            </div>
-
-            {/* Ctee Link Button */}
-            <div className="ctee-action-area">
-              <a
-                href="https://ctee.kr/place/aeika215/donation" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ctee-sponsor-btn"
-                title="크티(Ctee) 페이지로 이동하여 후원하기"
-                onClick={() => {
-                  trackOutboundLink({
-                    linkCategory: 'donation',
-                    platform: 'ctee',
-                    targetUrl: 'https://ctee.kr/place/aeika215/donation',
-                    title: '크티 후원 페이지 바로가기',
-                  });
-                }}
-              >
-                <span>크티 후원 페이지 바로가기</span>
-                <ExternalLink size={14} className="ctee-btn-icon" />
-              </a>
-              <span className="ctee-action-help">
-                ※ 위 버튼을 누르면 크티 후원 페이지로 안전하게 이동하며,<br />
-                해당 페이지의 <strong>[응원하기]</strong> 버튼을 통해 자발적인 후원이 가능합니다.
-              </span>
             </div>
           </div>
         </div>

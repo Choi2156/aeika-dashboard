@@ -157,7 +157,7 @@ export default function LicenseModal({ isOpen, onClose }) {
                 ☕ 4. 자발적 후원금의 성격 및 사용처 (Sponsorship Policy)
               </div>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7 }}>
-                본 대시보드는 이용자분들의 순수 자발적 참여로 제공되는 후원(크티) 채널을 운영하고 있습니다. 
+                본 대시보드는 이용자분들의 순수 자발적 참여로 제공되는 후원(투네이션) 채널을 운영하고 있습니다. 
                 모든 후원금은 서비스 제공을 위한 <strong>실시간 API 조회 토큰 비용 보충, 기능 고도화 유지보수 및 개발자의 카페인 충전</strong>에 전액 소중히 사용됩니다.
               </p>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7, marginTop: '0.25rem' }}>
