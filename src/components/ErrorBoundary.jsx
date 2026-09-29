@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -31,10 +31,10 @@ export default class ErrorBoundary extends React.Component {
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#ef4444' }}>
-            대시보드 로딩 중 일시적인 오류가 발생했습니다.
+            일시적인 로딩 오류가 발생했습니다.
           </h2>
           <p style={{ color: '#94a3b8', maxWidth: '500px', lineHeight: 1.6, marginBottom: '2rem' }}>
-            일정 예측 엔진 또는 데이터 가공 과정에서 충돌이 감지되었습니다. 브라우저를 새로 고침하거나 로컬 저장소 캐시를 초기화해 보세요.
+            데이터를 불러오는 중 문제가 발생했습니다. 페이지를 새로고침하거나 브라우저 캐시를 초기화해 보세요.
           </p>
           <div style={{ display: 'flex', gap: '12px' }}>
             <button

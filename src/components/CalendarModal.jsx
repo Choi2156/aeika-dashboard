@@ -196,7 +196,7 @@ export default function CalendarModal({ isOpen, onClose, meta }) {
         {/* 모달 하단 액션 바 */}
         <footer className="calendar-modal__footer">
           <p className="calendar-modal__caption">
-            ※ 본 달력은 {lastUpdated} 기준 수집된 확정 및 예상 일정이며, 신규 공지 발표 시 즉시 갱신됩니다.
+            ※ 본 달력은 {lastUpdated} 기준 일정이며, 공식 공지에 따라 수시로 갱신됩니다.
           </p>
           <div className="calendar-modal__actions">
             <a
@@ -215,7 +215,7 @@ export default function CalendarModal({ isOpen, onClose, meta }) {
               type="button"
               className="calendar-modal__btn-download"
               onClick={handleDownloadClick}
-              title="고해상도 무손실 PNG 이미지 다운로드"
+              title="고해상도 이미지 다운로드"
             >
               <Download size={14} />
               <span>고해상도 다운로드</span>

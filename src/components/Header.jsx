@@ -18,10 +18,10 @@ export default function Header({ onOpenSupport }) {
         </h1>
         <div className="header__subtitle-container">
           <p className="header__subtitle">
-            여러 게임의 공식 일정과 주기에 맞춘 예상 일정을 표기합니다.
+            주요 서브컬처 게임의 공식 일정과 예상 주기를 한눈에 확인합니다.
           </p>
           <span className="header__warning">
-            ⚠️ 수집 및 연산된 일정(확정/예상)은 오차가 발생할 수 있으며, 모든 저작권은 게임사에 귀속됩니다.
+            ⚠️ 비공식 팬 사이트이며, 실제 게임 일정과 오차가 발생할 수 있습니다.
           </span>
         </div>
       </div>

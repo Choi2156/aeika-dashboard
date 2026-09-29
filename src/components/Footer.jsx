@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, ShieldAlert, Heart, Info, Github } from 'lucide-react';
+import { Mail, ShieldAlert, Info, Github } from 'lucide-react';
 import { trackOutboundLink, trackChannelClick, trackClipboardCopy } from '../utils/analytics';
 import '../styles/components.css';
 
@@ -84,10 +84,10 @@ export default function Footer({ onOpenLicense }) {
           <div className="disclaimer-item" style={{ padding: '0.65rem 0.85rem', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', boxSizing: 'border-box' }}>
             <span className="disclaimer-title" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
               <ShieldAlert size={12} style={{ color: 'var(--accent-indigo-light)' }} />
-              <span>저작권 고지</span>
+              <span>저작권 안내</span>
             </span>
             <p className="disclaimer-text" style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-              본 사이트에 수납된 모든 캐릭터 이미지, 공식 로고 및 상표권은 각 게임 개발사에 귀속됩니다. 
+              본 사이트에 사용된 모든 캐릭터 이미지, 로고 및 상표권은 각 게임 개발사에 귀속됩니다. 
               <button onClick={onOpenLicense} className="footer-detail-trigger-btn" style={{ background: 'none', border: 'none', color: 'var(--accent-indigo-light)', fontWeight: 700, padding: '0 4px', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.68rem' }}>
                 [상세 보기]
               </button>
@@ -97,10 +97,10 @@ export default function Footer({ onOpenLicense }) {
           <div className="disclaimer-item" style={{ padding: '0.65rem 0.85rem', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', boxSizing: 'border-box' }}>
             <span className="disclaimer-title" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
               <ShieldAlert size={12} style={{ color: 'var(--accent-indigo-light)' }} />
-              <span>일정 면책 조항</span>
+              <span>일정 안내</span>
             </span>
             <p className="disclaimer-text" style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-              수동 수집 및 연산 기반의 일정 정보(확정/예상)는 오기입 등 오류 및 오차가 있을 수 있어 신뢰성을 보증하지 않습니다. 
+              수기 등록 및 주기 계산 일정(확정/예상)은 실제 게임 일정과 오차가 발생할 수 있습니다. 
               <button onClick={onOpenLicense} className="footer-detail-trigger-btn" style={{ background: 'none', border: 'none', color: 'var(--accent-indigo-light)', fontWeight: 700, padding: '0 4px', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.68rem' }}>
                 [상세 보기]
               </button>
@@ -110,10 +110,10 @@ export default function Footer({ onOpenLicense }) {
           <div className="disclaimer-item" style={{ padding: '0.65rem 0.85rem', background: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', boxSizing: 'border-box' }}>
             <span className="disclaimer-title" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
               <Info size={12} style={{ color: 'var(--accent-indigo-light)' }} />
-              <span>라이선스 안내</span>
+              <span>오픈소스 라이선스</span>
             </span>
             <p className="disclaimer-text" style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-              본 웹사이트 소스코드는 MIT 규격을 준수하며, 유튜브 우회 CDN 임베딩 호스팅 구조를 적용했습니다. 
+              본 웹사이트 소스코드는 MIT License를 준수하는 비영리 팬메이드 프로젝트입니다. 
               <button onClick={onOpenLicense} className="footer-detail-trigger-btn" style={{ background: 'none', border: 'none', color: 'var(--accent-indigo-light)', fontWeight: 700, padding: '0 4px', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.68rem' }}>
                 [상세 보기]
               </button>
@@ -123,7 +123,7 @@ export default function Footer({ onOpenLicense }) {
 
         <div className="footer-bottom">
           <p className="copyright-line">
-            &copy; 2026 AEIKA ARCHIVE. Developed with <Heart size={10} className="heart-icon" /> for subculture gaming community.
+            &copy; 2026 AEIKA ARCHIVE. All rights reserved.
           </p>
         </div>
       </div>

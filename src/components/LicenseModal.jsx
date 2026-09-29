@@ -90,7 +90,7 @@ export default function LicenseModal({ isOpen, onClose }) {
         <div className="guide-header">
           <div className="guide-header-title">
             <ShieldAlert size={20} className="guide-title-icon" style={{ color: 'var(--accent-indigo-light)' }} />
-            <span>라이선스 및 면책조항 상세 고지</span>
+            <span>라이선스 및 안내</span>
           </div>
           <button
             className="modal-close-btn"
@@ -107,10 +107,10 @@ export default function LicenseModal({ isOpen, onClose }) {
             {/* Section 1 */}
             <div className="guide-section">
               <div className="guide-section-heading" style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
-                ⚖️ 1. 저작권 및 상표권 고지 (Copyright Notice)
+                ⚖️ 1. 저작권 및 상표권 안내
               </div>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7 }}>
-                본 대시보드 사이트에 수납 표시되는 모든 서브컬처 게임들의 캐릭터 일러스트, 정식 로고, 타이틀 상표권 및 기타 게임 콘텐츠 데이터의 소유권은 원제조사 및 공식 퍼블리셔사에 귀속됩니다.
+                본 사이트에 사용된 모든 캐릭터 이미지, 로고, 상표권 및 게임 데이터의 권리는 원제조사 및 공식 퍼블리셔에 있습니다.
               </p>
               <div className="disclaimer-copyrights" style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '0.68rem', color: 'var(--slate-500)', display: 'flex', flexDirection: 'column', gap: '3px', paddingLeft: '0.5rem', borderLeft: '2px solid rgba(255, 255, 255, 0.08)', marginTop: '0.25rem' }}>
                 <div>• Copyright © COGNOSPHERE. All Rights Reserved. (원신 / 스타레일 / 젠존제)</div>
@@ -118,36 +118,31 @@ export default function LicenseModal({ isOpen, onClose }) {
                 <div>• Copyright © GRYPHLINE / HYPERGRYPH. All Rights Reserved. (명일방주 / 엔드필드)</div>
               </div>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7, marginTop: '0.25rem' }}>
-                본 대시보드는 정보 공유 및 게이머 커뮤니티 편의 제공을 최우선으로 기획된 비공식 팬 사이트이며, 권리자들의 지식재산권을 전적으로 침해하지 않고 존중합니다.
+                본 사이트는 비공식 팬메이드 서비스이며, 원저작권자의 권리를 존중합니다.
               </p>
             </div>
 
             {/* Section 2 */}
             <div className="guide-section">
               <div className="guide-section-heading" style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
-                🔮 2. 데이터 수집/예측 한계 및 면책 (Disclaimers)
+                🔮 2. 일정 안내 및 면책
               </div>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7 }}>
-                대시보드 일정 내 <strong>[확정]</strong> 마크는 제조사 공식 채널 및 공지를 확인 후 수동으로 반영한 정보이나, 수동 입력 과정에서 오탈자나 오기입 등 휴먼 에러가 발생할 가능성이 존재합니다. 
-                반면 <strong>[예상]</strong> 마크 및 D-Day 타이머는 과거 업데이트 주기를 바탕으로 알고리즘이 예측하여 계산한 예상치이므로 실제 배포 시점과 오차가 발생할 수 있습니다.
+                <strong>[확정]</strong> 표기는 공식 공지를 확인한 일정이지만, 수동 등록 과정에서 오기입이 발생할 수 있습니다. 
+                <strong>[예상]</strong> 표기는 이전 주기를 바탕으로 계산한 예상치로 실제 일정과 차이가 있을 수 있습니다.
               </p>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7, marginTop: '0.25rem' }}>
-                제조사의 예기치 못한 패치 일정 연기, 공식 발표의 사후 번복, 긴급 점검 등으로 인해 실제 일정과 오차가 발생할 수 있습니다. 
-                따라서 제공되는 모든 일정 데이터의 완전한 신뢰성은 보증하지 않으며, 본 사이트의 정보를 참고하여 발생한 어떠한 직간접적인 손해나 법적 결과에 대해서도 책임을 지지 않습니다. 중요 이벤트 일정은 반드시 인게임 공식 공지사항을 교차 확인해 주시기 바랍니다.
+                게임사의 긴급 점검이나 일정 연기 등으로 일정이 변경될 수 있으니 중요 일정은 인게임 공식 공지를 함께 확인해 주시기 바랍니다. 본 사이트의 정보를 참고하여 발생한 손해에 대해서는 책임을 지지 않습니다.
               </p>
             </div>
 
             {/* Section 3 */}
             <div className="guide-section">
               <div className="guide-section-heading" style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
-                📄 3. 오픈소스 라이선스 & 우회 CDN 호스팅
+                📄 3. 오픈소스 라이선스
               </div>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7 }}>
-                본 프로젝트의 프론트엔드 소스 코드는 <strong>MIT License</strong> 규격에 따라 무상 배포 및 수정이 가능합니다. 
-                사이트 구축에 핵심으로 사용된 벡터 아이콘 셋은 Lucide Icons 오픈 라이선스 규정을 따르며, 타이포그래피 서체는 Google Fonts에서 배포하는 Outfit 폰트(OFL License)가 탑재되었습니다.
-              </p>
-              <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7, marginTop: '0.25rem' }}>
-                대시보드 기동 시 원활한 리소스 관리와 네트워크 트래픽 오버헤드를 극소화하기 위해, 스토리 영상 클립 등의 미디어 콘텐츠는 유튜브 임베디드 소스 방식의 우회 호스팅 구조를 적용하여 안전하게 구동됩니다.
+                본 웹사이트 프론트엔드 소스코드는 <strong>MIT License</strong>를 따릅니다. 사용된 아이콘은 Lucide Icons, 폰트는 Google Fonts의 Outfit(OFL) 라이선스를 적용했습니다.
               </p>
             </div>
 
@@ -165,7 +160,7 @@ export default function LicenseModal({ isOpen, onClose }) {
 
         {/* ── Confirm Button ── */}
         <button className="guide-confirm-btn" onClick={handleClose}>
-          동의 및 닫기
+          닫기
         </button>
       </div>
     </div>

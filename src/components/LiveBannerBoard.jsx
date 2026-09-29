@@ -293,11 +293,11 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
         <div className="live-banner-board__content">
           <div className="welcome-badge">
             <Info size={12} />
-            <span>대시보드 알림</span>
+            <span>안내</span>
           </div>
-          <h2 className="welcome-title">현재 진행 중인 대형 라이브 일정이 없습니다.</h2>
+          <h2 className="welcome-title">현재 진행 중인 주요 일정이 없습니다.</h2>
           <p className="welcome-subtitle">
-            서브컬처 게임들의 다가오는 예상/확정 스케줄 및 특별 공식 방송 일정은 하단 PC 간트 차트에서 한눈에 확인해 보세요!
+            다가오는 업데이트와 공식 방송 일정은 아래 타임라인에서 확인하실 수 있습니다.
           </p>
         </div>
       </div>

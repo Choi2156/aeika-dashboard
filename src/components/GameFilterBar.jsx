@@ -46,16 +46,14 @@ export default function GameFilterBar({
 
   const handleToggleStorage = () => {
     if (isStorageConsentEnabled) {
-      if (confirm("⚙️ 설정 저장 비활성화 안내\n\n설정 자동 저장을 비활성화하시겠습니까? 해제 시 브라우저 내부(로컬스토리지)에 저장된 모든 게임 필터링 토글 및 테마 환경 설정이 즉시 삭제됩니다.")) {
+      if (confirm('설정 저장을 끄시겠습니까?\n저장되어 있던 게임 필터와 테마 설정이 초기화됩니다.')) {
         trackStorageConsentToggle(false);
         onToggleStorageConsent(false);
-        alert("✨ 로컬 보존 설정이 해제되었으며, 브라우저 저장소 데이터가 삭제되었습니다.");
       }
     } else {
-      if (confirm("💾 설정 자동 저장 동의 안내\n\n동의 시 선택하신 게임 필터, 뷰(PC/모바일), 다크/라이트 테마 환경 설정이 현재 브라우저의 전용 로컬 저장소에 안전하게 보관되어 재접속 시에도 그대로 유지됩니다.\n\n* 본 대시보드는 서버가 없는 정적 웹페이지로 어떤 개인정보도 외부로 전송하지 않으며, 오직 사용 중이신 브라우저 내부에만 안전히 보관됩니다. 활성화하시겠습니까?")) {
+      if (confirm('설정 저장을 켜시겠습니까?\n선택한 게임 필터와 테마 설정이 현재 브라우저에 저장되어 재접속 시에도 유지됩니다.')) {
         trackStorageConsentToggle(true);
         onToggleStorageConsent(true);
-        alert("💾 설정 자동 저장 기능이 활성화되었습니다! 이후의 변경 사항은 현재 브라우저에 자동 보존됩니다.");
       }
     }
   };
@@ -166,7 +164,7 @@ export default function GameFilterBar({
             <button
               className={`view-switcher__btn ${currentView === 'gantt' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
               onClick={() => handleViewChange('gantt')}
-              title="PC형 와이드 간트 뷰"
+              title="PC 간트 뷰"
               id="btn-view-gantt"
             >
               <Monitor size={14} />
@@ -175,7 +173,7 @@ export default function GameFilterBar({
             <button
               className={`view-switcher__btn ${currentView === 'list' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
               onClick={() => handleViewChange('list')}
-              title="모바일형 직관 리스트 뷰"
+              title="모바일 리스트 뷰"
               id="btn-view-list"
             >
               <Smartphone size={14} />
@@ -198,7 +196,7 @@ export default function GameFilterBar({
             className={`storage-consent-btn ${isStorageConsentEnabled ? 'storage-consent-btn--active' : ''} ${isShrunk ? 'storage-consent-btn--icon-only' : ''}`}
             onClick={handleToggleStorage}
             type="button"
-            title="개인 필터 및 테마 설정 브라우저 자동 보존"
+            title="설정 저장 (필터 및 테마 브라우저 보관)"
           >
             <Database size={12} />
             <span className="storage-consent-btn-label">설정 저장</span>

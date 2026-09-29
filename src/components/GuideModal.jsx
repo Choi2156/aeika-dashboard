@@ -103,7 +103,7 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
         <div className="guide-header">
           <div className="guide-header-title">
             <Info size={20} className="guide-title-icon" />
-            대시보드 안내 및 이력
+            이용 안내
           </div>
           <button
             className="modal-close-btn"
@@ -147,9 +147,8 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                     <Video size={20} />
                   </div>
                   <div className="guide-video-banner__text-group">
-                    <span className="guide-video-banner__label">TUTORIAL VIDEO</span>
-                    <h4 className="guide-video-banner__title">가이드 영상</h4>
-                    <p className="guide-video-banner__desc">대시보드 주요 기능 및 활용 방법을 소개하는 영상입니다.</p>
+                    <h4 className="guide-video-banner__title">대시보드 가이드 영상</h4>
+                    <p className="guide-video-banner__desc">주요 기능과 활용 팁을 정리한 영상입니다.</p>
                   </div>
                 </div>
                 <a 
@@ -166,7 +165,7 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                     });
                   }}
                 >
-                  <span>영상 보러가기</span>
+                  <span>영상 보기</span>
                   <ExternalLink size={12} />
                 </a>
               </div>
@@ -174,45 +173,44 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
               {/* Section 1 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  1. 시간대 및 버전 마감 표기 기준
+                  1. 시간대 및 버전 마감 기준
                 </div>
                 <ul className="guide-bullet-list">
-                  <li>본 대시보드의 모든 일정은 한국 시간(KST)을 기준으로 표기합니다.</li>
-                  <li>버전 마감일은 차기 업데이트 시작일과 겹치지 않도록 '패치 전날'을 기준으로 표기합니다. 서브컬처 게임 특성상 일일 초기화(오전 4~5시)와 점검 및 픽업 종료 시간이 제각각이라, 마감 시점을 직관적으로 파악하기 위한 기준입니다.</li>
+                  <li>모든 일정은 한국 시간(KST) 기준입니다.</li>
+                  <li>버전 마감일은 차기 업데이트 시작일과 겹치지 않도록 '패치 전날'을 기준으로 표기합니다. (게임마다 점검 시간과 픽업 종료 시점이 제각각인 점을 고려한 기준입니다.)</li>
                 </ul>
               </div>
 
               {/* Section 2 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  2. 확정 및 예상 일정 안내
+                  2. 확정 및 예상 일정
                 </div>
                 <ul className="guide-bullet-list">
-                  <li><strong>[확정] 마커:</strong> 공식 공지를 확인한 후 직접 등록한 일정입니다. 다만 공식 공지에서 정확한 버전 종료 시점을 명시하지 않은 경우 이전 버전의 정규 주기를 바탕으로 표기하므로, 실제 일정과 소폭 차이가 발생할 수 있습니다.</li>
-                  <li><strong>[예상] 마커:</strong> 각 게임의 정규 패치 주기를 바탕으로 계산된 일정입니다. 공식 발표나 일정 변동에 따라 변경될 수 있으니 참고용으로 활용하시기 바랍니다.</li>
+                  <li><strong>[확정]:</strong> 공식 공지를 확인한 후 등록한 일정입니다.</li>
+                  <li><strong>[예상]:</strong> 각 게임의 통상 패치 주기를 바탕으로 계산한 예상치이며, 공식 발표에 따라 변동될 수 있습니다.</li>
                 </ul>
               </div>
 
               {/* Section 3 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  3. 대시보드 조작 안내
+                  3. 조작 방법
                 </div>
                 <ul className="guide-bullet-list">
-                  <li>각 버전의 전체 기간(전반 일정) 위에 후반 일정 및 공식 방송 일정이 함께 구분되어 표시됩니다.</li>
-                  <li>게임별 행을 클릭하여 원하는 게임만 펼치거나 접을 수 있습니다.</li>
-                  <li>타임라인의 각 일정을 클릭하면 상세 정보와 관련 이미지를 확인할 수 있습니다.</li>
+                  <li>각 게임 행을 클릭하면 해당 게임 일정을 접거나 펼칠 수 있습니다.</li>
+                  <li>타임라인의 일정을 클릭하면 상세 정보와 관련 이미지를 볼 수 있습니다.</li>
                 </ul>
               </div>
 
               {/* Section 4 */}
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  4. 설정 저장 및 데이터 관리
+                  4. 설정 저장 안내
                 </div>
                 <ul className="guide-bullet-list">
-                  <li>상단의 '설정 저장'을 켜면 선택한 게임 필터, 뷰 모드, 테마 설정이 PC 및 모바일 기기의 현재 브라우저에 안전하게 저장됩니다.</li>
-                  <li>'설정 저장'을 끄면 저장된 브라우저 데이터가 즉시 삭제되며, 브라우저 설정(방문 기록 및 사이트 데이터)에서도 직접 삭제할 수 있습니다.</li>
+                  <li>'설정 저장'을 켜면 선택한 게임 필터와 테마 설정이 현재 브라우저에 저장됩니다.</li>
+                  <li>'설정 저장'을 끄면 저장된 브라우저 데이터가 즉시 삭제됩니다.</li>
                 </ul>
               </div>
             </div>
@@ -250,7 +248,7 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
 
         {/* ── Confirm Button ── */}
         <button className="guide-confirm-btn" onClick={handleClose}>
-          확인했습니다
+          닫기
         </button>
       </div>
     </div>

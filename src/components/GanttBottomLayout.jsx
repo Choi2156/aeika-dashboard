@@ -586,8 +586,8 @@ function GanttBottomLayout({
             ) : (
               <div className="shorts-no-data-card">
                 <Youtube size={24} color="#64748b" style={{ marginBottom: '6px' }} />
-                <p className="shorts-no-data-card__text">활성화된 게임의 추천 쇼츠가 없습니다.</p>
-                <span className="shorts-no-data-card__sub">필터바에서 다른 게임을 활성화해주세요.</span>
+                <p className="shorts-no-data-card__text">선택된 게임의 추천 쇼츠가 없습니다.</p>
+                <span className="shorts-no-data-card__sub">필터바에서 다른 게임을 선택해 보세요.</span>
               </div>
             )}
 
@@ -598,7 +598,7 @@ function GanttBottomLayout({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shorts-channel-direct-btn"
-                title="유튜브 채널 방문하여 더 많은 영상보기"
+                title="유튜브 채널 바로가기"
               >
                 <Youtube size={14} />
                 <span>채널 바로가기</span>

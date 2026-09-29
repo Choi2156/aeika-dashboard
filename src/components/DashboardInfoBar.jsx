@@ -26,7 +26,7 @@ export default function DashboardInfoBar({ meta, onOpenCalendar }) {
       {/* 📅 좌측: 오늘 기준 실시간 날짜 */}
       <div className="dashboard-info-bar__item dashboard-info-bar__item--today">
         <Calendar size={13} className="info-bar-icon info-bar-icon--today" />
-        <span className="info-bar-label">오늘 기준점 :</span>
+        <span className="info-bar-label">오늘 :</span>
         <span className="info-bar-value">{getTodayFormatted()}</span>
       </div>
 
@@ -35,7 +35,7 @@ export default function DashboardInfoBar({ meta, onOpenCalendar }) {
         type="button"
         className="dashboard-info-bar__calendar-btn"
         onClick={onOpenCalendar}
-        title="이달의 서브컬쳐 종합 스케줄 캘린더 이미지 보기 및 다운로드"
+        title="이달의 종합 캘린더 보기 및 다운로드"
       >
         <CalendarDays size={13} className="info-bar-icon--calendar" />
         <span className="info-bar-calendar-label">캘린더 다운로드</span>
