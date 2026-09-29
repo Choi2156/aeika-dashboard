@@ -117,7 +117,7 @@ export default function SupportModal({ isOpen, onClose }) {
 
             <div className="toonation-sponsor-body">
               <p className="toonation-sponsor-text">
-                여러분의 소중한 후원은 대시보드의 지속적인 <strong>개발 및 유지보수(주로 AI 토큰 & 데이터 최신화 비용)</strong>와 개발자의 <strong>카페인 보충</strong>에 소중히 사용됩니다.
+                보내주신 후원은 사이트 유지와 데이터 관리에 소중히 사용됩니다.
               </p>
 
               {/* QR Code Section */}
@@ -169,9 +169,8 @@ export default function SupportModal({ isOpen, onClose }) {
               </div>
 
               <div className="toonation-notice-box">
-                <span className="toonation-notice-title">💡 안내 사항</span>
                 <p className="toonation-notice-text">
-                  어디까지나 원활한 서비스를 위한 후원 기능입니다. 사이트의 모든 기능은 제한 없이 100% 무료로 제공되며, 본 후원 기능은 오직 자발적인 팁의 형태로만 존재합니다.
+                  💡 모든 기능은 후원 여부와 관계없이 항상 무료로 제공됩니다.
                 </p>
               </div>
             </div>

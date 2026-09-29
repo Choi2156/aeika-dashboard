@@ -154,14 +154,10 @@ export default function LicenseModal({ isOpen, onClose }) {
             {/* Section 4 */}
             <div className="guide-section">
               <div className="guide-section-heading" style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
-                ☕ 4. 자발적 후원금의 성격 및 사용처 (Sponsorship Policy)
+                ☕ 4. 후원 안내
               </div>
               <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7 }}>
-                본 대시보드는 이용자분들의 순수 자발적 참여로 제공되는 후원(투네이션) 채널을 운영하고 있습니다. 
-                모든 후원금은 서비스 제공을 위한 <strong>실시간 API 조회 토큰 비용 보충, 기능 고도화 유지보수 및 개발자의 카페인 충전</strong>에 전액 소중히 사용됩니다.
-              </p>
-              <p className="guide-section-text" style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.7, marginTop: '0.25rem' }}>
-                후원은 오직 자발적인 응원 팁(Tip)의 형태로만 가동되며, 후원 여부에 따른 이용 권한 차등, 특정 기능 잠금(Paywall), 광고 제거 혜택 차별 등은 절대 존재하지 않습니다. 대시보드의 모든 기능은 로그인 여부와 무관하게 모든 분들께 상시 100% 무료로 개방됩니다.
+                본 사이트는 개인이 운영하는 무료 팬메이드 서비스입니다. 후원은 별도의 혜택이 없는 순수 자발적 참여이며, 보내주신 후원금은 서비스 유지 및 관리에 전액 사용됩니다.
               </p>
             </div>
           </div>
