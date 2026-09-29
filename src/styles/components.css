@@ -1906,7 +1906,7 @@
    Sponsorship Modal Styles (SupportModal - Toonation)
    ============================================================= */
 .modal-body--support-toonation {
-  max-width: 460px !important;
+  max-width: 420px !important;
 }
 
 .toonation-sponsor-container {
@@ -1917,46 +1917,8 @@
   padding: 0.25rem 0;
 }
 
-.toonation-sponsor-brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.9rem;
-}
-
-.toonation-brand-icon {
-  color: #38bdf8;
-  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6));
-}
-
-.toonation-sponsor-brand h4 {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.toonation-brand-badge {
-  font-size: 0.65rem;
-  font-weight: 900;
-  background: rgba(14, 165, 233, 0.15);
-  color: #38bdf8;
-  border: 1px solid rgba(14, 165, 233, 0.35);
-  padding: 2px 10px;
-  border-radius: 9999px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-[data-theme="light"] .toonation-brand-badge {
-  background: rgba(14, 165, 233, 0.1);
-  color: #0284c7;
-  border-color: rgba(14, 165, 233, 0.25);
-}
-
 .toonation-sponsor-body {
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.5rem;
   width: 100%;
 }
 
@@ -1964,12 +1926,7 @@
   font-size: 0.84rem;
   color: var(--text-secondary);
   line-height: 1.6;
-  margin: 0 0 0.85rem 0;
-}
-
-.toonation-sponsor-text strong {
-  color: var(--text-primary);
-  font-weight: 800;
+  margin: 0 0 1rem 0;
 }
 
 /* ── QR Code Card ── */
@@ -1980,7 +1937,7 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
-  padding: 0.9rem 1rem;
+  padding: 1.25rem 1rem;
   margin-bottom: 1rem;
   width: 100%;
   box-sizing: border-box;
@@ -1993,108 +1950,27 @@
 
 .toonation-qr-wrapper {
   background: #ffffff;
-  padding: 6px;
+  padding: 8px;
   border-radius: 12px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  text-decoration: none;
+}
+
+.toonation-qr-wrapper:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
 }
 
 .toonation-qr-img {
-  width: 135px;
-  height: 135px;
+  width: 140px;
+  height: 140px;
   display: block;
   border-radius: 8px;
-}
-
-.toonation-qr-caption {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-top: 0.55rem;
-  line-height: 1.4;
-}
-
-.toonation-payment-methods {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 0.5rem;
-}
-
-.toonation-method-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 1px 7px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .toonation-method-tag {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.06);
-  color: #475569;
-}
-
-/* ── Action Button ── */
-.toonation-action-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  width: 100%;
-  margin-bottom: 0.85rem;
-}
-
-.toonation-sponsor-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 320px;
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  border: 1px solid rgba(14, 165, 233, 0.4);
-  border-radius: var(--radius-lg);
-  color: #ffffff !important;
-  font-size: 0.84rem;
-  font-weight: 800;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35), 0 0 10px rgba(14, 165, 233, 0.2);
-  transition: all var(--transition-base);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.toonation-sponsor-btn:hover {
-  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-  border-color: rgba(56, 189, 248, 0.8);
-  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5), 0 0 15px rgba(56, 189, 248, 0.4);
-  transform: translateY(-2px);
-}
-
-.toonation-sponsor-btn:active {
-  transform: translateY(0);
-}
-
-.toonation-btn-icon {
-  opacity: 0.9;
-  transition: transform var(--transition-fast);
-}
-
-.toonation-sponsor-btn:hover .toonation-btn-icon {
-  transform: translateX(2px) translateY(-1px);
-}
-
-.toonation-action-help {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin: 0;
 }
 
 .toonation-notice-box {
@@ -2102,7 +1978,7 @@
   border: 1px dashed rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   padding: 0.75rem 1rem;
-  text-align: left;
+  text-align: center;
   width: 100%;
   box-sizing: border-box;
 }
@@ -2112,16 +1988,8 @@
   border-color: rgba(0, 0, 0, 0.08);
 }
 
-.toonation-notice-title {
-  display: block;
-  font-size: 0.74rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 0.3rem;
-}
-
 .toonation-notice-text {
-  font-size: 0.71rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   line-height: 1.5;
   margin: 0;

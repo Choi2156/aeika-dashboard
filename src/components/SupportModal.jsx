@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { X, Heart, Coffee, ExternalLink } from 'lucide-react';
+import { X, Heart } from 'lucide-react';
 import { trackOutboundLink } from '../utils/analytics';
 import '../styles/components.css';
 
@@ -94,8 +94,8 @@ export default function SupportModal({ isOpen, onClose }) {
         {/* ── Header ── */}
         <div className="guide-header">
           <div className="guide-header-title">
-            <Coffee size={20} className="guide-title-icon" style={{ color: 'var(--accent-sky, #38bdf8)' }} />
-            <span>개발자에게 커피 사주기</span>
+            <Heart size={20} className="guide-title-icon" style={{ color: 'var(--accent-sky, #38bdf8)' }} />
+            <span>후원하기</span>
           </div>
           <button
             className="modal-close-btn"
@@ -109,63 +109,35 @@ export default function SupportModal({ isOpen, onClose }) {
         {/* ── Content ── */}
         <div className="guide-content">
           <div className="toonation-sponsor-container">
-            <div className="toonation-sponsor-brand">
-              <Heart size={30} className="toonation-brand-icon" />
-              <h4>애이카 아카이브 응원하기</h4>
-              <span className="toonation-brand-badge">투네이션 (Toonation)</span>
-            </div>
-
             <div className="toonation-sponsor-body">
               <p className="toonation-sponsor-text">
                 보내주신 후원은 사이트 유지와 데이터 관리에 소중히 사용됩니다.
               </p>
 
-              {/* QR Code Section */}
+              {/* QR Code Card */}
               <div className="toonation-qr-card">
-                <div className="toonation-qr-wrapper">
+                <a
+                  href="https://toon.at/donate/7Jmmxh-h32zRAHNKPegc0zgJ60v3fKmsfcHJBbisO_M"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="toonation-qr-wrapper"
+                  title="투네이션 후원 페이지 바로가기"
+                  onClick={() => {
+                    trackOutboundLink({
+                      linkCategory: 'donation',
+                      platform: 'toonation',
+                      targetUrl: 'https://toon.at/donate/7Jmmxh-h32zRAHNKPegc0zgJ60v3fKmsfcHJBbisO_M',
+                      title: '투네이션 후원 QR 클릭',
+                    });
+                  }}
+                >
                   <img
                     src="./assets/toonation_qr.png"
                     alt="투네이션 후원 QR 코드"
                     className="toonation-qr-img"
                     loading="lazy"
                   />
-                </div>
-                <span className="toonation-qr-caption">
-                  스마트폰 카메라로 QR 코드를 스캔하면 간편결제 창으로 바로 연결됩니다.
-                </span>
-                <div className="toonation-payment-methods">
-                  <span className="toonation-method-tag">네이버페이</span>
-                  <span className="toonation-method-tag">카카오페이</span>
-                  <span className="toonation-method-tag">토스페이</span>
-                  <span className="toonation-method-tag">신용/체크카드</span>
-                  <span className="toonation-method-tag">휴대폰</span>
-                </div>
-              </div>
-
-              {/* Toonation Link Button */}
-              <div className="toonation-action-area">
-                <a
-                  href="https://toon.at/donate/7Jmmxh-h32zRAHNKPegc0zgJ60v3fKmsfcHJBbisO_M" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="toonation-sponsor-btn"
-                  title="투네이션(Toonation) 페이지로 이동하여 후원하기"
-                  onClick={() => {
-                    trackOutboundLink({
-                      linkCategory: 'donation',
-                      platform: 'toonation',
-                      targetUrl: 'https://toon.at/donate/7Jmmxh-h32zRAHNKPegc0zgJ60v3fKmsfcHJBbisO_M',
-                      title: '투네이션 후원 페이지 바로가기',
-                    });
-                  }}
-                >
-                  <span>투네이션 후원 페이지 바로가기</span>
-                  <ExternalLink size={14} className="toonation-btn-icon" />
                 </a>
-                <span className="toonation-action-help">
-                  ※ 위 버튼을 누르면 투네이션 안전 결제 페이지로 이동하며,<br />
-                  네이버/카카오/토스페이 등 원하시는 수단으로 자발적인 후원이 가능합니다.
-                </span>
               </div>
 
               <div className="toonation-notice-box">
