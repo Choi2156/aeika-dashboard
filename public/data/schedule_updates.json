@@ -30,6 +30,20 @@
     "link": "https://cafe.naver.com/honkaistarrail/805855"
   },
   {
+    "id": "EVT_AKEF_20261006_0001",
+    "game": "명일방주: 엔드필드",
+    "version": "1.6",
+    "type": "공식방송",
+    "title": "1.6 「단청도」 버전 미리보기 특별 방송",
+    "date": "2026-10-06",
+    "end_date": "2026-10-06",
+    "time": "20:30",
+    "is_fixed": true,
+    "detail": "✦ 방송 일시: 2026년 10월 6일(화) 20:30 (KST)\n✦ 메인 챕터 버전: 「단청도 (SANCTUARY OF INK)」\n✦ 내용: 먹의 운치가 종이에 스며들고, 구름과 물이 여백을 남긴다. 관리자님, 심신을 치유하는 아름다운 세계가 단청을 갖추고 기다리고 있습니다. 신규 메인 챕터 단청도 업데이트 콘텐츠 선공개, 신규 오퍼레이터 및 시스템 최적화 안내\n✦ 방송 예약: https://youtube.com/live/1TPiuhgcEO8",
+    "custom_img": "endfield_1.6_stream.webp",
+    "link": "https://youtube.com/live/1TPiuhgcEO8"
+  },
+  {
     "id": "EVT_HSR_20260920_0001",
     "game": "붕괴: 스타레일",
     "version": "4.6",
