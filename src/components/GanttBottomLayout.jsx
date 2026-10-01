@@ -73,9 +73,10 @@ function allocateVideosWithShuffle(allVideos, activeGames, targetCount = 6) {
 }
 
 /* ────────────────────────────────────────────
-   Longform Video Allocation with Moderate Shuffle (스마트 셔플 & 최신순 최대 10개)
-   선택된 게임의 롱폼 영상 중 최신순 상위 영상(최대 targetCount개)을 선별한 뒤,
-   새로고침(또는 활성 게임 변경) 시마다 영상 순서를 자연스럽게 셔플(Fisher-Yates)하여 반환
+   Longform Video Allocation with Chronological Anchor & Smart Pool Sampling (스마트 롱폼 선별)
+   최신 1~2개 영상은 100% 무조건 고정하여 최신 패치/스토리 가시성을 확보하고,
+   나머지 자리는 상위 후보군(최대 20개)에서 무작위 샘플링 후,
+   최종 선별된 10개 영상을 다시 '최신순(날짜 내림차순)'으로 재정렬하여 반환
    ──────────────────────────────────────────── */
 function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
   if (!allVideos || allVideos.length === 0) return [];
@@ -100,16 +101,34 @@ function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
 
   // 2. 최신순(addedAt 내림차순) 정렬
   const sorted = filtered.sort((a, b) => {
-    const dateA = a.addedAt ? new Date(a.addedAt) : new Date(0);
-    const dateB = b.addedAt ? new Date(b.addedAt) : new Date(0);
+    const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
+    const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
     return dateB - dateA;
   });
 
-  // 3. 최신순 상위 targetCount(10개) 추출
-  const topCandidates = sorted.slice(0, targetCount);
+  // 영상 총 개수가 목표 개수 이하이면 최신순 그대로 반환
+  if (sorted.length <= targetCount) {
+    return sorted;
+  }
 
-  // 4. 새로고침 기준 셔플 (순서 무작위 혼합)
-  return shuffleArray(topCandidates);
+  // 3. 최신 앵커 고정 (상위 2개는 무조건 포함)
+  const anchorCount = Math.min(2, sorted.length);
+  const anchored = sorted.slice(0, anchorCount);
+
+  // 4. 나머지 슬롯은 상위 후보 풀(최대 20개)에서 무작위 샘플링
+  const remainingCount = targetCount - anchorCount;
+  const candidatePool = sorted.slice(anchorCount, Math.min(sorted.length, targetCount + 10));
+  const sampled = shuffleArray(candidatePool).slice(0, remainingCount);
+
+  // 5. 최종 선별된 목록을 다시 '최신순(날짜 내림차순)'으로 정렬하여 반환
+  const finalSelection = [...anchored, ...sampled];
+  finalSelection.sort((a, b) => {
+    const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
+    const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
+    return dateB - dateA;
+  });
+
+  return finalSelection;
 }
 
 /* ────────────────────────────────────────────
@@ -435,7 +454,6 @@ function GanttBottomLayout({
                       <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
                       <div className="longform-video-card__duration-badge"><span>{video.duration || '풀버전'}</span></div>
                       <div className="longform-video-card__game-badge" style={{ backgroundColor: color }}><span>{video.game}</span></div>
-                      {gamesConfig?.[video.game]?.copyright && (<span className="card-copyright-label">{gamesConfig[video.game].copyright}</span>)}
                     </div>
                     <div className="longform-video-card__content">
                       {video.desc && <p className="longform-video-card__desc">{video.desc}</p>}
@@ -486,7 +504,6 @@ function GanttBottomLayout({
                       <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
                       <div className="longform-video-card__duration-badge"><span>영상</span></div>
                       <div className="longform-video-card__game-badge" style={{ backgroundColor: color }}><span>{video.game}</span></div>
-                      {gamesConfig?.[video.game]?.copyright && (<span className="card-copyright-label">{gamesConfig[video.game].copyright}</span>)}
                     </div>
                     <div className="longform-video-card__content">
                       {video.desc && <p className="longform-video-card__desc">{video.desc}</p>}

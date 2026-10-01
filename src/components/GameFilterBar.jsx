@@ -191,28 +191,33 @@ export default function GameFilterBar({
             {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
-          {/* 설정 저장 단추 */}
-          <button
-            className={`storage-consent-btn ${isStorageConsentEnabled ? 'storage-consent-btn--active' : ''} ${isShrunk ? 'storage-consent-btn--icon-only' : ''}`}
-            onClick={handleToggleStorage}
-            type="button"
-            title="설정 저장 (필터 및 테마 브라우저 보관)"
-          >
-            <Database size={12} />
-            <span className="storage-consent-btn-label">설정 저장</span>
-          </button>
+          {/* 설정 저장 단추 (축소 바에서는 공간 확보를 위해 숨김) */}
+          {!isShrunk && (
+            <button
+              className={`storage-consent-btn ${isStorageConsentEnabled ? 'storage-consent-btn--active' : ''}`}
+              onClick={handleToggleStorage}
+              type="button"
+              title="설정 저장 (필터 및 테마 브라우저 보관)"
+            >
+              <Database size={12} />
+              <span className="storage-consent-btn-label">설정 저장</span>
+            </button>
+          )}
         </div>
 
-        <button
-          className={`game-filter-bar__guide-btn ${isShrunk ? 'game-filter-bar__guide-btn--icon-only' : ''}`}
-          onClick={handleOpenGuide}
-          type="button"
-          id="open-guide-btn"
-          title="이용 안내 보기"
-        >
-          <HelpCircle size={14} />
-          <span className="game-filter-bar__guide-label">이용 안내</span>
-        </button>
+        {/* 이용 안내 버튼 (축소 바에서는 공간 확보를 위해 숨김) */}
+        {!isShrunk && (
+          <button
+            className="game-filter-bar__guide-btn"
+            onClick={handleOpenGuide}
+            type="button"
+            id="open-guide-btn"
+            title="이용 안내 보기"
+          >
+            <HelpCircle size={14} />
+            <span className="game-filter-bar__guide-label">이용 안내</span>
+          </button>
+        )}
       </div>
     </section>
   );

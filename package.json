@@ -1,7 +1,7 @@
 {
   "name": "subculture-game-dashboard",
   "private": true,
-  "version": "1.2.7",
+  "version": "1.2.8",
   "type": "module",
   "scripts": {
     "dev": "vite",

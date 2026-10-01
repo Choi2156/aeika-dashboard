@@ -608,6 +608,11 @@
   gap: 0.75rem !important;
 }
 
+.game-filter-bar--shrunk .storage-consent-btn,
+.game-filter-bar--shrunk .game-filter-bar__guide-btn {
+  display: none !important;
+}
+
 .game-filter-bar__left {
   display: flex;
   flex-direction: column;
@@ -645,20 +650,29 @@
   flex-wrap: nowrap !important;
 }
 
-/* 모바일 단축 메뉴바: 가로폭 부족 시 일렬 정렬 유지 및 2열 가로 도크 배치 */
+/* 모바일 단축 메뉴바: 가로폭 부족 시 일렬 정렬 유지 및 1열 슬림 도크 배치 */
 @media (max-width: 768px) {
   .game-filter-bar--shrunk {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 0.6rem !important;
-    padding: 0.6rem 1rem !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    padding: 0.35rem 0.65rem !important;
   }
   
   .game-filter-bar--shrunk .game-filter-bar__left {
-    flex: 1 1 100% !important;
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
+    flex: 0 1 auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    gap: 0.35rem !important;
+    min-width: 0 !important;
+  }
+
+  .game-filter-bar--shrunk .game-filter-bar__controls {
+    display: none !important; /* 모바일 축소 바에서는 공간 확보를 위해 전체 선택/해제 생략 */
   }
 
   .game-filter-bar--shrunk .game-filter-bar__buttons {
@@ -666,15 +680,48 @@
     flex-direction: row !important;
     flex-wrap: nowrap !important; /* 모바일 단축 바에서 게임 아이콘들이 절대 세로로 꺾이지 않고 일렬 배치 유지 */
     align-items: center !important;
-    justify-content: center !important;
-    gap: 0.4rem !important;
+    justify-content: flex-start !important;
+    gap: 0.3rem !important;
+  }
+
+  .game-filter-bar--shrunk .game-filter-btn {
+    padding: 0.2rem !important;
+  }
+
+  .game-filter-bar--shrunk .game-filter-btn__icon-img {
+    width: 26px !important;
+    height: 26px !important;
   }
   
   .game-filter-bar--shrunk .game-filter-bar__right {
-    flex: 1 1 100% !important;
-    justify-content: center !important;
-    gap: 0.5rem !important;
-    margin-top: 0.25rem !important;
+    flex: 0 0 auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.35rem !important;
+    margin-top: 0 !important;
+    border-top: none !important;
+    padding-top: 0 !important;
+  }
+
+  .game-filter-bar--shrunk .game-filter-bar__view-switcher {
+    gap: 0.35rem !important;
+  }
+
+  .game-filter-bar--shrunk .view-switcher {
+    padding: 2px !important;
+    gap: 2px !important;
+  }
+
+  .game-filter-bar--shrunk .view-switcher__btn {
+    padding: 3px 6px !important;
+    font-size: 0.72rem !important;
+  }
+
+  .game-filter-bar--shrunk .theme-switcher-btn {
+    padding: 4px !important;
+    width: 28px !important;
+    height: 28px !important;
   }
 }
 
