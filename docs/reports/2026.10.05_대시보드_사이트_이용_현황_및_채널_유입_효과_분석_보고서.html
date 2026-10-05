@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 사이트 이용 현황 및 채널 유입 효과 분석 보고서 (2026.10.05)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --bg: #090d16;
+            --card: #131a2c;
+            --accent: #38bdf8;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --purple: #a855f7;
+            --rose: #f43f5e;
+        }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: #f1f5f9;
+            line-height: 1.6;
+        }
+        .glass-card {
+            background: rgba(19, 26, 44, 0.78);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            transition: all 0.25s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+    <header class="mb-8 text-center md:text-left border-b border-slate-800 pb-6">
+        <div class="inline-block px-3 py-1 rounded-full bg-sky-950/70 border border-sky-500/30 text-sky-400 text-xs font-semibold mb-3">
+            GA4 실측 데이터 기반 분석 보고서
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">📊 대시보드 이용 현황 및 채널 유입 효과 분석</h1>
+        <p class="text-slate-400 text-sm">조회 기간: 2026-01-01 ~ 2026-10-05 | 월간 기준: 매월 13일 ~ 다음 달 12일</p>
+    </header>
+
+    <!-- 1. 핵심 지표 요약 카드 -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="glass-card p-5">
+            <div class="text-xs text-slate-400 mb-1">전기간 누적 순방문자</div>
+            <div class="text-2xl font-bold text-sky-400">2,485명</div>
+            <div class="text-xs text-slate-500 mt-1">페이지뷰 7,075회</div>
+        </div>
+        <div class="glass-card p-5">
+            <div class="text-xs text-slate-400 mb-1">완료 4달차 일평균 DAU</div>
+            <div class="text-2xl font-bold text-emerald-400">30.35명</div>
+            <div class="text-xs text-slate-500 mt-1">9/8 최고 113명 달성</div>
+        </div>
+        <div class="glass-card p-5">
+            <div class="text-xs text-slate-400 mb-1">진행 5달차 일평균 DAU</div>
+            <div class="text-2xl font-bold text-amber-400">25.00명</div>
+            <div class="text-xs text-slate-500 mt-1">23일간 미완료 진행중</div>
+        </div>
+        <div class="glass-card p-5">
+            <div class="text-xs text-slate-400 mb-1">유튜브 영상/채널 클릭</div>
+            <div class="text-2xl font-bold text-rose-400">24회</div>
+            <div class="text-xs text-slate-500 mt-1">영상 18회 + 채널 6회</div>
+        </div>
+    </section>
+
+    <!-- 2. 핵심 결론 -->
+    <section class="glass-card p-6 mb-8">
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <i data-lucide="check-circle-2" class="text-sky-400 w-5 h-5"></i> 핵심 결론 요약
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6 text-sm leading-relaxed">
+            <div class="border-l-2 border-sky-500 pl-4">
+                <div class="font-bold text-sky-300 mb-1">1. 일정 확인 유틸리티 효용 입증</div>
+                <p class="text-slate-300">핵심 조작(게임 필터 인당 5.5회, 모달 열람 인당 4.3회, 일정 클릭 인당 4.2회)이 활성 사용자층(150~200명) 사이에서 매우 반복적으로 일어났으며, 캘린더 열람자의 48.9%(23명)가 기기 저장을 마쳤습니다.</p>
+            </div>
+            <div class="border-l-2 border-rose-500 pl-4">
+                <div class="font-bold text-rose-300 mb-1">2. 채널 성장 기여는 매우 미미</div>
+                <p class="text-slate-300">누적 추천 영상 클릭(18회/11명), 채널 링크 클릭(6회/6명)에 불과합니다. 방문자는 대시보드를 '일정 도구'로 소비하며, 유튜브 시청의 주요 통로 역할을 하지는 못하고 있습니다. (시청/구독 여부는 GA4로 확인 불가)</p>
+            </div>
+            <div class="border-l-2 border-amber-500 pl-4">
+                <div class="font-bold text-amber-300 mb-1">3. 평시 트래픽은 일평균 20~25명</div>
+                <p class="text-slate-300">9월 8일 피크(113명) 이후 5달차(9/13~10/05)는 일평균 25명으로 자연 회귀했습니다. 피크는 일회성 외부 이벤트였으며, 서비스의 기초 체력은 20~25명 선으로 안정화되었습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 차트 섹션 -->
+    <section class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="glass-card p-6">
+            <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="bar-chart-2" class="text-sky-400 w-4 h-4"></i> 주요 인터랙션 이벤트 볼륨
+            </h3>
+            <div style="height: 260px;">
+                <canvas id="eventChart"></canvas>
+            </div>
+        </div>
+        <div class="glass-card p-6">
+            <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="trending-up" class="text-emerald-400 w-4 h-4"></i> 주별 활성 사용자(N주) 추이
+            </h3>
+            <div style="height: 260px;">
+                <canvas id="weekChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 후속 측정 쟁점 -->
+    <section class="glass-card p-6 mb-8">
+        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <i data-lucide="help-circle" class="text-amber-400 w-5 h-5"></i> 향후 3대 측정 쟁점 제안
+        </h2>
+        <div class="space-y-4 text-sm">
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-sky-300">쟁점 1. 월간 이벤트 발생 추세 및 기능별 전환 분석</span>
+                    <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">GA4 탐색 보고서로 즉시 가능</span>
+                </div>
+                <p class="text-slate-400">전체 기간 합계가 아닌 월별(9월 vs 10월) 캘린더 다운로드와 필터 조작량 추이를 비교 분석.</p>
+            </div>
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-sky-300">쟁점 2. 순수 재방문자 코호트와 유입 경로(소스/매체) 확인</span>
+                    <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">GA4 기본 보고서로 즉시 가능</span>
+                </div>
+                <p class="text-slate-400">평시 20~25명의 유저가 어디서 들어오는지(직접 주소 입력, 검색, 유튜브 링크)와 주간 리텐션을 분리 측정.</p>
+            </div>
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-sky-300">쟁점 3. 유튜브 이동 링크에 캠페인 추적 태그(UTM) 부착</span>
+                    <span class="text-xs bg-rose-950 text-rose-400 border border-rose-800 px-2 py-0.5 rounded">코드/데이터 변경 필요</span>
+                </div>
+                <p class="text-slate-400">추천 영상 링크에 ?utm_source=aeika_dashboard 태그를 추가하여 유튜브 스튜디오에서 실제 시청 시간과 조회수를 양방향 검증.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center text-xs text-slate-500 py-6 border-t border-slate-800">
+        서브컬처 게임 일정 대시보드 (aeika.site) &bull; 공식 분석 보고서 아카이브
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // 1. 이벤트 차트
+        new Chart(document.getElementById('eventChart'), {
+            type: 'bar',
+            data: {
+                labels: ['게임필터', '모달열람', '일정클릭', '영상캐러셀', '캘린더모달', '다운로드', '영상클릭', '채널클릭'],
+                datasets: [
+                    {
+                        label: '이벤트 수',
+                        data: [1108, 863, 629, 307, 95, 37, 18, 6],
+                        backgroundColor: '#38bdf8'
+                    },
+                    {
+                        label: '고유 사용자',
+                        data: [200, 200, 151, 8, 47, 23, 11, 6],
+                        backgroundColor: '#10b981'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { display: false } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f1f5f9' } }
+                }
+            }
+        });
+
+        // 2. 주별 차트
+        const weekLabels = ['W21','W22','W23','W24','W25','W26','W27','W28','W29','W30','W31','W32','W33','W34','W35','W36','W37','W38','W39','W40'];
+        const activeData = [91, 283, 259, 239, 210, 105, 179, 170, 207, 102, 100, 137, 141, 188, 110, 278, 160, 129, 123, 15];
+        const newData = [92, 278, 238, 213, 179, 70, 150, 137, 159, 61, 73, 102, 101, 140, 58, 210, 103, 54, 68, 5];
+
+        new Chart(document.getElementById('weekChart'), {
+            type: 'line',
+            data: {
+                labels: weekLabels,
+                datasets: [
+                    {
+                        label: '활성 사용자',
+                        data: activeData,
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '새 사용자',
+                        data: newData,
+                        borderColor: '#a855f7',
+                        borderDash: [4, 4],
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f1f5f9' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

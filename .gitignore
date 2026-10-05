@@ -12,3 +12,6 @@ lerna-debug.log*
 .shadow-configs/
 .agents/
 .gemini/
+scripts/youtube_sync/token.json
+scripts/youtube_sync/credentials.json
+scripts/youtube_sync/config.json

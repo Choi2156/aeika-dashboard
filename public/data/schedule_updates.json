@@ -30,6 +30,20 @@
     "link": "https://cafe.naver.com/honkaistarrail/805855"
   },
   {
+    "id": "EVT_ZZZ_20261009_0001",
+    "game": "젠레스 존 제로",
+    "version": "3.3",
+    "type": "공식방송",
+    "title": "3.3 버전 「다시 하늘을 향해」 특별 방송",
+    "date": "2026-10-09",
+    "end_date": "2026-10-09",
+    "time": "20:30",
+    "is_fixed": true,
+    "detail": "3.3 신규 버전 스토리 및 신규 에이전트 선공개, 리딤코드 혜택 안내",
+    "custom_img": "zzz_3.3_stream.webp",
+    "link": "https://www.youtube.com/@ZZZ_KO"
+  },
+  {
     "id": "EVT_AKEF_20261006_0001",
     "game": "명일방주: 엔드필드",
     "version": "1.6",
