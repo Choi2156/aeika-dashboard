@@ -1,5 +1,33 @@
 [
   {
+    "id": "EVT_AKEF_20261015_0001",
+    "game": "명일방주: 엔드필드",
+    "version": "1.6",
+    "type": "전반업데이트",
+    "title": "1.6 버전 - 「단청도」",
+    "date": "2026-10-15",
+    "end_date": "2026-11-25",
+    "time": "",
+    "is_fixed": true,
+    "detail": "✦ 신규 오퍼레이터: 6★ 사 [냉기/서포터/양손검, 전반부 픽업]\n✦ 신규 구역: 사의 그림\n✦ 신규 이벤트: 위기협약 및 신규 이벤트 다수 개방",
+    "custom_img": "endfield_1.6_banner.webp",
+    "link": ""
+  },
+  {
+    "id": "EVT_AKEF_20261105_0001",
+    "game": "명일방주: 엔드필드",
+    "version": "1.6 후반",
+    "type": "후반업데이트",
+    "title": "1.6 버전 후반부 오퍼레이터 헤드헌팅 전환",
+    "date": "2026-11-05",
+    "end_date": "2026-11-25",
+    "time": "",
+    "is_fixed": true,
+    "detail": "✦ 신규 오퍼레이터: 6★ 명하 [전기/가드/한손검, 후반부 픽업]",
+    "custom_img": "endfield_1.6_banner.webp",
+    "link": ""
+  },
+  {
     "id": "EVT_WW_20261019_0001",
     "game": "명조",
     "version": "이벤트",
