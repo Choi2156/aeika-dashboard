@@ -1,5 +1,20 @@
 [
   {
+    "id": "EVT_AKEF_20270109_0001",
+    "game": "명일방주: 엔드필드",
+    "version": "행사",
+    "type": "오프라인이벤트",
+    "title": "〈명일방주: 엔드필드〉 1주년 오프라인 페스티벌",
+    "date": "2027-01-09",
+    "end_date": "2027-01-10",
+    "time": "",
+    "is_fixed": true,
+    "detail": "✦ 행사명: 〈명일방주: 엔드필드〉 1주년 오프라인 페스티벌\n✦ 일시: 2027년 1월 9일(토) ~ 1월 10일(일)\n✦ 장소: 일산 킨텍스 제2전시장 10A홀\n\n※ 상세 행사 프로그램 및 티켓 예매 일정은 추후 공식 공지를 통해 안내될 예정입니다.",
+    "location": "일산 킨텍스 제2전시장 10A홀",
+    "custom_img": "endfield_1st_anniversary.webp",
+    "link": "https://game.naver.com/lounge/Arknights_Endfield/board/detail/8294959"
+  },
+  {
     "id": "EVT_AKEF_20261015_0001",
     "game": "명일방주: 엔드필드",
     "version": "1.6",
