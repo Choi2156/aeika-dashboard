@@ -306,7 +306,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
           type: '공식방송',
           title: `${streamTargetVer} 버전 공식 특별 방송 프로그램`,
           date: formatDate(targetStreamDate),
-          time: '20:00',
+          time: '',
           is_fixed: false,
           detail: '차기 정규 버전 스펙 선공개 안내 특별 프로그램입니다.',
           custom_img: '',
