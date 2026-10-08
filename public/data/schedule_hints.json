@@ -2,6 +2,14 @@
   "hints": [
     {
       "game": "명조",
+      "trigger_version": "3.7",
+      "cycle_override": 43,
+      "half_cycle_override": 22,
+      "target_date": "2026-11-12",
+      "note": "3.7 버전 43일 변칙 주기 적용 (9/30 수 ~ 11/11 수 마감, 11/12 목 점검, 후반 10/22 목 전환)"
+    },
+    {
+      "game": "명조",
       "trigger_version": "3.8",
       "next_version_number": "4.0",
       "note": "3.8 버전 종료 후 4.0 신규 대형 지역으로 메이저 점프"
