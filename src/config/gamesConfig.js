@@ -8,7 +8,7 @@
 export const GAMES_CONFIG = {
   "원신": {
     cycle: 42,
-    halfCycle: 21,
+    halfCycle: 20,
     streamOffset: -12,
     standardWeekday: 3, // 수요일
     theme: {

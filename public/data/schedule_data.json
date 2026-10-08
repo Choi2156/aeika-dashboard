@@ -6,7 +6,7 @@
   "games_config": {
     "원신": {
       "cycle": 42,
-      "halfCycle": 21,
+      "halfCycle": 20,
       "streamOffset": -12
     },
     "붕괴: 스타레일": {
