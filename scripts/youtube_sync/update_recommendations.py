@@ -211,7 +211,9 @@ def run_pipeline():
         title = v.get("title", "")
         tags = v.get("tags", [])
         
-        # 1) CSV 시트 우선 대조
+        # 삭제/비공개 영상 원천 제외
+        if title in ["Deleted video", "Private video"] or not title.strip():
+            continue
         if v_id in sheet_map:
             sheet_info = sheet_map[v_id]
             if sheet_info.get("status") and sheet_info.get("status") != "업로드":

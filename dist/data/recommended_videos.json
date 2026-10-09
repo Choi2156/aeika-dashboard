@@ -211,73 +211,73 @@
       "order": 10
     },
     {
+      "id": "q6WBlZBwEcM",
+      "url": "https://youtube.com/shorts/q6WBlZBwEcM",
+      "game": "명조",
+      "addedAt": "2026-10-08T11:25:09Z",
+      "order": 1
+    },
+    {
       "id": "VYUoUMcfz0Y",
       "url": "https://youtube.com/shorts/VYUoUMcfz0Y",
       "game": "명조",
       "addedAt": "2026-10-07T11:57:44Z",
-      "order": 1
+      "order": 2
     },
     {
       "id": "PfdJ1QNQoW0",
       "url": "https://youtube.com/shorts/PfdJ1QNQoW0",
       "game": "명조",
       "addedAt": "2026-10-07T04:14:05Z",
-      "order": 2
+      "order": 3
     },
     {
       "id": "n4H7Uw7kixE",
       "url": "https://youtube.com/shorts/n4H7Uw7kixE",
       "game": "명조",
       "addedAt": "2026-10-05T10:31:45Z",
-      "order": 3
+      "order": 4
     },
     {
       "id": "z6RFPYT1q_s",
       "url": "https://youtube.com/shorts/z6RFPYT1q_s",
       "game": "명조",
       "addedAt": "2026-10-03T03:42:01Z",
-      "order": 4
+      "order": 5
     },
     {
       "id": "fML2I1A9GjU",
       "url": "https://youtube.com/shorts/fML2I1A9GjU",
       "game": "명조",
       "addedAt": "2026-10-03T00:30:24Z",
-      "order": 5
+      "order": 6
     },
     {
       "id": "1wj3SWwxbps",
       "url": "https://youtube.com/shorts/1wj3SWwxbps",
       "game": "명조",
       "addedAt": "2026-10-03T00:00:38Z",
-      "order": 6
+      "order": 7
     },
     {
       "id": "TGVp-njiffQ",
       "url": "https://youtube.com/shorts/TGVp-njiffQ",
       "game": "명조",
       "addedAt": "2026-10-01T15:12:51Z",
-      "order": 7
+      "order": 8
     },
     {
       "id": "TV-OsKiCWjM",
       "url": "https://youtube.com/shorts/TV-OsKiCWjM",
       "game": "명조",
       "addedAt": "2026-10-01T14:42:45Z",
-      "order": 8
+      "order": 9
     },
     {
       "id": "ZxWxRzzLBfc",
       "url": "https://youtube.com/shorts/ZxWxRzzLBfc",
       "game": "명조",
       "addedAt": "2026-09-30T11:45:16Z",
-      "order": 9
-    },
-    {
-      "id": "TnoYlwPV2U8",
-      "url": "https://youtube.com/shorts/TnoYlwPV2U8",
-      "game": "명조",
-      "addedAt": "2026-09-30T11:27:36Z",
       "order": 10
     },
     {
@@ -713,13 +713,22 @@
       "order": 3
     },
     {
+      "id": "1hCwRJ09GWA",
+      "url": "https://youtu.be/1hCwRJ09GWA",
+      "game": "명조",
+      "type": "story",
+      "desc": "[명조][기담 임무] - 달빛에 빌어보는 선정의 그리움 (3.7버전)(컷편집)",
+      "addedAt": "2026-10-07T16:33:49Z",
+      "order": 1
+    },
+    {
       "id": "j5sjtqL4WfI",
       "url": "https://youtu.be/j5sjtqL4WfI",
       "game": "명조",
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 제4막 -「몽주의 궤적, 마음이 그리는 대로」(3.7버전)(컷편집)",
       "addedAt": "2026-10-02T03:58:10Z",
-      "order": 1
+      "order": 2
     },
     {
       "id": "qaZPRBJaCVE",
@@ -728,7 +737,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 에필로그 -「떠도는 유람객, 사라지는 잔향」(3.6버전)(컷편집)",
       "addedAt": "2026-08-21T05:03:48Z",
-      "order": 2
+      "order": 3
     },
     {
       "id": "lmN8laM9ZkA",
@@ -737,7 +746,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 제3막 -「연운이 아득하니 심검이 우네」(3.6버전)(컷편집)",
       "addedAt": "2026-08-21T05:02:55Z",
-      "order": 3
+      "order": 4
     },
     {
       "id": "yHXRan1ydd4",
@@ -746,7 +755,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 에필로그 -「신비로운 선율의 서약, 아득히 이어진 인연」+ 후일담 (3.5버전)(컷편집)",
       "addedAt": "2026-07-15T05:00:46Z",
-      "order": 4
+      "order": 5
     },
     {
       "id": "nAQOacc-BtQ",
@@ -755,7 +764,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 제2막 -「골짜기를 뒤흔든 현령, 잠잠해진 물결」(3.5버전)(컷편집)",
       "addedAt": "2026-07-15T05:00:43Z",
-      "order": 5
+      "order": 6
     },
     {
       "id": "_aqACQKf3mQ",
@@ -764,7 +773,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제4장 · 제1막 -「산비가 내리기 전, 누각을 채운 거센 바람」(3.5버전)(컷편집)",
       "addedAt": "2026-07-15T05:00:33Z",
-      "order": 6
+      "order": 7
     },
     {
       "id": "fQ4oXg3clQo",
@@ -773,7 +782,7 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제3장 · 에필로그 -「우리의 선택은 하늘」(3.4버전)(컷편집)",
       "addedAt": "2026-06-18T20:37:41Z",
-      "order": 7
+      "order": 8
     },
     {
       "id": "FuY-ue45flI",
@@ -782,7 +791,7 @@
       "type": "story",
       "desc": "[명조][이문 임무] 제3장 · 외전 「엣지 드림」(3.4버전)(컷편집)",
       "addedAt": "2026-06-18T09:03:23Z",
-      "order": 8
+      "order": 9
     },
     {
       "id": "BSRnLcpqCtU",
@@ -791,15 +800,6 @@
       "type": "story",
       "desc": "[명조][조수 임무] 제3장 에필로그 -「녹아내린 밤하늘 아래」(3.3버전)(컷편집)",
       "addedAt": "2026-06-18T08:58:44Z",
-      "order": 9
-    },
-    {
-      "id": "LNHYjxEm-ek",
-      "url": "https://youtu.be/LNHYjxEm-ek",
-      "game": "명조",
-      "type": "story",
-      "desc": "[명조] [조수 임무] 제3장 제5막 - 「어젯밤의 뭇별들」 에필로그/후일담 (3.3버전)(컷편집)",
-      "addedAt": "2026-05-06T00:14:01Z",
       "order": 10
     },
     {
