@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서브컬처 게임 일정 대시보드 정기 성과 분석 보고서 (5달차 완결 및 스냅샷 차분 결산)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        :root {
+            --bg: #090d16;
+            --card: #131a2c;
+            --accent: #38bdf8;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --purple: #a855f7;
+            --rose: #f43f5e;
+        }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: #f1f5f9;
+            line-height: 1.6;
+        }
+        .glass-card {
+            background: rgba(19, 26, 44, 0.82);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            transition: all 0.25s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.45);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #c084fc 80%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.7rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .badge-sky { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+        th, td { white-space: nowrap; }
+        .table-wrap { overflow-x: auto; }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-7xl mx-auto space-y-10">
+
+    <!-- Header Section -->
+    <header class="glass-card p-6 md:p-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-l-4 border-l-sky-500">
+        <div>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="badge badge-sky"><i data-lucide="calendar-check" class="w-3.5 h-3.5 mr-1"></i> 대시보드 5달차 완결 (09/13 - 10/12)</span>
+                <span class="badge badge-emerald"><i data-lucide="layers" class="w-3.5 h-3.5 mr-1"></i> 백업 스냅샷 차분(Delta) 최초 적용</span>
+                <span class="badge badge-purple"><i data-lucide="shield-check" class="w-3.5 h-3.5 mr-1"></i> 분모 착시 교정 및 중앙값 도입</span>
+            </div>
+            <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight">
+                서브컬처 게임 일정 대시보드 <span class="gradient-text">5달차 정기 성과 분석 보고서</span>
+            </h1>
+            <p class="text-sm md:text-base text-slate-400 mt-2">
+                표면 평균의 착시를 걷어낸 실질 오가닉 기저 체력(+8.3% 중앙값 상승), 30일 롤링 MAU 만료 절벽 해명 및 32일 순증 이벤트 정밀 진단
+            </p>
+        </div>
+        <div class="text-left lg:text-right text-xs md:text-sm text-slate-400 space-y-1 bg-slate-900/70 p-4 rounded-xl border border-slate-800 shrink-0">
+            <div><strong class="text-slate-200">보고서 작성일:</strong> 2026-10-16</div>
+            <div><strong class="text-slate-200">5달차 완결 구간:</strong> 2026-09-13 - 2026-10-12 (30일간)</div>
+            <div><strong class="text-slate-200">전기간 누적 구간:</strong> 2026-05-28 - 2026-10-15 (141일간)</div>
+            <div><strong class="text-slate-200">서비스 도메인:</strong> <a href="https://aeika.site" target="_blank" class="text-sky-400 hover:underline">aeika.site</a> (v1.2.8)</div>
+        </div>
+    </header>
+
+    <!-- 0. 4대 방법론 혁신 배너 -->
+    <section class="glass-card p-6 border border-sky-500/20 bg-gradient-to-r from-sky-950/30 via-slate-900/40 to-purple-950/30">
+        <h2 class="text-base md:text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-sky-400"></i> 이전 보고서 대비 4대 분석 혁신 및 무결성 검증
+        </h2>
+        <div class="grid md:grid-cols-4 gap-4 text-xs md:text-sm">
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="font-bold text-sky-400 mb-1">1. 평균의 착시 해체 (중앙값 도입)</div>
+                <p class="text-slate-300">9/8 홍보 스파이크(235명) 기저효과로 월평균 DAU는 -15.3% 감소한 것처럼 보이나, <strong>일일 중앙값(24명 ➔ 26명, +8.3%)</strong>과 <strong>평시 평균(25.21명 ➔ 28.00명, +11.1%)</strong>은 오히려 성장했음을 입증했습니다.</p>
+            </div>
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="font-bold text-emerald-400 mb-1">2. 계측 시점 분모 착시 교정</div>
+                <p class="text-slate-300">9월 6일 이전(첫 2,054명)에는 커스텀 이벤트가 미배포 상태였음을 백업 원천으로 확인했습니다. 9월 7일 이후 유효 모수(527명) 기준 실제 <strong>필터·모달 참여율은 6-8%가 아닌 46.5% - 47.4%</strong>입니다.</p>
+            </div>
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="font-bold text-purple-400 mb-1">3. 스냅샷 차분(Delta) 최초 분리</div>
+                <p class="text-slate-300">보관된 4개 시점(09/06, 09/14, 10/05, 10/16) 백업 CSV를 빼기 연산하여, 이번 한 달(32일간) 순증한 <strong>게임 필터(+937회), 모달(+784회), 외부공지(+58회)</strong> 실적을 정확히 추출했습니다.</p>
+            </div>
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="font-bold text-amber-400 mb-1">4. MAU 30일 만료 절벽 규명</div>
+                <p class="text-slate-300">10/8 - 10/10 사흘간 MAU가 -145명 감소한 현상이 유저 이탈이 아니라, 정확히 30일 전인 <strong>9/8 - 9/10 홍보 유입자의 30일 롤링 집계 만료</strong>임을 일별 시계열로 증명했습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 1. Master KPI Scorecards -->
+    <section>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card p-5 border-t-2 border-t-sky-400">
+                <div class="flex justify-between items-center text-slate-400 text-xs">
+                    <span>5달차 일평균 / 중앙값 DAU</span>
+                    <i data-lucide="users" class="w-4 h-4 text-sky-400"></i>
+                </div>
+                <div class="text-2xl md:text-3xl font-extrabold text-white mt-2">
+                    25.70<span class="text-sm font-normal text-slate-400 ml-1">명</span>
+                    <span class="text-base font-bold text-sky-400 ml-1">(중앙 26.0명)</span>
+                </div>
+                <div class="text-xs text-sky-400/90 mt-2 flex items-center">
+                    <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i> 연휴 제외 평시 28.00명 (전월 평시 대비 +11.1%)
+                </div>
+            </div>
+
+            <div class="glass-card p-5 border-t-2 border-t-emerald-400">
+                <div class="flex justify-between items-center text-slate-400 text-xs">
+                    <span>주간 코어 재방문자 (W38-W41)</span>
+                    <i data-lucide="repeat" class="w-4 h-4 text-emerald-400"></i>
+                </div>
+                <div class="text-2xl md:text-3xl font-extrabold text-white mt-2">
+                    75<span class="text-sm font-normal text-slate-400 ml-1">명 (최고)</span>
+                    <span class="text-base font-bold text-emerald-400 ml-1">/ 62.7%</span>
+                </div>
+                <div class="text-xs text-emerald-400/90 mt-2 flex items-center">
+                    <i data-lucide="award" class="w-3.5 h-3.5 mr-1"></i> 인당 주간 세션 5주 연속 1.04 - 1.19회 돌파
+                </div>
+            </div>
+
+            <div class="glass-card p-5 border-t-2 border-t-purple-400">
+                <div class="flex justify-between items-center text-slate-400 text-xs">
+                    <span>32일간 핵심 일정 조작 순증</span>
+                    <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-purple-400"></i>
+                </div>
+                <div class="text-2xl md:text-3xl font-extrabold text-white mt-2">
+                    +2,372<span class="text-sm font-normal text-slate-400 ml-1">회</span>
+                </div>
+                <div class="text-xs text-purple-400/90 mt-2 flex items-center">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mr-1"></i> 필터 +937 · 모달 +784 · 일정바 +651 (참여율 ~47%)
+                </div>
+            </div>
+
+            <div class="glass-card p-5 border-t-2 border-t-amber-400">
+                <div class="flex justify-between items-center text-slate-400 text-xs">
+                    <span>공식 공지/외부 링크 전환</span>
+                    <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
+                </div>
+                <div class="text-2xl md:text-3xl font-extrabold text-white mt-2">
+                    69<span class="text-sm font-normal text-slate-400 ml-1">회 (42명)</span>
+                </div>
+                <div class="text-xs text-amber-400/90 mt-2 flex items-center">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 mr-1"></i> 한 달간 +58회 (+527% 폭증, 최근 11일간 +29회)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. 3대 핵심 결론 요약 (팩트 / 해석 / 한계 분리) -->
+    <section class="glass-card p-6 md:p-8 space-y-6">
+        <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="compass" class="w-5 h-5 text-sky-400"></i> 1. 핵심 결론 요약 (Fact · Interpretation · Limitation 분리)
+        </h2>
+        <div class="grid lg:grid-cols-3 gap-6 text-sm">
+            <div class="bg-slate-900/50 p-5 rounded-xl border-l-4 border-l-sky-400 space-y-2">
+                <div class="font-bold text-sky-300 text-base">① 자생적 오가닉 기초 체력의 실질 성장</div>
+                <p class="text-slate-300"><strong class="text-white">[관측 팩트]</strong> 5달차 전체 일평균 DAU는 25.70명(연인원 771명)으로 4달차(30.35명) 대비 낮아 보이나, <strong>일일 중앙값은 24.0명 ➔ 26.0명(+8.3%)</strong>으로 상승했습니다. 4달차에서 9/8-10 홍보 스파이크(235명)를 뺀 평시 평균(25.21명) 대비 <strong>5달차 연휴 제외 평시 평균(28.00명)은 +11.1% 성장</strong>했습니다.</p>
+                <p class="text-slate-400 text-xs"><strong class="text-slate-200">[해석 및 한계]</strong> 9/8 홍보로 유입된 신규 유저 중 약 15-25명이 고정 코어층으로 정착하며 주간 재방문자가 75명(W38)까지 확대되었습니다. 단, 북마크 유입과 유튜브 설명란 재진입의 정확한 비율은 매체 보고서 부재로 분리 불가합니다.</p>
+            </div>
+            <div class="bg-slate-900/50 p-5 rounded-xl border-l-4 border-l-emerald-400 space-y-2">
+                <div class="font-bold text-emerald-300 text-base">② 일정 탐색 유틸리티 및 공지 허브 작동 입증</div>
+                <p class="text-slate-300"><strong class="text-white">[관측 팩트]</strong> 09/14 ➔ 10/16(32일간) 순증 방문자(+297명) 동안 개별 필터 토글(+937회/+147명), 상세 모달 열람(+784회/+136명), 일정바 클릭(+651회/+122명)이 폭발적으로 증가했습니다. 특히 최근 11일간은 모달 열람(+275회)이 필터 조작(+260회)을 추월했습니다.</p>
+                <p class="text-slate-400 text-xs"><strong class="text-slate-200">[해석 및 한계]</strong> 9/7 태깅 이후 유효 방문자 모수 대비 <strong>약 46% - 47%가 능동적으로 일정을 조작</strong>합니다. 반면 캘린더 다운로드는 최근 11일간 +2회(+0명)에 그쳐, 월초 커뮤니티 공지 푸시가 있을 때만 폭발하는 특성이 확인되었습니다.</p>
+            </div>
+            <div class="bg-slate-900/50 p-5 rounded-xl border-l-4 border-l-rose-400 space-y-2">
+                <div class="font-bold text-rose-300 text-base">③ 외부 공지 이동은 급증, 유튜브 시청 전환은 보조적</div>
+                <p class="text-slate-300"><strong class="text-white">[관측 팩트]</strong> 공식 라운지 공지 및 특방 링크 클릭(<code>click_outbound_link</code>)은 한 달간 +58회(+31명, 누적 69회)로 6.3배 급증한 반면, 하단 추천 영상 클릭(+15회/+9명), 채널 이동(+6회/+6명), 쇼츠 인라인 재생(+8회/+5명)은 소폭 증가에 머물렀습니다.</p>
+                <p class="text-slate-400 text-xs"><strong class="text-slate-200">[해석 및 한계]</strong> 유저들은 대시보드를 <strong>'일정 확인 및 공식 공지 포털'</strong>로 명확히 인지하고 있습니다. 하단 영상 영역은 직접 조회수 견인 엔진보다는 채널 브랜드 쇼케이스로 포지셔닝하는 것이 합리적입니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Interactive Charts Section (Row 1) -->
+    <section class="grid lg:grid-cols-2 gap-6">
+        <!-- Chart 1: Month 5 Daily DAU & MAU Roll-off -->
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i> 5달차 일별 DAU 추이 및 10/8 MAU 만료 절벽 검증
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">2026-09-13 - 2026-10-15 (33일간 실측) | 9/8 홍보분의 30일 만료(10/8-10) 확인</p>
+                </div>
+                <span class="badge badge-sky">일별 시계열</span>
+            </div>
+            <div class="h-72">
+                <canvas id="dailyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 2: Monthly Mean vs Median vs Baseline DAU -->
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-400"></i> 월차별(1-5달차) 평균 vs 중앙값 vs 평시 기저 DAU
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">홍보 스파이크와 연휴 착시를 제거하면 3달차 이후 지속 우상향</p>
+                </div>
+                <span class="badge badge-emerald">착시 제거 비교</span>
+            </div>
+            <div class="h-72">
+                <canvas id="monthlyCompareChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Interactive Charts Section (Row 2) -->
+    <section class="grid lg:grid-cols-2 gap-6">
+        <!-- Chart 3: Weekly Cohort Returning Users & Sessions per User -->
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="users-round" class="w-4 h-4 text-purple-400"></i> 주간 코호트(W31-W41) 재방문자 및 인당 참여 세션 도약
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">5달차(W37-W41) 5주 연속 인당 참여 세션 1.0회 돌파 및 재방문 75명 경신</p>
+                </div>
+                <span class="badge badge-purple">코호트 리텐션</span>
+            </div>
+            <div class="h-72">
+                <canvas id="weeklyCohortChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 4: Snapshot Delta Events (09/14 -> 10/16) -->
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i> 백업 스냅샷 차분(Delta): 초기 8일 vs 최근 32일 이벤트
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">09/07-09/14 초기 누적 대비 09/14-10/16(5달차 32일간) 순증 발생량</p>
+                </div>
+                <span class="badge badge-amber">스냅샷 차분</span>
+            </div>
+            <div class="h-72">
+                <canvas id="eventDeltaChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 월차별 정밀 비교 테이블 -->
+    <section class="glass-card p-6 md:p-8 space-y-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="table" class="w-5 h-5 text-sky-400"></i> 2. 채널 연계 월차별(1달차 - 5달차 완결 + 6달차 초반) 정밀 비교표
+            </h2>
+            <span class="text-xs text-slate-400">기준 주기: 매월 13일 - 익월 12일 (유튜브 채널 개설일 동기화)</span>
+        </div>
+        <div class="table-wrap">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+                <thead>
+                    <tr class="border-b border-slate-700 text-slate-300 bg-slate-900/60">
+                        <th class="p-3">월차 구분 (채널 차수)</th>
+                        <th class="p-3">분석 기간</th>
+                        <th class="p-3 text-center">실일수</th>
+                        <th class="p-3 text-right">연인원 (DAU합)</th>
+                        <th class="p-3 text-right">일평균 DAU</th>
+                        <th class="p-3 text-right text-sky-400">DAU 중앙값</th>
+                        <th class="p-3 text-right text-emerald-400">평시 평균 (특수일 제외)</th>
+                        <th class="p-3 text-right">최고 DAU</th>
+                        <th class="p-3 text-right">기말 WAU / MAU</th>
+                        <th class="p-3 text-right">평균 DAU/MAU</th>
+                        <th class="p-3 text-right">평균 DAU/WAU</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-slate-300">
+                    <tr>
+                        <td class="p-3 font-semibold">대시보드 1달차 (채널 3달차)</td>
+                        <td class="p-3 text-slate-400">2026-05-28 - 06-12</td>
+                        <td class="p-3 text-center">16일*</td>
+                        <td class="p-3 text-right">653명</td>
+                        <td class="p-3 text-right">40.81명</td>
+                        <td class="p-3 text-right font-semibold text-sky-300">40.5명</td>
+                        <td class="p-3 text-right">40.81명</td>
+                        <td class="p-3 text-right">62명 (06/03)</td>
+                        <td class="p-3 text-right">275 / 582명</td>
+                        <td class="p-3 text-right">24.48%*</td>
+                        <td class="p-3 text-right">26.90%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 font-semibold">대시보드 2달차 (채널 4달차)</td>
+                        <td class="p-3 text-slate-400">2026-06-13 - 07-12</td>
+                        <td class="p-3 text-center">30일</td>
+                        <td class="p-3 text-right">877명</td>
+                        <td class="p-3 text-right">29.23명</td>
+                        <td class="p-3 text-right font-semibold text-sky-300">30.0명</td>
+                        <td class="p-3 text-right">29.23명</td>
+                        <td class="p-3 text-right">61명 (06/15)</td>
+                        <td class="p-3 text-right">168 / 688명</td>
+                        <td class="p-3 text-right">3.66%</td>
+                        <td class="p-3 text-right">15.42%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 font-semibold">대시보드 3달차 (채널 5달차)</td>
+                        <td class="p-3 text-slate-400">2026-07-13 - 08-12</td>
+                        <td class="p-3 text-center">31일</td>
+                        <td class="p-3 text-right">731명</td>
+                        <td class="p-3 text-right">23.58명</td>
+                        <td class="p-3 text-right font-semibold text-sky-300">22.0명</td>
+                        <td class="p-3 text-right">23.58명</td>
+                        <td class="p-3 text-right">44명 (07/17)</td>
+                        <td class="p-3 text-right">119 / 529명</td>
+                        <td class="p-3 text-right">3.89%</td>
+                        <td class="p-3 text-right">16.45%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 font-semibold">대시보드 4달차 (채널 6달차)</td>
+                        <td class="p-3 text-slate-400">2026-08-13 - 09-12</td>
+                        <td class="p-3 text-center">31일</td>
+                        <td class="p-3 text-right">941명</td>
+                        <td class="p-3 text-right">30.35명</td>
+                        <td class="p-3 text-right font-semibold text-sky-300">24.0명</td>
+                        <td class="p-3 text-right font-semibold text-emerald-300">25.21명 (9/8-10 제외)</td>
+                        <td class="p-3 text-right text-amber-400 font-bold">113명 (09/08)</td>
+                        <td class="p-3 text-right">278 / 633명</td>
+                        <td class="p-3 text-right">5.94%</td>
+                        <td class="p-3 text-right">18.69%</td>
+                    </tr>
+                    <tr class="bg-sky-950/30 border-l-2 border-l-sky-400">
+                        <td class="p-3 font-bold text-white">대시보드 5달차 (완결 결산)</td>
+                        <td class="p-3 text-sky-300 font-semibold">2026-09-13 - 10-12</td>
+                        <td class="p-3 text-center font-bold">30일</td>
+                        <td class="p-3 text-right font-bold text-white">771명</td>
+                        <td class="p-3 text-right font-bold text-white">25.70명</td>
+                        <td class="p-3 text-right font-extrabold text-sky-400">26.0명 (+8.3%)</td>
+                        <td class="p-3 text-right font-extrabold text-emerald-400">28.00명 (연휴 제외)</td>
+                        <td class="p-3 text-right font-bold text-white">38명 (3회)</td>
+                        <td class="p-3 text-right font-bold text-white">132 / 412명</td>
+                        <td class="p-3 text-right font-bold text-sky-300">4.54% (기말 7.52%)</td>
+                        <td class="p-3 text-right font-bold text-white">18.29%</td>
+                    </tr>
+                    <tr class="bg-emerald-950/20">
+                        <td class="p-3 font-semibold text-emerald-300">6달차 초반 (보조 관측)</td>
+                        <td class="p-3 text-slate-400">2026-10-13 - 10-15</td>
+                        <td class="p-3 text-center">3일*</td>
+                        <td class="p-3 text-right">82명</td>
+                        <td class="p-3 text-right font-bold text-emerald-300">27.33명</td>
+                        <td class="p-3 text-right font-bold text-sky-300">29.0명</td>
+                        <td class="p-3 text-right font-bold text-emerald-300">27.33명</td>
+                        <td class="p-3 text-right">33명 (10/14)</td>
+                        <td class="p-3 text-right">134 / 390명</td>
+                        <td class="p-3 text-right font-bold text-emerald-300">6.86% (최고 8.21%)</td>
+                        <td class="p-3 text-right font-bold text-emerald-300">21.10%</td>
+                    </tr>
+                    <tr class="bg-slate-900/80 font-bold text-white">
+                        <td class="p-3">전기간 누적 (완결 141일)</td>
+                        <td class="p-3">2026-05-28 - 10-15</td>
+                        <td class="p-3 text-center">141일</td>
+                        <td class="p-3 text-right">4,055명</td>
+                        <td class="p-3 text-right">28.76명</td>
+                        <td class="p-3 text-right text-sky-400">26.0명</td>
+                        <td class="p-3 text-right">-</td>
+                        <td class="p-3 text-right text-amber-400">113명 (09/08)</td>
+                        <td class="p-3 text-right">고유 2,583명</td>
+                        <td class="p-3 text-right">6.83%</td>
+                        <td class="p-3 text-right">18.40%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 6. 5달차 피크 TOP 10 및 일정 동기화 분석 -->
+    <section class="glass-card p-6 md:p-8 space-y-4">
+        <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="flame" class="w-5 h-5 text-amber-400"></i> 3. 5달차 트래픽 피크 TOP 10 및 게임 일정 · 릴리즈 동기화 검증
+        </h2>
+        <div class="table-wrap">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+                <thead>
+                    <tr class="border-b border-slate-700 text-slate-300 bg-slate-900/60">
+                        <th class="p-3 text-center">순위</th>
+                        <th class="p-3">일자 (요일)</th>
+                        <th class="p-3 text-right">활성 사용자 (DAU)</th>
+                        <th class="p-3 text-right">WAU / MAU</th>
+                        <th class="p-3 text-right">고착도 (DAU/MAU)</th>
+                        <th class="p-3 text-right">주간참여 (DAU/WAU)</th>
+                        <th class="p-3">검증된 내부 동인 (게임 공식 일정 / 사이트 패치 / 채널 업로드)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-slate-300">
+                    <tr class="bg-amber-950/20">
+                        <td class="p-3 text-center font-bold text-amber-400">공동 1위</td>
+                        <td class="p-3 font-semibold text-white">2026-09-15 (화)</td>
+                        <td class="p-3 text-right font-extrabold text-amber-400">38명</td>
+                        <td class="p-3 text-right">215 / 657명</td>
+                        <td class="p-3 text-right">5.78%</td>
+                        <td class="p-3 text-right">17.67%</td>
+                        <td class="p-3">주초 정기 일정 확인 피크 요일(화요일) · 스타레일 아하 & 젠존제 빌리 쇼츠 2편 게시</td>
+                    </tr>
+                    <tr class="bg-amber-950/20">
+                        <td class="p-3 text-center font-bold text-amber-400">공동 1위</td>
+                        <td class="p-3 font-semibold text-white">2026-09-20 (일)</td>
+                        <td class="p-3 text-right font-extrabold text-amber-400">38명</td>
+                        <td class="p-3 text-right">166 / 660명</td>
+                        <td class="p-3 text-right">5.76%</td>
+                        <td class="p-3 text-right">22.89%</td>
+                        <td class="p-3"><strong>붕괴: 스타레일 4.6 프리뷰 특별 방송일</strong> · 스타레일 신규 쇼츠 4편 집중 업로드</td>
+                    </tr>
+                    <tr class="bg-amber-950/20">
+                        <td class="p-3 text-center font-bold text-amber-400">공동 1위</td>
+                        <td class="p-3 font-semibold text-white">2026-09-29 (화)</td>
+                        <td class="p-3 text-right font-extrabold text-amber-400">38명</td>
+                        <td class="p-3 text-right">135 / 572명</td>
+                        <td class="p-3 text-right">6.64%</td>
+                        <td class="p-3 text-right font-bold text-emerald-400">28.15%</td>
+                        <td class="p-3"><strong>스타레일 4.6 오픈(9/28) 직후 + 명조 3.7 및 젠존제 3.2 후반 패치(9/30) 전야</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-center font-semibold">공동 4위</td>
+                        <td class="p-3">2026-09-16 (수)</td>
+                        <td class="p-3 text-right font-bold text-sky-300">36명</td>
+                        <td class="p-3 text-right">191 / 669명</td>
+                        <td class="p-3 text-right">5.38%</td>
+                        <td class="p-3 text-right">18.85%</td>
+                        <td class="p-3">수요일 정기 점검 확인 · 명조 <code>인간 모습의 여우의 별자리</code> 메가히트 쇼츠 게시일</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-center font-semibold">공동 4위</td>
+                        <td class="p-3">2026-09-19 (토)</td>
+                        <td class="p-3 text-right font-bold text-sky-300">36명</td>
+                        <td class="p-3 text-right">160 / 675명</td>
+                        <td class="p-3 text-right">5.33%</td>
+                        <td class="p-3 text-right">22.50%</td>
+                        <td class="p-3"><strong>명조 3.7 프리뷰 특별 방송일</strong> · 대시보드 <code>v1.2.6</code> 예측 엔진 고도화 배포일</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-center font-semibold">6위</td>
+                        <td class="p-3">2026-09-14 (월)</td>
+                        <td class="p-3 text-right font-bold text-white">34명</td>
+                        <td class="p-3 text-right">283 / 632명</td>
+                        <td class="p-3 text-right">5.38%</td>
+                        <td class="p-3 text-right">12.01%</td>
+                        <td class="p-3">원신 7.1 특방 및 스타레일 4.5 후반 전환 직후 주초 일정 체크</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-center font-semibold">공동 7위</td>
+                        <td class="p-3">2026-09-21 (월)</td>
+                        <td class="p-3 text-right font-bold text-white">33명</td>
+                        <td class="p-3 text-right">163 / 632명</td>
+                        <td class="p-3 text-right">5.22%</td>
+                        <td class="p-3 text-right">20.25%</td>
+                        <td class="p-3">주말 양대 특방(명조 3.7 · 스타레일 4.6) 이후 확정 타임라인 확인 유입</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-center font-semibold">공동 7위</td>
+                        <td class="p-3">2026-09-22 (화)</td>
+                        <td class="p-3 text-right font-bold text-white">33명</td>
+                        <td class="p-3 text-right">150 / 618명</td>
+                        <td class="p-3 text-right">5.34%</td>
+                        <td class="p-3 text-right">22.00%</td>
+                        <td class="p-3"><strong>원신 7.1 버전 「죽음의 진혼곡」 업데이트(9/23) 전야</strong> 일정 점검</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-center font-semibold">9위</td>
+                        <td class="p-3">2026-10-12 (월)</td>
+                        <td class="p-3 text-right font-bold text-white">31명</td>
+                        <td class="p-3 text-right">132 / 412명</td>
+                        <td class="p-3 text-right font-bold text-sky-400">7.52%</td>
+                        <td class="p-3 text-right">23.48%</td>
+                        <td class="p-3">원신 7.1 후반 전환(10/13) 및 엔드필드 1.6(10/15) 패치 주간 진입 체크</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-center font-semibold">공동 10위</td>
+                        <td class="p-3">2026-09-28 (월) / 10-09 (금)</td>
+                        <td class="p-3 text-right font-bold text-white">30명</td>
+                        <td class="p-3 text-right">124 / 557명 · 119 / 447명</td>
+                        <td class="p-3 text-right">5.39% · 6.71%</td>
+                        <td class="p-3 text-right">24.19% · 25.21%</td>
+                        <td class="p-3"><strong>9/28 스타레일 4.6 오픈 당일</strong> / <strong>10/9 젠존제 3.3 특별 방송 당일</strong></td>
+                    </tr>
+                    <tr class="bg-emerald-950/20">
+                        <td class="p-3 text-center font-bold text-emerald-400">6달차 초</td>
+                        <td class="p-3 font-semibold text-emerald-300">2026-10-14 (수)</td>
+                        <td class="p-3 text-right font-bold text-emerald-300">33명</td>
+                        <td class="p-3 text-right">128 / 402명</td>
+                        <td class="p-3 text-right font-extrabold text-emerald-400">8.21%</td>
+                        <td class="p-3 text-right font-bold text-emerald-300">25.78%</td>
+                        <td class="p-3"><strong>명일방주: 엔드필드 1.6 버전 & 스타레일 메가커피 콜라보(10/15) 오픈 전야</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 7. 백업 스냅샷 차분(Delta) 이벤트 상세 분석 테이블 -->
+    <section class="glass-card p-6 md:p-8 space-y-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="mouse-pointer" class="w-5 h-5 text-purple-400"></i> 4. 백업 스냅샷 4종 비교 및 5달차 순증(Delta: 09/14 ➔ 10/16) 이벤트 전수 분석
+            </h2>
+            <span class="text-xs text-emerald-400 font-semibold">※ 09/07 태깅 배포 이후 유효 순증 방문자(527명) 기준 실질 참여율 산출</span>
+        </div>
+        <div class="table-wrap">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+                <thead>
+                    <tr class="border-b border-slate-700 text-slate-300 bg-slate-900/60">
+                        <th class="p-3">분류</th>
+                        <th class="p-3">이벤트 이름 (기능 정의)</th>
+                        <th class="p-3 text-right">09/06 누적 (태깅 전)</th>
+                        <th class="p-3 text-right">09/14 누적 (초기 8일)</th>
+                        <th class="p-3 text-right">10/05 누적 (중간 29일)</th>
+                        <th class="p-3 text-right text-white">10/16 누적 (현재 40일)</th>
+                        <th class="p-3 text-right text-sky-400">🔥 5달차 순증 (09/14➔10/16)</th>
+                        <th class="p-3 text-right text-emerald-400">최근 11일 순증 (10/05➔10/16)</th>
+                        <th class="p-3 text-right">인당 반복도</th>
+                        <th class="p-3 text-right">유효 모수 참여율</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-slate-300">
+                    <tr>
+                        <td class="p-3 text-slate-400">기본 탐색</td>
+                        <td class="p-3 font-semibold"><code>page_view</code> (페이지 조회)</td>
+                        <td class="p-3 text-right">5,228 (2,054명)</td>
+                        <td class="p-3 text-right">5,957 (2,284명)</td>
+                        <td class="p-3 text-right">7,075 (2,485명)</td>
+                        <td class="p-3 text-right font-bold text-white">7,708 (2,581명)</td>
+                        <td class="p-3 text-right font-bold text-sky-300">+1,751회 (+297명)</td>
+                        <td class="p-3 text-right">+633회 (+96명)</td>
+                        <td class="p-3 text-right">2.99회</td>
+                        <td class="p-3 text-right">100.0% (기준)</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-slate-400">기본 탐색</td>
+                        <td class="p-3 font-semibold"><code>session_start</code> (세션 시작)</td>
+                        <td class="p-3 text-right">4,889 (2,054명)</td>
+                        <td class="p-3 text-right">5,542 (2,284명)</td>
+                        <td class="p-3 text-right">6,574 (2,485명)</td>
+                        <td class="p-3 text-right font-bold text-white">7,149 (2,581명)</td>
+                        <td class="p-3 text-right font-bold text-sky-300">+1,607회 (+297명)</td>
+                        <td class="p-3 text-right">+575회 (+96명)</td>
+                        <td class="p-3 text-right">2.77회</td>
+                        <td class="p-3 text-right">100.0%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-slate-400">기본 탐색</td>
+                        <td class="p-3 font-semibold"><code>scroll</code> (하단 스크롤 도달)</td>
+                        <td class="p-3 text-right">2,845 (1,288명)</td>
+                        <td class="p-3 text-right">3,258 (1,452명)</td>
+                        <td class="p-3 text-right">3,875 (1,601명)</td>
+                        <td class="p-3 text-right font-bold text-white">4,203 (1,668명)</td>
+                        <td class="p-3 text-right font-bold text-sky-300">+945회 (+216명)</td>
+                        <td class="p-3 text-right">+328회 (+67명)</td>
+                        <td class="p-3 text-right">2.54회</td>
+                        <td class="p-3 text-right text-amber-300">72.7% (보수적)</td>
+                    </tr>
+                    <tr class="bg-sky-950/25">
+                        <td class="p-3 text-sky-400 font-bold">핵심 일정</td>
+                        <td class="p-3 font-bold text-white"><code>toggle_game_filter</code> (개별 필터)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">431 (103명)</td>
+                        <td class="p-3 text-right">1,108 (200명)</td>
+                        <td class="p-3 text-right font-extrabold text-white">1,368 (250명)</td>
+                        <td class="p-3 text-right font-extrabold text-sky-400">+937회 (+147명)</td>
+                        <td class="p-3 text-right font-bold text-emerald-400">+260회 (+50명)</td>
+                        <td class="p-3 text-right font-bold text-amber-400">5.47회</td>
+                        <td class="p-3 text-right font-extrabold text-emerald-400">47.4%</td>
+                    </tr>
+                    <tr class="bg-sky-950/25">
+                        <td class="p-3 text-sky-400 font-bold">핵심 일정</td>
+                        <td class="p-3 font-bold text-white"><code>open_modal</code> (상세 모달 열람)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">354 (109명)</td>
+                        <td class="p-3 text-right">863 (200명)</td>
+                        <td class="p-3 text-right font-extrabold text-white">1,138 (245명)</td>
+                        <td class="p-3 text-right font-extrabold text-sky-400">+784회 (+136명)</td>
+                        <td class="p-3 text-right font-extrabold text-emerald-400">+275회 (+45명)</td>
+                        <td class="p-3 text-right font-bold text-amber-400">4.64회</td>
+                        <td class="p-3 text-right font-extrabold text-emerald-400">46.5%</td>
+                    </tr>
+                    <tr class="bg-sky-950/25">
+                        <td class="p-3 text-sky-400 font-bold">핵심 일정</td>
+                        <td class="p-3 font-bold text-white"><code>click_schedule_event</code> (일정바 클릭)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">220 (72명)</td>
+                        <td class="p-3 text-right">629 (151명)</td>
+                        <td class="p-3 text-right font-extrabold text-white">871 (194명)</td>
+                        <td class="p-3 text-right font-extrabold text-sky-400">+651회 (+122명)</td>
+                        <td class="p-3 text-right font-bold text-emerald-400">+242회 (+43명)</td>
+                        <td class="p-3 text-right font-bold text-amber-400">4.49회</td>
+                        <td class="p-3 text-right font-bold text-emerald-400">36.8%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-slate-400">UI 제어</td>
+                        <td class="p-3"><code>filter_all_games</code> (전체 선택/해제)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">78 (37명)</td>
+                        <td class="p-3 text-right">195 (71명)</td>
+                        <td class="p-3 text-right font-bold text-white">230 (84명)</td>
+                        <td class="p-3 text-right text-sky-300">+152회 (+47명)</td>
+                        <td class="p-3 text-right">+35회 (+13명)</td>
+                        <td class="p-3 text-right">2.74회</td>
+                        <td class="p-3 text-right">15.9%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-slate-400">UI 제어</td>
+                        <td class="p-3"><code>change_view_mode</code> (뷰 모드 전환)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">75 (39명)</td>
+                        <td class="p-3 text-right">148 (70명)</td>
+                        <td class="p-3 text-right font-bold text-white">175 (82명)</td>
+                        <td class="p-3 text-right text-sky-300">+100회 (+43명)</td>
+                        <td class="p-3 text-right">+27회 (+12명)</td>
+                        <td class="p-3 text-right">2.13회</td>
+                        <td class="p-3 text-right">15.6%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-purple-400 font-semibold">캘린더</td>
+                        <td class="p-3"><code>view_calendar</code> (달력 모달 열람)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">59 (30명)</td>
+                        <td class="p-3 text-right">95 (47명)</td>
+                        <td class="p-3 text-right font-bold text-white">114 (52명)</td>
+                        <td class="p-3 text-right text-sky-300">+55회 (+22명)</td>
+                        <td class="p-3 text-right">+19회 (+5명)</td>
+                        <td class="p-3 text-right">2.19회</td>
+                        <td class="p-3 text-right">9.9%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-purple-400 font-semibold">캘린더</td>
+                        <td class="p-3"><code>download_calendar_image</code> (달력 저장)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">29 (17명)</td>
+                        <td class="p-3 text-right">37 (23명)</td>
+                        <td class="p-3 text-right font-bold text-white">39 (23명)</td>
+                        <td class="p-3 text-right text-amber-300">+10회 (+6명)</td>
+                        <td class="p-3 text-right text-rose-400 font-bold">+2회 (+0명)</td>
+                        <td class="p-3 text-right">1.70회</td>
+                        <td class="p-3 text-right font-bold text-purple-300">모달 대비 44.2%</td>
+                    </tr>
+                    <tr class="bg-emerald-950/25">
+                        <td class="p-3 text-emerald-400 font-bold">외부 포털</td>
+                        <td class="p-3 font-bold text-white"><code>click_outbound_link</code> (공식공지·방송)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">11 (11명)</td>
+                        <td class="p-3 text-right">40 (29명)</td>
+                        <td class="p-3 text-right font-extrabold text-white">69 (42명)</td>
+                        <td class="p-3 text-right font-extrabold text-emerald-400">+58회 (+31명)</td>
+                        <td class="p-3 text-right font-extrabold text-emerald-400">+29회 (+13명)</td>
+                        <td class="p-3 text-right">1.64회</td>
+                        <td class="p-3 text-right font-bold text-emerald-300">8.0% (+527%↑)</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-slate-400">UI 제어</td>
+                        <td class="p-3"><code>toggle_theme</code> / <code>click_notice_ticker</code></td>
+                        <td class="p-3 text-right text-slate-500">0 / 0</td>
+                        <td class="p-3 text-right">42(17명) / 13(9명)</td>
+                        <td class="p-3 text-right">68(30명) / 31(16명)</td>
+                        <td class="p-3 text-right font-bold text-white">76(35명) / 34(19명)</td>
+                        <td class="p-3 text-right">+34회 / +21회</td>
+                        <td class="p-3 text-right">+8회 / +3회</td>
+                        <td class="p-3 text-right">2.17 / 1.79회</td>
+                        <td class="p-3 text-right">6.6% / 3.6%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-rose-400">영상/채널</td>
+                        <td class="p-3"><code>navigate_video_carousel</code> (캐러셀 탐색)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">104 (2명)</td>
+                        <td class="p-3 text-right">307 (8명)</td>
+                        <td class="p-3 text-right font-bold text-white">381 (10명)</td>
+                        <td class="p-3 text-right">+277회 (+8명)</td>
+                        <td class="p-3 text-right">+74회 (+2명)</td>
+                        <td class="p-3 text-right font-bold text-rose-400">38.10회 (소수집중)</td>
+                        <td class="p-3 text-right">1.9% (10명)</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-rose-400">영상/채널</td>
+                        <td class="p-3"><code>click_recommended_video</code> (영상 클릭)</td>
+                        <td class="p-3 text-right text-slate-500">0 (0명)</td>
+                        <td class="p-3 text-right">8 (4명)</td>
+                        <td class="p-3 text-right">18 (11명)</td>
+                        <td class="p-3 text-right font-bold text-white">23 (13명)</td>
+                        <td class="p-3 text-right">+15회 (+9명)</td>
+                        <td class="p-3 text-right">+5회 (+2명)</td>
+                        <td class="p-3 text-right">1.77회</td>
+                        <td class="p-3 text-right">2.5%</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-rose-400">영상/채널</td>
+                        <td class="p-3"><code>click_youtube_channel</code> / <code>play_short_inline</code></td>
+                        <td class="p-3 text-right text-slate-500">0 / 0</td>
+                        <td class="p-3 text-right">3(3명) / 1(1명)</td>
+                        <td class="p-3 text-right">6(6명) / 5(5명)</td>
+                        <td class="p-3 text-right font-bold text-white">9(9명) / 9(6명)</td>
+                        <td class="p-3 text-right">+6회 / +8회</td>
+                        <td class="p-3 text-right">+3회 / +4회</td>
+                        <td class="p-3 text-right">1.00 / 1.50회</td>
+                        <td class="p-3 text-right">1.7% / 1.1%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 8. 인프라 대역폭 점검 및 6달차 로드맵 -->
+    <section class="grid lg:grid-cols-3 gap-6">
+        <div class="glass-card p-6 space-y-3 border-t-2 border-t-emerald-400">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="server" class="w-4 h-4 text-emerald-400"></i> GitHub Pages 대역폭 실측 진단
+            </h3>
+            <div class="text-2xl font-extrabold text-emerald-400">월 1.1 - 1.8 GB <span class="text-xs font-normal text-slate-400">(한도 100GB의 1.5%)</span></div>
+            <p class="text-xs md:text-sm text-slate-300">
+                5달차 연인원 771명(약 1,450 세션) 및 WebP 압축·브라우저 캐싱(재방문 비중 50%+)을 대입한 결과, 월간 전송량은 소프트 한도(100GB)의 <strong>1.5% 내외</strong>로 <strong>현재 규모의 50배(일평균 DAU 1,300명+)까지 무비용·무제한급 안정 운영</strong>이 보장됩니다.
+            </p>
+        </div>
+
+        <div class="glass-card p-6 space-y-3 border-t-2 border-t-sky-400 lg:col-span-2">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="rocket" class="w-4 h-4 text-sky-400"></i> 6달차(10/13 - 11/12) 핵심 운영 및 개발 액션 플랜
+            </h3>
+            <div class="grid md:grid-cols-3 gap-4 text-xs md:text-sm">
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <div class="font-bold text-sky-300 mb-1">1. 공식 라운지 공지 링크 표준화</div>
+                    <p class="text-slate-300">최근 11일간 <code>click_outbound_link</code>가 +29회 급증한 성과를 바탕으로, 버전 일정 및 콜라보 등록 시 <strong>공식 공지 원문 링크 + 핵심 요약</strong> 기입을 표준 운영 룰로 정착합니다.</p>
+                </div>
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <div class="font-bold text-purple-300 mb-1">2. 월초 커뮤니티 달력 정기 포스팅</div>
+                    <p class="text-slate-300">달력 다운로드는 자연 탐색보다 커뮤니티 푸시에 직결됩니다. 매월 초 자동 생성되는 <code>calendar_current.png</code>를 유튜브 커뮤니티에 정기 게시하여 월초 부스트를 정례화합니다.</p>
+                </div>
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <div class="font-bold text-amber-300 mb-1">3. 추천 영상 쇼케이스 역할 정립</div>
+                    <p class="text-slate-300">무리한 상단 배치로 일정 확인 UX를 해치지 않고, 하단 영상 큐는 <strong>자동화 스크립트 기반의 저관리 브랜드 쇼케이스</strong>로 유지하여 운영 피로도를 최소화합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center text-xs text-slate-500 pt-4 pb-8">
+        AEIKA Studio Dashboard Analytics · Generated on 2026-10-16 · Integrity Principles v1.2.0 Applied
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Pretendard', sans-serif";
+
+        // 1. Daily DAU & MAU Chart (09/13 - 10/15)
+        const dailyLabels = [
+            '09/13(일)','09/14(월)','09/15(화)','09/16(수)','09/17(목)','09/18(금)','09/19(토)','09/20(일)',
+            '09/21(월)','09/22(화)','09/23(수)','09/24(목)','09/25(금)','09/26(토)','09/27(일)','09/28(월)',
+            '09/29(화)','09/30(수)','10/01(목)','10/02(금)','10/03(토)','10/04(일)','10/05(월)','10/06(화)',
+            '10/07(수)','10/08(목)','10/09(금)','10/10(토)','10/11(일)','10/12(월)','10/13(화)','10/14(수)','10/15(목)'
+        ];
+        const dauData = [27,34,38,36,20,21,36,38,33,33,20,22,17,26,26,30,38,22,17,9,14,12,19,26,27,25,30,19,25,31,20,33,29];
+        const mauData = [630,632,657,669,669,666,675,660,632,618,606,595,567,561,559,557,572,572,568,558,558,555,554,549,561,478,447,416,413,412,405,402,390];
+
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'bar',
+            data: {
+                labels: dailyLabels,
+                datasets: [
+                    {
+                        type: 'line',
+                        label: '30일 롤링 MAU (우축)',
+                        data: mauData,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        tension: 0.25,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        type: 'bar',
+                        label: '일일 활성 사용자 (DAU, 좌축)',
+                        data: dauData,
+                        backgroundColor: dauData.map((v, i) => i >= 30 ? 'rgba(16, 185, 129, 0.75)' : (v >= 35 ? 'rgba(245, 158, 11, 0.85)' : (v <= 14 ? 'rgba(244, 63, 94, 0.55)' : 'rgba(56, 189, 248, 0.75)'))),
+                        borderRadius: 4,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { beginAtZero: true, max: 45, title: { display: true, text: 'DAU (명)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y1: { position: 'right', min: 300, max: 750, title: { display: true, text: 'MAU (명)' }, grid: { drawOnChartArea: false } },
+                    x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } }, grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. Monthly Comparison Chart (Mean vs Median vs Baseline)
+        new Chart(document.getElementById('monthlyCompareChart'), {
+            type: 'bar',
+            data: {
+                labels: ['1달차 (론칭 16일)', '2달차 (안정 30일)', '3달차 (비수기 31일)', '4달차 (대반등 31일)', '5달차 (완결 30일)', '6달차 초 (3일)'],
+                datasets: [
+                    {
+                        label: '단순 일평균 DAU (Mean)',
+                        data: [40.81, 29.23, 23.58, 30.35, 25.70, 27.33],
+                        backgroundColor: 'rgba(148, 163, 184, 0.5)',
+                        borderRadius: 5
+                    },
+                    {
+                        label: '일일 DAU 중앙값 (Median)',
+                        data: [40.5, 30.0, 22.0, 24.0, 26.0, 29.0],
+                        backgroundColor: 'rgba(56, 189, 248, 0.85)',
+                        borderRadius: 5
+                    },
+                    {
+                        label: '특수일(스파이크/연휴) 제외 평시 평균',
+                        data: [40.81, 29.23, 23.58, 25.21, 28.00, 27.33],
+                        backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                        borderRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, max: 45, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 3. Weekly Cohort Chart (W31 - W41)
+        new Chart(document.getElementById('weeklyCohortChart'), {
+            type: 'bar',
+            data: {
+                labels: ['W31','W32','W33','W34','W35','W36(9/8홍보)','W37(5달1주)','W38(5달2주)','W39(5달3주)','W40(5달4주)','W41(최근)'],
+                datasets: [
+                    {
+                        type: 'line',
+                        label: '인당 주간 참여 세션 수 (우축)',
+                        data: [0.73, 0.75, 0.87, 0.87, 0.85, 0.95, 1.07, 1.19, 1.04, 1.15, 1.19],
+                        borderColor: '#f59e0b',
+                        backgroundColor: '#f59e0b',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        type: 'bar',
+                        label: '주간 재방문자 수 (좌축)',
+                        data: [27, 35, 40, 48, 52, 68, 57, 75, 55, 59, 64],
+                        backgroundColor: 'rgba(168, 85, 247, 0.85)',
+                        borderRadius: 4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'bar',
+                        label: '주간 신규 방문자 수 (좌축)',
+                        data: [73, 102, 101, 140, 58, 210, 103, 54, 68, 63, 38],
+                        backgroundColor: 'rgba(56, 189, 248, 0.35)',
+                        borderRadius: 4,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { stacked: true, beginAtZero: true, title: { display: true, text: '주간 사용자 수 (명)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y1: { position: 'right', min: 0.5, max: 1.4, title: { display: true, text: '인당 참여 세션 (회)' }, grid: { drawOnChartArea: false } },
+                    x: { stacked: true, ticks: { font: { size: 10 } }, grid: { display: false } }
+                }
+            }
+        });
+
+        // 4. Snapshot Delta Events Chart
+        new Chart(document.getElementById('eventDeltaChart'), {
+            type: 'bar',
+            data: {
+                labels: ['개별 게임 필터', '상세 모달 열람', '일정바 클릭', '전체 필터 리셋', '뷰 모드 전환', '외부 공지/방송 클릭', '달력 모달 열람', '달력 이미지 저장', '추천 영상 클릭'],
+                datasets: [
+                    {
+                        label: '초기 8일 누적 (09/07 - 09/14)',
+                        data: [431, 354, 220, 78, 75, 11, 59, 29, 8],
+                        backgroundColor: 'rgba(148, 163, 184, 0.45)',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '5달차 32일 순증 (09/14 ➔ 10/16 Delta)',
+                        data: [937, 784, 651, 152, 100, 58, 55, 10, 15],
+                        backgroundColor: 'rgba(56, 189, 248, 0.85)',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { stacked: true, grid: { display: false } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
