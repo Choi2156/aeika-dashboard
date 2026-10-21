@@ -43,6 +43,20 @@
     "link": "https://game.naver.com/lounge/Arknights_Endfield/board/detail/8318254"
   },
   {
+    "id": "EVT_GNS_20261023_0001",
+    "game": "원신",
+    "version": "7.2",
+    "type": "공식방송",
+    "title": "7.2 버전 특별 방송",
+    "date": "2026-10-23",
+    "end_date": "2026-10-23",
+    "time": "21:00",
+    "is_fixed": true,
+    "detail": "✦ 방송 일시: 2026년 10월 23일(금) 21:00 (한국 시간)\n✦ 방송 채널: 공식 YouTube 채널\n\n〈원신〉 신규 버전 특별 방송이 진행될 예정입니다!\n이번 특별 방송에선 7.2 버전의 게임 콘텐츠와 최신 소식을 소개할 예정입니다.\n방송 중에 리딤코드 등 혜택도 함께 공개됩니다!",
+    "custom_img": "genshin_7.2_stream.webp",
+    "link": "https://www.youtube.com/live/Xexrcb7HLnE?si=WPbilXhW8GVgowQE"
+  },
+  {
     "id": "EVT_ZZZ_20261021_0001",
     "game": "젠레스 존 제로",
     "version": "3.3",
