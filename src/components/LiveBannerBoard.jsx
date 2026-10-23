@@ -260,7 +260,7 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
             actionIcon = <Volume2 size={11} />;
           }
         } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
-          badgeText = isFixed ? 'FESTIVAL' : '행사 예정';
+          badgeText = isFixed ? 'EVENT' : '행사 예정';
           titleText = `${cleanEventTitle(ev.title)} 진행 중!`;
           actionIcon = <Info size={11} />;
         } else {
