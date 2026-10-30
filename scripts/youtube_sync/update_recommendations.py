@@ -140,13 +140,12 @@ def classify_fallback_video(title, duration_seconds=0, is_shorts_api=False):
     1. 풀버전 스토리 (story):
        - 제목(title)에 '(컷편집)' 또는 '(풀버전)'이 반드시 포함되어야 함 (채널 공통 태그 오염 방지)
        - 재생시간(duration_seconds)이 있을 경우 10분(600초) 이상이어야 함 (짧은 하이라이트 클립 오분류 방지)
-    2. 추천 쇼츠 (shorts):
+    2. 롱폼 제목 명명 규칙 (other):
+       - 제목이 [게임명]으로 시작하거나 (X.X버전) 등이 있고 해시태그가 없는 가로형 클립 -> 무조건 롱폼(other)
+    3. 추천 쇼츠 (shorts):
        - 제목에 #shorts 또는 #쇼츠 포함
        - 제목에 키워드 해시태그(#[a-zA-Z가-힣_0-9]{2,}) 포함
-       - API상 세로형 쇼츠
-    3. 스토리 하이라이트 영상 / 일반 롱폼 (other):
-       - 제목에 [게임명] 또는 (X.X버전) 등이 있고 해시태그 및 (컷편집)/(풀버전)이 없는 가로형 클립
-       - 재생시간이 10분 미만인 하이라이트 컷씬 클립
+    4. 그 외 해시태그가 없는 영상은 모두 롱폼 추천(other)
     """
     title_strip = title.strip()
     title_lower = title_strip.lower()
@@ -159,12 +158,20 @@ def classify_fallback_video(title, duration_seconds=0, is_shorts_api=False):
             return "other", False
         return "story", False
 
-    # 2. 쇼츠 영상 판별
+    # 2. 롱폼 제목 명명 규칙 우선 검사:
+    # 제목이 [게임명]으로 시작하거나 (X.X버전) 패턴을 갖고 있으면서 해시태그가 없는 경우 -> 무조건 롱폼(other)
+    has_bracket_tag = bool(re.match(r'^\[.+?\]', title_strip))
+    has_version_pattern = bool(re.search(r'\(\d+\.\d+버전\)', title_strip))
     has_hashtag = bool(re.search(r'#[a-zA-Z가-힣_0-9]{2,}', title_strip))
-    if "#shorts" in title_lower or "#쇼츠" in title_lower or has_hashtag or is_shorts_api:
+
+    if (has_bracket_tag or has_version_pattern) and not has_hashtag:
+        return "other", False
+
+    # 3. 쇼츠 영상 판별 (채널의 모든 쇼츠는 제목에 해시태그가 포함됨)
+    if "#shorts" in title_lower or "#쇼츠" in title_lower or has_hashtag:
         return "shorts", True
 
-    # 3. 그 외 가로형 클립은 모두 롱폼 추천(other)
+    # 4. 해시태그가 전혀 없는 영상은 쇼츠가 아니므로 모두 롱폼(other)
     return "other", False
 
 def run_pipeline():
@@ -350,6 +357,28 @@ def run_pipeline():
         print("      [PASS] 스토리 풀버전 큐 내 하이라이트 영상 혼입 0건 (100% 무결)")
     else:
         print(f"      [OK] 오분류된 하이라이트 영상 {misclassified_count}건을 롱폼 추천(other)으로 자동 정상화 완료")
+
+    # (d) 쇼츠 큐에 롱폼(해시태그 부재, [게임명] 또는 (X.X버전) 포함) 영상이 혼입되었는지 전수 감사 및 자동 격리
+    all_videos_map = {v.get("id"): v for v in videos}
+    invalid_shorts = []
+    for sh in final_shorts:
+        sh_id = sh.get("id")
+        v_meta = all_videos_map.get(sh_id, {})
+        title = v_meta.get("title", "")
+        has_tag = bool(re.search(r'#[a-zA-Z가-힣_0-9]{2,}', title))
+        is_lf_title = bool(re.match(r'^\[.+?\]', title.strip())) or bool(re.search(r'\(\d+\.\d+버전\)', title))
+        if title and (not has_tag or is_lf_title):
+            invalid_shorts.append((sh, title))
+
+    if invalid_shorts:
+        print(f"[!] 경고: 쇼츠 큐에 롱폼 패턴 {len(invalid_shorts)}건 감지 ➔ 자동 격리 진행:")
+        invalid_sh_ids = {s[0]["id"] for s in invalid_shorts}
+        for s, t in invalid_shorts:
+            print(f"    - 격리 대상 쇼츠: {t} ({s.get('id')})")
+        final_shorts = [x for x in final_shorts if x.get("id") not in invalid_sh_ids]
+        print(f"      [OK] 불량 쇼츠 자동 격리 완료 (잔여 쇼츠: {len(final_shorts)}개)")
+    else:
+        print("      [PASS] 쇼츠 큐 내 롱폼 혼입 0건 (100% 무결)")
 
     # 5. 파일 저장 및 동기화
     new_db = {

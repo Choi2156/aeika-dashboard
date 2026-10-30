@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import datetime
 import time
 import isodate  # youtube 비디오 길이(duration) 파싱용
@@ -63,23 +64,25 @@ class YoutubeCollector:
     def classify_is_shorts(duration_seconds, title, tags=None):
         """
         영상이 Shorts인지 판별합니다.
-        - 재생시간 180초 이하 → Shorts
-        - 제목에 #shorts / #쇼츠 포함 → Shorts
-        - 태그에 shorts / 쇼츠 포함 → Shorts
-        - 그 외 → Long-form
+        채널 규칙: 쇼츠는 반드시 제목에 해시태그(#shorts, #쇼츠 또는 게임/캐릭터 키워드 해시태그)가 포함되어 있습니다.
+        - 제목에 해시태그가 없고 [게임명]으로 시작하거나 (X.X버전) 등이 있는 가로형 클립은 아무리 짧아도 Shorts가 아님 (Long-form).
         """
-        if duration_seconds <= SHORTS_MAX_DURATION:
+        title_strip = title.strip()
+        title_lower = title_strip.lower()
+
+        # 1. 롱폼 제목 명명 규칙([게임명] 시작, (X.X버전) 포함 등)을 가지며 해시태그가 없으면 무조건 롱폼
+        has_bracket_tag = bool(re.match(r'^\[.+?\]', title_strip))
+        has_version_pattern = bool(re.search(r'\(\d+\.\d+버전\)', title_strip))
+        has_hashtag = bool(re.search(r'#[a-zA-Z가-힣_0-9]{2,}', title_strip))
+
+        if (has_bracket_tag or has_version_pattern) and not has_hashtag:
+            return False
+
+        # 2. 제목에 해시태그가 포함되어 있거나 #shorts/#쇼츠가 있는 경우 -> Shorts
+        if "#shorts" in title_lower or "#쇼츠" in title_lower or has_hashtag:
             return True
 
-        title_lower = title.lower()
-        if "#shorts" in title_lower or "#쇼츠" in title_lower:
-            return True
-
-        if tags:
-            tags_lower = [t.lower() for t in tags]
-            if "shorts" in tags_lower or "쇼츠" in tags_lower:
-                return True
-
+        # 3. 채널의 모든 쇼츠는 제목에 해시태그가 들어가므로, 해시태그가 없는 영상은 롱폼으로 판정
         return False
 
     # ──────────────────────────────────────────────
