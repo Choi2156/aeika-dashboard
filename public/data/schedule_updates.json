@@ -99,6 +99,20 @@
     "link": "https://www.youtube.com/live/ODRQ2MXjKTY?si=7kaHAIoV2WzHlxVc"
   },
   {
+    "id": "EVT_WW_20261106_0001",
+    "game": "명조",
+    "version": "3.8",
+    "type": "공식방송",
+    "title": "3.8 버전 프리뷰 특별 방송",
+    "date": "2026-11-06",
+    "end_date": "2026-11-06",
+    "time": "20:00",
+    "is_fixed": true,
+    "detail": "『명조:워더링 웨이브』 3.8 버전 프리뷰 특별 방송이 2026년 11월 6일(금) 20:00에 공개됩니다.\n\n이번 방송은 『명조:워더링 웨이브』 공식 라이브 채널에서 진행되니, 방랑자 여러분의 많은 시청 바랍니다!\n※ 방송 중 리딤코드 등 특별 혜택 공개 예정",
+    "custom_img": "wuthering_3.8_stream.webp",
+    "link": "https://www.youtube.com/live/f2T-9DIyuWI?si=eZuz_Ubzg5MQzcc-"
+  },
+  {
     "id": "EVT_ZZZ_20261021_0001",
     "game": "젠레스 존 제로",
     "version": "3.3",
