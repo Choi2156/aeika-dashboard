@@ -45,11 +45,10 @@ export function useScheduleData() {
         if (!dataRes.ok) throw new Error('schedule_data.json 로드 실패');
         const scheduleData = await dataRes.json();
 
-        // 2) 부가 데이터 6종 병렬 페치 (각각의 실패가 메인 스케줄 로딩을 방해하지 않도록 격리)
-        const [hintsData, recommendedVideos, briefingData, updatesData, patchNotes, notices] = await Promise.all([
+        // 2) 부가 데이터 5종 병렬 페치 (각각의 실패가 메인 스케줄 로딩을 방해하지 않도록 격리)
+        const [hintsData, recommendedVideos, updatesData, patchNotes, notices] = await Promise.all([
           fetchJsonSafe('./data/schedule_hints.json?t=' + cacheKey, { hints: [] }),
           fetchJsonSafe('./data/recommended_videos.json?t=' + cacheKey, { shorts: [], longform: [] }),
-          fetchJsonSafe('./data/briefing_data.json?t=' + cacheKey, { last_checked: '', articles: [] }),
           fetchJsonSafe('./data/schedule_updates.json?t=' + cacheKey, []),
           fetchJsonSafe('./data/patch_notes.json?t=' + cacheKey, []),
           fetchJsonSafe('./data/notices.json?t=' + cacheKey, []),
@@ -106,7 +105,6 @@ export function useScheduleData() {
           events: allEvents,
           gamesConfig: GAMES_CONFIG,
           recommendedVideos,
-          briefingData,
           patchNotes,
           notices,
           meta: { ...(scheduleData.meta || {}), last_updated: computedLastUpdated },

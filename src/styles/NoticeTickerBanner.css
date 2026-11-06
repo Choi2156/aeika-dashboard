@@ -1,13 +1,9 @@
-/* ════════════════════════════════════════════
-   NoticeTickerBanner Component Styles
-   ════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   NoticeTickerBanner.css — Slim Top Notice Bar (v2.0)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .notice-ticker-banner {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto 12px auto;
-  padding: 0 16px;
-  box-sizing: border-box;
   cursor: pointer;
   user-select: none;
 }
@@ -15,24 +11,19 @@
 .notice-ticker-banner__inner {
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 38px;
-  padding: 0 14px;
-  border-radius: 10px;
-  background: var(--bg-card, rgba(30, 41, 59, 0.7));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 10px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
   overflow: hidden;
 }
 
 .notice-ticker-banner:hover .notice-ticker-banner__inner {
-  border-color: rgba(99, 102, 241, 0.4);
-  background: var(--bg-card-hover, rgba(30, 41, 59, 0.9));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  border-color: var(--accent-indigo);
+  background: var(--bg-tertiary);
 }
 
 .notice-ticker-banner__badge-group {
@@ -43,24 +34,7 @@
 }
 
 .notice-ticker-banner__icon {
-  color: #818cf8;
-  animation: notice-pulse 2.5s infinite ease-in-out;
-}
-
-@keyframes notice-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.15); opacity: 1; color: #a5b4fc; }
-}
-
-.notice-ticker-banner__badge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(99, 102, 241, 0.2);
-  color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.35);
-  letter-spacing: 0.5px;
+  color: var(--accent-indigo-light);
 }
 
 .notice-ticker-banner__content {
@@ -73,31 +47,20 @@
 }
 
 .notice-ticker-banner__title {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-primary, #f1f5f9);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: transform 0.35s ease, opacity 0.35s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
   transform: translateY(0);
   opacity: 1;
 }
 
 .notice-ticker-banner__title--sliding {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   opacity: 0;
-}
-
-.notice-ticker-banner__important-tag {
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 3px;
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  flex-shrink: 0;
 }
 
 .notice-ticker-banner__action {
@@ -105,73 +68,21 @@
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
-  font-size: 0.75rem;
-  color: var(--text-muted, #94a3b8);
-  transition: color 0.2s ease, transform 0.2s ease;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
 }
 
 .notice-ticker-banner:hover .notice-ticker-banner__action {
-  color: #818cf8;
-  transform: translateX(2px);
+  color: var(--accent-indigo-light);
 }
 
 @media (max-width: 768px) {
-  .notice-ticker-banner {
-    padding: 0 10px;
-    margin-bottom: 8px;
-  }
-  .notice-ticker-banner__inner {
-    height: 34px;
-    padding: 0 10px;
-    gap: 8px;
-  }
   .notice-ticker-banner__action-text {
     display: none;
   }
   .notice-ticker-banner__title {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
   }
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   LIGHT MODE VISIBILITY OVERRIDES (NoticeTickerBanner.css)
-   ═══════════════════════════════════════════════════════════════ */
-
-[data-theme="light"] .notice-ticker-banner__inner {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
-}
-
-[data-theme="light"] .notice-ticker-banner:hover .notice-ticker-banner__inner {
-  border-color: #818cf8 !important;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.1) !important;
-}
-
-[data-theme="light"] .notice-ticker-banner__badge {
-  background: #e0e7ff !important;
-  color: #4338ca !important;
-  border-color: #c7d2fe !important;
-  font-weight: 800 !important;
-}
-
-[data-theme="light"] .notice-ticker-banner__important-tag {
-  background: #fee2e2 !important;
-  color: #dc2626 !important;
-  border-color: #fca5a5 !important;
-  font-weight: 900 !important;
-}
-
-[data-theme="light"] .notice-ticker-banner__title {
-  color: #0f172a !important;
-  font-weight: 600 !important;
-}
-
-[data-theme="light"] .notice-ticker-banner__action {
-  color: #475569 !important;
-}
-
-[data-theme="light"] .notice-ticker-banner:hover .notice-ticker-banner__action {
-  color: #4f46e5 !important;
-}
-

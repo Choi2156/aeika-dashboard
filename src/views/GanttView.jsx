@@ -1,50 +1,48 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { ChevronDown, ChevronRight, Radio, Globe, Youtube } from 'lucide-react';
+import { ChevronDown, ChevronRight, Radio, Globe, Youtube, MapPin } from 'lucide-react';
 import GanttBottomLayout from '../components/GanttBottomLayout';
 import '../styles/GanttView.css';
 
 /* ────────────────────────────────────────────
    Constants
    ──────────────────────────────────────────── */
-const CELL_WIDTH = 64;
-const GAME_COL_WIDTH = 160;
-const HEADER_HEIGHT = 52;
+const DESKTOP_CELL_WIDTH = 60;
+const MOBILE_CELL_WIDTH = 38;
+const DESKTOP_GAME_COL_WIDTH = 156;
+const MOBILE_GAME_COL_WIDTH = 68;
 const ROW_HEIGHT_COLLAPSED = 28;
 const DATE_RANGE_BEFORE = 30; // days before today
 const DATE_RANGE_AFTER = 90; // days after today
 
 /* ────────────────────────────────────────────
-   Helper Functions
+   Helper Functions (KST Standard)
    ──────────────────────────────────────────── */
+import {
+  getTodayDateKST,
+  diffDays,
+  formatDateObj,
+  getKoreanDayName,
+  addDaysToDate,
+} from '../utils/dateKST';
+
 function getToday() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
+  return getTodayDateKST();
 }
 
 function getDaysDiff(startDate, endDate) {
-  const s = new Date(startDate);
-  const e = new Date(endDate);
-  s.setHours(0, 0, 0, 0);
-  e.setHours(0, 0, 0, 0);
-  return Math.round((e - s) / (1000 * 60 * 60 * 24));
+  return diffDays(startDate, endDate);
 }
 
 function formatDateStr(d) {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  return formatDateObj(d);
 }
 
 function getKoreanDay(dayNum) {
-  return ['일', '월', '화', '수', '목', '금', '토'][dayNum];
+  return getKoreanDayName(dayNum);
 }
 
 function addDays(date, days) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
+  return addDaysToDate(date, days);
 }
 
 function getShortGameName(gameName) {
@@ -54,17 +52,10 @@ function getShortGameName(gameName) {
     '원신': '원신',
     '명조': '명조',
     '명일방주: 엔드필드': '엔드필드',
-    '명일방주': '명방',
-    '블루 아카이브': '블아',
-    '소녀전선 2: 망명': '소전2',
-    '소녀전선2: 망명': '소전2',
-    '소녀전선2': '소전2',
-    '이환': '이환',
   };
   return mapping[gameName] || gameName;
 }
 
-// 테마 컬러 광채 처리를 위한 HEX ➔ RGB 파서 유틸리티
 function hexToRgb(hex) {
   if (!hex || typeof hex !== 'string') return '99, 102, 241';
   const c = hex.replace('#', '');
@@ -80,11 +71,9 @@ function hexToRgb(hex) {
     const b = parseInt(c.substring(4, 6), 16);
     return `${r}, ${g}, ${b}`;
   }
-  return '99, 102, 241'; // Fallback
+  return '99, 102, 241';
 }
 
-
-/* Display type name mapping */
 const EVENT_TYPE_LABELS = {
   '전반업데이트': '버전 업데이트',
   '후반업데이트': '후반 업데이트',
@@ -94,20 +83,22 @@ const EVENT_TYPE_LABELS = {
 };
 
 /* ────────────────────────────────────────────
-   GanttView Component
+   GanttView Component (v2.0 Sticky Label & Compact Mobile)
    ──────────────────────────────────────────── */
-export default function GanttView({ 
-  events, 
-  gamesConfig, 
-  recommendedVideos, 
-  briefingData, 
-  activeGames, 
-  onToggleGame, 
+export default function GanttView({
+  events,
+  gamesConfig,
+  recommendedVideos,
+  briefingData,
+  activeGames,
+  onToggleGame,
   onEventClick,
   notices = [],
-  onOpenNotice 
+  onOpenNotice,
+  jumpTodayTrigger,
 }) {
   const scrollRef = useRef(null);
+  const scrollRafRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -119,22 +110,31 @@ export default function GanttView({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const gameColWidth = isMobile ? 80 : GAME_COL_WIDTH;
+  const cellWidth = isMobile ? MOBILE_CELL_WIDTH : DESKTOP_CELL_WIDTH;
+  const gameColWidth = isMobile ? MOBILE_GAME_COL_WIDTH : DESKTOP_GAME_COL_WIDTH;
+  const lanePitch = isMobile ? 30 : 34;
 
   const today = useMemo(() => getToday(), []);
   const todayStr = useMemo(() => formatDateStr(today), [today]);
 
-  /* ── Build date axis ── */
+  /* ── Build date axis & month span groups ── */
   const dateAxis = useMemo(() => {
     const start = addDays(today, -DATE_RANGE_BEFORE);
     const totalDays = DATE_RANGE_BEFORE + DATE_RANGE_AFTER + 1;
     const axis = [];
     for (let i = 0; i < totalDays; i++) {
       const d = addDays(start, i);
+      const y = d.getFullYear();
+      const m = d.getMonth() + 1;
+      const dayOfMonth = d.getDate();
       axis.push({
         date: d,
         dateStr: formatDateStr(d),
-        label: `${d.getMonth() + 1}/${d.getDate()}`,
+        year: y,
+        month: m,
+        dayOfMonth,
+        isMonthStart: dayOfMonth === 1,
+        label: `${m}/${dayOfMonth}`,
         dayName: getKoreanDay(d.getDay()),
         isToday: formatDateStr(d) === todayStr,
         isWeekend: d.getDay() === 0 || d.getDay() === 6,
@@ -142,6 +142,25 @@ export default function GanttView({
     }
     return axis;
   }, [today, todayStr]);
+
+  const monthSpans = useMemo(() => {
+    const spans = [];
+    for (const day of dateAxis) {
+      const key = `${day.year}-${day.month}`;
+      const last = spans[spans.length - 1];
+      if (!last || last.key !== key) {
+        spans.push({
+          key,
+          label: `${day.year}년 ${day.month}월`,
+          shortLabel: `${day.month}월`,
+          count: 1,
+        });
+      } else {
+        last.count += 1;
+      }
+    }
+    return spans;
+  }, [dateAxis]);
 
   const axisStartStr = useMemo(() => dateAxis[0]?.dateStr, [dateAxis]);
 
@@ -156,7 +175,6 @@ export default function GanttView({
         names.push(ev.game);
       }
     });
-    // Sort by gamesConfig key order if available
     const configKeys = gamesConfig ? Object.keys(gamesConfig) : [];
     names.sort((a, b) => {
       const ia = configKeys.indexOf(a);
@@ -180,22 +198,22 @@ export default function GanttView({
     return map;
   }, [events, gameNames]);
 
-  /* ── ★ 핵심: 게임별 동적 레인 맵 생성 (Dynamic Lanes System) ── */
+  /* ── 게임별 동적 레인 맵 생성 (오프라인 이벤트가 있는 게임만 4번째 레인 할당) ── */
   const gameLanesMap = useMemo(() => {
     const map = {};
     gameNames.forEach((gameName) => {
       const gameEvents = eventsByGame[gameName] || [];
-      const baseLanes = ['전반업데이트', '후반업데이트', '공식방송', '오프라인이벤트'];
-      
-      const customTypes = new Set();
+      const baseLanes = ['전반업데이트', '후반업데이트', '공식방송'];
+
+      const extraTypes = new Set();
       gameEvents.forEach((ev) => {
-        if (ev.type && !baseLanes.includes(ev.type)) {
-          customTypes.add(ev.type);
+        const target = ev.lane_override || ev.type;
+        if (target && !baseLanes.includes(target)) {
+          extraTypes.add(target);
         }
       });
-      
-      const sortedCustom = Array.from(customTypes).sort();
-      map[gameName] = [...baseLanes, ...sortedCustom];
+
+      map[gameName] = [...baseLanes, ...Array.from(extraTypes)];
     });
     return map;
   }, [gameNames, eventsByGame]);
@@ -212,27 +230,65 @@ export default function GanttView({
       const spanDays = Math.max(endOffset - startOffset + 1, 1);
 
       return {
-        left: startOffset * CELL_WIDTH,
-        width: spanDays * CELL_WIDTH,
+        left: startOffset * cellWidth,
+        width: spanDays * cellWidth,
         startOffset,
         endOffset,
         spanDays,
       };
     },
-    [axisStartStr]
+    [axisStartStr, cellWidth]
   );
 
-  /* ── Auto-scroll to today on mount ── */
-  useEffect(() => {
+  /* ── Sticky Bar Label용 스크롤 오프셋 CSS 변수 동기화 (rAF 기반, 리렌더링 0회) ── */
+  const syncScrollCssVar = useCallback(() => {
     if (!scrollRef.current) return;
-    const todayIndex = dateAxis.findIndex((d) => d.isToday);
-    if (todayIndex === -1) return;
-    const scrollTarget =
-      todayIndex * CELL_WIDTH - scrollRef.current.clientWidth / 2 + gameColWidth;
-    scrollRef.current.scrollLeft = Math.max(0, scrollTarget);
-  }, [dateAxis, gameColWidth]);
+    scrollRef.current.style.setProperty(
+      '--gantt-scroll-left',
+      `${scrollRef.current.scrollLeft}px`
+    );
+  }, []);
 
-  /* ── PC 뷰: 마우스 휠 가로 스크롤 (경계면 도달 시 수직 스크롤 자연 통과) ── */
+  const handleContainerScroll = useCallback(() => {
+    if (scrollRafRef.current) return;
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      syncScrollCssVar();
+    });
+  }, [syncScrollCssVar]);
+
+  /* ── Scroll to today helper ── */
+  const scrollToToday = useCallback(
+    (smooth = false) => {
+      if (!scrollRef.current) return;
+      const todayIndex = dateAxis.findIndex((d) => d.isToday);
+      if (todayIndex === -1) return;
+      const scrollTarget = Math.max(
+        0,
+        todayIndex * cellWidth - (scrollRef.current.clientWidth - gameColWidth) / 2
+      );
+      if (smooth) {
+        scrollRef.current.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+      } else {
+        scrollRef.current.scrollLeft = scrollTarget;
+      }
+      requestAnimationFrame(syncScrollCssVar);
+    },
+    [dateAxis, cellWidth, gameColWidth, syncScrollCssVar]
+  );
+
+  /* ── Auto-scroll to today on mount / resize ── */
+  useEffect(() => {
+    scrollToToday(false);
+  }, [scrollToToday]);
+
+  /* ── 외부 [오늘 MM.DD] 버튼 클릭 시 오늘 위치로 스크롤 ── */
+  useEffect(() => {
+    if (!jumpTodayTrigger) return;
+    scrollToToday(true);
+  }, [jumpTodayTrigger, scrollToToday]);
+
+  /* ── PC 뷰: 마우스 휠 가로 스크롤 ── */
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
@@ -240,14 +296,15 @@ export default function GanttView({
     const handleWheel = (e) => {
       if (e.deltaY !== 0) {
         const isAtStart = container.scrollLeft <= 0;
-        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+        const isAtEnd =
+          container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
         const scrollingRight = e.deltaY > 0;
         const scrollingLeft = e.deltaY < 0;
 
-        // 차트 가로 스크롤 여유가 있을 때만 가로로 넘기고, 끝에 도달하면 페이지 수직 스크롤 허용
         if ((scrollingRight && !isAtEnd) || (scrollingLeft && !isAtStart)) {
           e.preventDefault();
           container.scrollLeft += e.deltaY * 0.85;
+          syncScrollCssVar();
         }
       }
     };
@@ -256,9 +313,9 @@ export default function GanttView({
     return () => {
       container.removeEventListener('wheel', handleWheel);
     };
-  }, []);
+  }, [syncScrollCssVar]);
 
-  /* ── PC 뷰: 마우스 드래그 가로 스크롤 (Swipe to Scroll) ── */
+  /* ── PC 뷰: 마우스 드래그 가로 스크롤 ── */
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
@@ -270,7 +327,6 @@ export default function GanttView({
     let dragStartX = 0;
 
     const handleMouseDown = (e) => {
-      // 좌클릭만 허용 (이벤트 바 등 다른 요소 오인 동작 차단)
       if (e.button !== 0) return;
       isDown = true;
       container.classList.add('gantt-container--dragging');
@@ -285,11 +341,10 @@ export default function GanttView({
       container.classList.remove('gantt-container--dragging');
     };
 
-    const handleMouseUp = (e) => {
+    const handleMouseUp = () => {
       isDown = false;
       container.classList.remove('gantt-container--dragging');
-      
-      // 실제 마우스를 드래그하여 이동했다면 클릭 이벤트를 강제 캡처/차단
+
       if (isDragging) {
         const handlePreventClick = (evt) => {
           evt.stopPropagation();
@@ -302,17 +357,15 @@ export default function GanttView({
 
     const handleMouseMove = (e) => {
       if (!isDown) return;
-      
       const x = e.pageX - container.offsetLeft;
-      const walk = (x - startX) * 1.3; // 감속/가속도 조정
-      
+      const walk = (x - startX) * 1.3;
       if (Math.abs(e.pageX - dragStartX) > 5) {
         isDragging = true;
       }
-      
       if (isDragging) {
         e.preventDefault();
         container.scrollLeft = scrollLeftVal - walk;
+        syncScrollCssVar();
       }
     };
 
@@ -327,17 +380,18 @@ export default function GanttView({
       container.removeEventListener('mouseup', handleMouseUp);
       container.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [syncScrollCssVar]);
 
-  /* ── Get theme color for game ── */
   const getGameColor = useCallback(
-    (gameName) => {
-      return gamesConfig?.[gameName]?.theme?.color || '#6366f1';
-    },
+    (gameName) => gamesConfig?.[gameName]?.theme?.color || '#6366f1',
     [gamesConfig]
   );
 
-  /* ── Determine display label for event type ── */
+  const getGameColorDark = useCallback(
+    (gameName) => gamesConfig?.[gameName]?.theme?.colorDark || '#4338ca',
+    [gamesConfig]
+  );
+
   const getDisplayTypeName = useCallback((ev) => {
     if (ev.type === '공식방송') return '공식방송';
     if (ev.type === '후반업데이트') return '후반업데이트';
@@ -353,15 +407,16 @@ export default function GanttView({
       if (!bar) return null;
 
       const color = getGameColor(gameName);
+      const colorDark = getGameColorDark(gameName);
       const isFixed = ev.is_fixed === true;
       const displayType = getDisplayTypeName(ev);
       const isStream = ev.type === '공식방송';
 
-      // 해당 게임의 동적 레인 맵에서 본 이벤트 타입의 인덱스 추적 (lane_override 속성이 있으면 해당 레인 위치 적용)
-      const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송', '오프라인이벤트'];
+      const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
       const targetType = ev.lane_override || ev.type;
       const laneIndex = lanes.indexOf(targetType) !== -1 ? lanes.indexOf(targetType) : 0;
-      const topPos = `${laneIndex * 36 + 6}px`;
+      const topPos = `${laneIndex * lanePitch + 5}px`;
+      const barHeight = isMobile ? '24px' : '27px';
 
       if (isCollapsed) {
         return (
@@ -376,7 +431,7 @@ export default function GanttView({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              onEventClick?.(ev, displayType);
+              onEventClick?.(ev, displayType, 'gantt');
             }}
             title={`${ev.version || ''} ${displayType}`}
           />
@@ -393,12 +448,12 @@ export default function GanttView({
               left: `${bar.left}px`,
               width: `${bar.width}px`,
               top: topPos,
-              transform: 'none',
-              height: '28px',
+              height: barHeight,
               '--bar-color': color,
-              backgroundColor: `rgba(${hexToRgb(color)}, 0.08)`,
+              '--bar-left': `${bar.left}px`,
+              '--bar-width': `${bar.width}px`,
+              backgroundColor: `rgba(${hexToRgb(color)}, 0.12)`,
               border: `1.5px solid ${color}`,
-              boxShadow: `0 0 10px rgba(${hexToRgb(color)}, 0.15)`,
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -406,9 +461,9 @@ export default function GanttView({
             }}
             title={`${ev.title} (장소: ${ev.location || '—'})`}
           >
-            <span className="gantt-bar-label" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span>📍</span>
-              <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{ev.title}</span>
+            <span className="gantt-bar-label">
+              <MapPin size={11} style={{ display: 'inline', verticalAlign: '-1px', marginRight: '3px' }} />
+              {ev.title}
             </span>
           </div>
         );
@@ -416,28 +471,35 @@ export default function GanttView({
 
       if (isStream) {
         const flagBgColor = isFixed ? color : '#475569';
-        const labelTextColor = isFixed ? color : '#94a3b8';
         const badgeLabel = isFixed ? 'LIVE' : '예상';
 
         return (
           <div
             key={ev.id || `${gameName}-stream-${ev.start_date}`}
-            className={`gantt-bar-stream ${isFixed ? '' : 'gantt-bar-stream--predicted'}`}
+            className={`gantt-bar-stream ${isFixed ? 'gantt-bar-stream--confirmed' : 'gantt-bar-stream--predicted'}`}
             style={{
               left: `${bar.left}px`,
-              top: `${laneIndex * 36 + 2}px`,
-              transform: 'none',
+              top: `${laneIndex * lanePitch + 3}px`,
+              '--stream-color': color,
+              '--stream-color-dark': colorDark,
             }}
             onClick={(e) => {
               e.stopPropagation();
               onEventClick?.(ev, displayType, 'gantt');
             }}
           >
-            <div className="gantt-stream-flag" style={{ backgroundColor: flagBgColor, border: isFixed ? 'none' : '1px solid #64748b' }}>
-              <Radio size={11} className="gantt-live-icon" />
+            <div
+              className="gantt-stream-flag"
+              style={{
+                backgroundColor: flagBgColor,
+                color: isFixed ? '#0f172a' : '#ffffff',
+                border: isFixed ? 'none' : '1px solid #64748b',
+              }}
+            >
+              <Radio size={10} className="gantt-live-icon" />
               <span className="gantt-live-badge">{badgeLabel}</span>
             </div>
-            <span className="gantt-stream-label" style={{ color: labelTextColor }}>
+            <span className="gantt-stream-label">
               {ev.version ? `v${ev.version} 방송` : '방송'}
             </span>
           </div>
@@ -446,13 +508,20 @@ export default function GanttView({
 
       const isSystemType = ['전반업데이트', '후반업데이트'].includes(ev.type);
       const cleanVer = ev.version ? ev.version.replace(/\s*(전반|후반).*$/, '').trim() : '?';
+      const shortTypeLabel =
+        ev.type === '전반업데이트'
+          ? isMobile
+            ? '전반'
+            : '버전 업데이트'
+          : ev.type === '후반업데이트'
+          ? isMobile
+            ? '후반'
+            : '후반 업데이트'
+          : EVENT_TYPE_LABELS[ev.type] || ev.type;
+
       const label = isSystemType
-        ? (isFixed
-          ? `[확정] v${cleanVer} ${EVENT_TYPE_LABELS[ev.type] || ev.type}`
-          : `[예상] v${cleanVer} ${EVENT_TYPE_LABELS[ev.type] || ev.type}`)
-        : (isFixed
-          ? `[확정] ${ev.title}`
-          : `[예상] ${ev.title}`);
+        ? `${isFixed ? '' : '[예상] '}v${cleanVer} ${shortTypeLabel}`
+        : `${isFixed ? '' : '[예상] '}${ev.title}`;
 
       return (
         <div
@@ -462,9 +531,10 @@ export default function GanttView({
             left: `${bar.left}px`,
             width: `${bar.width}px`,
             top: topPos,
-            transform: 'none',
-            height: '28px',
+            height: barHeight,
             '--bar-color': color,
+            '--bar-left': `${bar.left}px`,
+            '--bar-width': `${bar.width}px`,
             backgroundColor: isFixed ? color : undefined,
             borderColor: isFixed ? color : undefined,
           }}
@@ -478,45 +548,73 @@ export default function GanttView({
         </div>
       );
     },
-    [getBarStyle, getGameColor, getDisplayTypeName, onEventClick, gameLanesMap]
+    [
+      getBarStyle,
+      getGameColor,
+      getGameColorDark,
+      getDisplayTypeName,
+      onEventClick,
+      gameLanesMap,
+      lanePitch,
+      isMobile,
+    ]
   );
 
-  /* ── Today column index ── */
-  const todayIndex = useMemo(
-    () => dateAxis.findIndex((d) => d.isToday),
-    [dateAxis]
-  );
-
-  /* ── Total width of date grid ── */
-  const totalGridWidth = dateAxis.length * CELL_WIDTH;
+  const todayIndex = useMemo(() => dateAxis.findIndex((d) => d.isToday), [dateAxis]);
+  const totalGridWidth = dateAxis.length * cellWidth;
 
   return (
     <div className="gantt-view-wrapper">
-      <div className="gantt-container" ref={scrollRef}>
+      <div
+        className="gantt-container"
+        ref={scrollRef}
+        onScroll={handleContainerScroll}
+      >
         <div
           className="gantt-grid"
           style={{ width: `${gameColWidth + totalGridWidth}px` }}
         >
-          {/* ═══ Header Row ═══ */}
+          {/* ═══ Header Row (2-Tier: Month Span + Date Row) ═══ */}
           <div className="gantt-header">
             <div
               className="gantt-header-game gantt-sticky-intersect"
               style={{ width: `${gameColWidth}px`, minWidth: `${gameColWidth}px` }}
             >
-              <span className="gantt-header-game-label">게임</span>
+              <span className="gantt-header-game-label">게임 / 타임라인</span>
             </div>
 
-            <div className="gantt-header-dates">
-              {dateAxis.map((day, i) => (
-                <div
-                  key={day.dateStr}
-                  className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${day.isWeekend ? ' gantt-header-weekend' : ''}`}
-                  style={{ width: `${CELL_WIDTH}px`, minWidth: `${CELL_WIDTH}px` }}
-                >
-                  <span className="gantt-header-date">{day.label}</span>
-                  <span className="gantt-header-day">{day.dayName}</span>
-                </div>
-              ))}
+            <div className="gantt-header-timeline-col">
+              {/* Tier 1: 연·월(Month) 스팬 바 */}
+              <div className="gantt-header-months">
+                {monthSpans.map((mSpan) => (
+                  <div
+                    key={mSpan.key}
+                    className="gantt-header-month-cell"
+                    style={{
+                      width: `${mSpan.count * cellWidth}px`,
+                      minWidth: `${mSpan.count * cellWidth}px`,
+                    }}
+                  >
+                    <span className="gantt-header-month-label">
+                      {mSpan.count >= 3 ? mSpan.label : mSpan.shortLabel}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tier 2: 일자(Date) & 요일 헤더 */}
+              <div className="gantt-header-dates">
+                {dateAxis.map((day) => (
+                  <div
+                    key={day.dateStr}
+                    className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${day.isWeekend ? ' gantt-header-weekend' : ''}${day.isMonthStart ? ' gantt-header-month-start' : ''}`}
+                    style={{ width: `${cellWidth}px`, minWidth: `${cellWidth}px` }}
+                  >
+                    <span className="gantt-header-date">{day.label}</span>
+                    <span className="gantt-header-day">{day.dayName}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -526,9 +624,11 @@ export default function GanttView({
               const isCollapsed = activeGames && activeGames[gameName] === false;
               const gameEvents = eventsByGame[gameName] || [];
               const color = getGameColor(gameName);
-              
-              const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송', '오프라인이벤트'];
-              const rowH = isCollapsed ? ROW_HEIGHT_COLLAPSED : (lanes.length * 36 + 12);
+
+              const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
+              const rowH = isCollapsed
+                ? ROW_HEIGHT_COLLAPSED
+                : lanes.length * lanePitch + 8;
 
               return (
                 <div
@@ -545,39 +645,46 @@ export default function GanttView({
                     }}
                     onClick={() => onToggleGame && onToggleGame(gameName)}
                   >
-                    <span className="gantt-game-indicator" style={{ backgroundColor: color }} />
-                    
+                    <span
+                      className="gantt-game-indicator"
+                      style={{ backgroundColor: color }}
+                    />
+
                     <div className="gantt-game-meta-group">
-                      <span className="gantt-game-name">{isMobile ? getShortGameName(gameName) : gameName}</span>
-                      {!isCollapsed && (gamesConfig?.[gameName]?.officialUrl || gamesConfig?.[gameName]?.youtubeUrl) && (
-                        <div className="gantt-game-links">
-                          {gamesConfig?.[gameName]?.officialUrl && (
-                            <a
-                              href={gamesConfig[gameName].officialUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="gantt-game-link-btn"
-                              onClick={(e) => e.stopPropagation()}
-                              title={`${gameName} 공식 사이트 / 다운로드`}
-                            >
-                              <Globe size={11} />
-                              <span>공식 사이트</span>
-                            </a>
-                          )}
-                          {gamesConfig?.[gameName]?.youtubeUrl && (
-                            <a
-                              href={gamesConfig[gameName].youtubeUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="gantt-game-youtube-btn"
-                              onClick={(e) => e.stopPropagation()}
-                              title={`${gameName} 공식 유튜브 채널`}
-                            >
-                              <Youtube size={12} />
-                            </a>
-                          )}
-                        </div>
-                      )}
+                      <span className="gantt-game-name">
+                        {isMobile ? getShortGameName(gameName) : gameName}
+                      </span>
+                      {!isCollapsed &&
+                        (gamesConfig?.[gameName]?.officialUrl ||
+                          gamesConfig?.[gameName]?.youtubeUrl) && (
+                          <div className="gantt-game-links">
+                            {gamesConfig?.[gameName]?.officialUrl && (
+                              <a
+                                href={gamesConfig[gameName].officialUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="gantt-game-link-btn"
+                                onClick={(e) => e.stopPropagation()}
+                                title={`${gameName} 공식 사이트 / 다운로드`}
+                              >
+                                <Globe size={11} />
+                                <span>공식 사이트</span>
+                              </a>
+                            )}
+                            {gamesConfig?.[gameName]?.youtubeUrl && (
+                              <a
+                                href={gamesConfig[gameName].youtubeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="gantt-game-youtube-btn"
+                                onClick={(e) => e.stopPropagation()}
+                                title={`${gameName} 공식 유튜브 채널`}
+                              >
+                                <Youtube size={12} />
+                              </a>
+                            )}
+                          </div>
+                        )}
                     </div>
 
                     {isCollapsed ? (
@@ -588,18 +695,18 @@ export default function GanttView({
                   </div>
 
                   <div className="gantt-row-cells" style={{ width: `${totalGridWidth}px` }}>
-                    {dateAxis.map((day, i) => (
+                    {dateAxis.map((day) => (
                       <div
                         key={day.dateStr}
-                        className={`gantt-cell${day.isToday ? ' gantt-cell-today' : ''}${day.isWeekend ? ' gantt-cell-weekend' : ''}`}
-                        style={{ width: `${CELL_WIDTH}px`, minWidth: `${CELL_WIDTH}px` }}
+                        className={`gantt-cell${day.isToday ? ' gantt-cell-today' : ''}${day.isWeekend ? ' gantt-cell-weekend' : ''}${day.isMonthStart ? ' gantt-cell-month-start' : ''}`}
+                        style={{ width: `${cellWidth}px`, minWidth: `${cellWidth}px` }}
                       />
                     ))}
 
                     {todayIndex >= 0 && (
                       <div
                         className="gantt-today-line"
-                        style={{ left: `${todayIndex * CELL_WIDTH + CELL_WIDTH / 2}px` }}
+                        style={{ left: `${todayIndex * cellWidth + cellWidth / 2}px` }}
                       />
                     )}
 
@@ -614,7 +721,7 @@ export default function GanttView({
         </div>
       </div>
 
-      {/* ═══ 간트 차트 하단 영역 (별도 컴포넌트로 분리, 캐러셀 상태 격리) ═══ */}
+      {/* ═══ 간트 차트 하단 영역 ═══ */}
       <GanttBottomLayout
         events={events}
         gamesConfig={gamesConfig}

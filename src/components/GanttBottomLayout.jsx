@@ -1,33 +1,35 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
-import { ChevronLeft, ChevronRight, Radio, Youtube, MapPin, Megaphone, ChevronRight as ChevronRightIcon, Video, Shuffle } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Radio,
+  Youtube,
+  MapPin,
+  Megaphone,
+  ChevronRight as ChevronRightIcon,
+  Video,
+  Shuffle,
+  Film,
+  Sparkles,
+  ExternalLink,
+} from 'lucide-react';
 import NoticeCategoryBadge from './NoticeCategoryBadge';
-import { trackVideoClick, trackChannelClick, trackShuffleClick, trackCarouselNavigation, trackShortsInlinePlay } from '../utils/analytics';
+import { getCleanSummaryText } from '../utils/eventTextParser';
+import {
+  getTodayDateKST,
+  formatDateObj,
+  addDaysToDate,
+  formatDisplayDate,
+  diffDays,
+} from '../utils/dateKST';
+import {
+  trackVideoClick,
+  trackChannelClick,
+  trackShuffleClick,
+  trackCarouselNavigation,
+  trackShortsInlinePlay,
+} from '../utils/analytics';
 
-/* ────────────────────────────────────────────
-   Helper Functions
-   ──────────────────────────────────────────── */
-function getToday() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function formatDateStr(d) {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function addDays(date, days) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
-/* ────────────────────────────────────────────
-   Array Shuffle Helper (Fisher-Yates)
-   ──────────────────────────────────────────── */
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -37,33 +39,30 @@ function shuffleArray(array) {
   return arr;
 }
 
-/* ────────────────────────────────────────────
-   Video Allocation Algorithm with Smart Shuffle (쇼츠용)
-   ──────────────────────────────────────────── */
 function allocateVideosWithShuffle(allVideos, activeGames, targetCount = 6) {
   if (!allVideos || allVideos.length === 0) return [];
 
-  const activeGameNames = activeGames && Object.keys(activeGames).length > 0
-    ? Object.keys(activeGames).filter(name => activeGames[name] !== false)
-    : Array.from(new Set(allVideos.map(v => v.game)));
+  const activeGameNames =
+    activeGames && Object.keys(activeGames).length > 0
+      ? Object.keys(activeGames).filter((name) => activeGames[name] !== false)
+      : Array.from(new Set(allVideos.map((v) => v.game)));
 
   const n = activeGameNames.length;
   if (n === 0) return [];
 
   const gameVideoMap = {};
-  activeGameNames.forEach(game => {
-    const pool = allVideos.filter(v => v.game === game);
+  activeGameNames.forEach((game) => {
+    const pool = allVideos.filter((v) => v.game === game);
     gameVideoMap[game] = shuffleArray(pool);
   });
 
   const base = Math.floor(targetCount / n);
-  let remainder = targetCount % n;
-
+  const remainder = targetCount % n;
   const shuffledGameOrder = shuffleArray(activeGameNames);
   const bonusSet = new Set(shuffledGameOrder.slice(0, remainder));
 
   const selectedVideos = [];
-  activeGameNames.forEach(game => {
+  activeGameNames.forEach((game) => {
     const limit = base + (bonusSet.has(game) ? 1 : 0);
     const sliced = gameVideoMap[game]?.slice(0, limit) || [];
     selectedVideos.push(...sliced);
@@ -72,24 +71,17 @@ function allocateVideosWithShuffle(allVideos, activeGames, targetCount = 6) {
   return shuffleArray(selectedVideos);
 }
 
-/* ────────────────────────────────────────────
-   Longform Video Allocation with Chronological Anchor & Smart Pool Sampling (스마트 롱폼 선별)
-   최신 1~2개 영상은 100% 무조건 고정하여 최신 패치/스토리 가시성을 확보하고,
-   나머지 자리는 상위 후보군(최대 20개)에서 무작위 샘플링 후,
-   최종 선별된 10개 영상을 다시 '최신순(날짜 내림차순)'으로 재정렬하여 반환
-   ──────────────────────────────────────────── */
-function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
+function allocateLongformVideos(allVideos, activeGames, targetCount = 12) {
   if (!allVideos || allVideos.length === 0) return [];
 
-  const activeGameNames = activeGames && Object.keys(activeGames).length > 0
-    ? Object.keys(activeGames).filter(name => activeGames[name] !== false)
-    : Array.from(new Set(allVideos.map(v => v.game)));
+  const activeGameNames =
+    activeGames && Object.keys(activeGames).length > 0
+      ? Object.keys(activeGames).filter((name) => activeGames[name] !== false)
+      : Array.from(new Set(allVideos.map((v) => v.game)));
 
   if (activeGameNames.length === 0) return [];
 
   const activeSet = new Set(activeGameNames);
-  
-  // 1. 활성화된 게임의 영상만 필터링 (중복 ID 원천 차단)
   const seenIds = new Set();
   const filtered = [];
   for (const v of allVideos) {
@@ -99,28 +91,20 @@ function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
     }
   }
 
-  // 2. 최신순(addedAt 내림차순) 정렬
   const sorted = filtered.sort((a, b) => {
     const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
     const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
     return dateB - dateA;
   });
 
-  // 영상 총 개수가 목표 개수 이하이면 최신순 그대로 반환
-  if (sorted.length <= targetCount) {
-    return sorted;
-  }
+  if (sorted.length <= targetCount) return sorted;
 
-  // 3. 최신 앵커 고정 (상위 2개는 무조건 포함)
   const anchorCount = Math.min(2, sorted.length);
   const anchored = sorted.slice(0, anchorCount);
-
-  // 4. 나머지 슬롯은 상위 후보 풀(최대 20개)에서 무작위 샘플링
   const remainingCount = targetCount - anchorCount;
   const candidatePool = sorted.slice(anchorCount, Math.min(sorted.length, targetCount + 10));
   const sampled = shuffleArray(candidatePool).slice(0, remainingCount);
 
-  // 5. 최종 선별된 목록을 다시 '최신순(날짜 내림차순)'으로 정렬하여 반환
   const finalSelection = [...anchored, ...sampled];
   finalSelection.sort((a, b) => {
     const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
@@ -131,47 +115,12 @@ function allocateLongformVideos(allVideos, activeGames, targetCount = 10) {
   return finalSelection;
 }
 
-/* ────────────────────────────────────────────
-   Touch Swipe Handler Builder
-   ──────────────────────────────────────────── */
-function createTouchHandlers(onNext, onPrev) {
-  let startX = null;
-  let startY = null;
-  let lastX = null;
-  let lastY = null;
-
-  const resolve = () => {
-    if (startX === null || lastX === null) return;
-    const diffX = startX - lastX;
-    const diffY = startY - lastY;
-    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-      if (diffX > 0) { onNext(); } else { onPrev(); }
-    }
-    startX = null; startY = null; lastX = null; lastY = null;
-  };
-
-  return {
-    onTouchStart: (e) => {
-      if (e.touches && e.touches.length > 0) {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        lastX = startX; lastY = startY;
-      }
-    },
-    onTouchMove: (e) => {
-      if (e.touches && e.touches.length > 0) {
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-      }
-    },
-    onTouchEnd: resolve,
-    onTouchCancel: resolve,
-  };
-}
-
-/* ════════════════════════════════════════════
-   GanttBottomLayout Component
-   ════════════════════════════════════════════ */
+/**
+ * GanttBottomLayout 2.0 (Unified Media & Notice Station)
+ * - 기존의 3층 세로 적재 구조를 탭 기반 미디어 스테이션으로 통합하여 스크롤 길이를 대폭 단축하고 탐색성 강화
+ * - 좌측(68%): [공식 방송·오프라인] / [스토리 풀버전] / [추천 롱폼] 탭 스테이션 (3열~2열 클린 카드 그리드)
+ * - 우측(32%): 인라인 쇼츠 플레이어 + 공지사항 보드
+ */
 function GanttBottomLayout({
   events,
   gamesConfig,
@@ -180,62 +129,70 @@ function GanttBottomLayout({
   recommendedVideos,
   notices = [],
   onOpenNotice,
-  isMobile
+  isMobile,
 }) {
-
-  /* ── Carousel / Slider State ── */
+  const [activeMediaTab, setActiveMediaTab] = useState('streams'); // 'streams' | 'stories' | 'others'
+  const [pageIndex, setPageIndex] = useState(0);
   const [currentShortIndex, setCurrentShortIndex] = useState(0);
   const [isPlayingShort, setIsPlayingShort] = useState(false);
-  const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
-  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
-  const [currentOtherIndex, setCurrentOtherIndex] = useState(0);
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [isShuffling, setIsShuffling] = useState(false);
 
-  useEffect(() => { setIsPlayingShort(false); }, [currentShortIndex]);
+  useEffect(() => {
+    setIsPlayingShort(false);
+  }, [currentShortIndex]);
 
-  /* ── Date ── */
-  const today = useMemo(() => getToday(), []);
-  const todayStr = useMemo(() => formatDateStr(today), [today]);
+  useEffect(() => {
+    setPageIndex(0);
+  }, [activeMediaTab]);
 
-  /* ── Game Color Helper ── */
+  const today = useMemo(() => getTodayDateKST(), []);
+  const todayStr = useMemo(() => formatDateObj(today), [today]);
+
   const getGameColor = useCallback(
-    (gameName) => gamesConfig?.[gameName]?.theme?.color || gamesConfig?.[gameName]?.color || '#6366f1',
+    (gameName) =>
+      gamesConfig?.[gameName]?.theme?.color ||
+      gamesConfig?.[gameName]?.color ||
+      '#6366f1',
     [gamesConfig]
   );
 
-  /* ── 1. Recent Streams & Offline Events (확정된 방송 및 행사만 정밀 필터링 - 라이브 원본 복원) ── */
+  // 1. 공식 방송 및 오프라인 행사
   const recentStreams = useMemo(() => {
     if (!events) return [];
-    const rangeStart = formatDateStr(addDays(today, -14));
-    const rangeEnd   = formatDateStr(addDays(today, 14));
+    const rangeStart = formatDateObj(addDaysToDate(today, -14));
+    const rangeEnd = formatDateObj(addDaysToDate(today, 21));
     const filtered = events.filter((ev) => {
       if (ev.type !== '공식방송' && ev.type !== '오프라인이벤트') return false;
-      if (ev.is_fixed !== true) return false; // 예상 일정(_pred)은 제외하고 확정 일정만 노출!
+      if (ev.is_fixed !== true) return false;
       if (activeGames && activeGames[ev.game] === false) return false;
-      
+
       if (ev.type === '공식방송') {
-        // 공식 방송은 ±14일 기준 유지
         if (ev.date < rangeStart || ev.date > rangeEnd) return false;
       } else if (ev.type === '오프라인이벤트') {
-        // 오프라인 행사는 종료되지 않은 예정된 것만 표시
         const isEnded = ev.end_date ? ev.end_date < todayStr : ev.date < todayStr;
         if (isEnded) return false;
       }
       return true;
     });
-    const future = filtered.filter((ev) => ev.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date));
-    const past   = filtered.filter((ev) => ev.date <  todayStr).sort((a, b) => b.date.localeCompare(a.date));
-    return [...future, ...past].slice(0, 10);
+    const future = filtered
+      .filter((ev) => ev.date >= todayStr)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    const past = filtered
+      .filter((ev) => ev.date < todayStr)
+      .sort((a, b) => b.date.localeCompare(a.date));
+    return [...future, ...past].slice(0, 12);
   }, [events, today, todayStr, activeGames]);
 
-  // 활성화된 게임 목록의 고유 키 (참조 변경으로 인한 불필요한 셔플 재실행 방지)
   const activeGamesKey = useMemo(() => {
     if (!activeGames) return 'all';
-    return Object.keys(activeGames).filter(k => activeGames[k] !== false).sort().join(',');
+    return Object.keys(activeGames)
+      .filter((k) => activeGames[k] !== false)
+      .sort()
+      .join(',');
   }, [activeGames]);
 
-  /* ── 2. 추천 쇼츠 데이터 (새로고침 시, 활성 게임 변경 시, 셔플 클릭 시 스마트 셔플) ── */
+  // 2. 추천 쇼츠
   const recommendedShorts = useMemo(() => {
     const rawShorts = recommendedVideos?.shorts || [];
     return allocateVideosWithShuffle(rawShorts, activeGames, 6);
@@ -246,30 +203,24 @@ function GanttBottomLayout({
     setShuffleSeed((prev) => prev + 1);
     setCurrentShortIndex(0);
     setIsPlayingShort(false);
-    setTimeout(() => {
-      setIsShuffling(false);
-    }, 500);
+    setTimeout(() => setIsShuffling(false), 450);
   }, []);
 
-  /* ── 3-1. 스토리 풀버전 롱폼 비디오 데이터 (새로고침 시 스마트 셔플, 최대 10개) ── */
+  // 3. 스토리 풀버전
   const storyVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
-    // 2중 방어선: 제목/설명에 '컷편집' 또는 '풀버전'이 없는 짧은 하이라이트 영상은 풀버전 큐에서 원천 배제
     const stories = rawLongform.filter((v) => {
       if (v.type !== 'story') return false;
       const text = v.desc || v.title || '';
-      if (text && !text.includes('컷편집') && !text.includes('풀버전')) {
-        return false;
-      }
+      if (text && !text.includes('컷편집') && !text.includes('풀버전')) return false;
       return true;
     });
-    return allocateLongformVideos(stories, activeGames, 10);
+    return allocateLongformVideos(stories, activeGames, 12);
   }, [recommendedVideos, activeGamesKey]);
 
-  /* ── 3-2. 일반 롱폼 비디오 데이터 (롱폼 추천 영상, 새로고침 시 스마트 셔플, 최대 10개) ── */
+  // 4. 추천 롱폼
   const otherVideos = useMemo(() => {
     const rawLongform = recommendedVideos?.longform || [];
-    // 2중 방어선: 하이라이트 클립이 혹시라도 story로 잘못 마킹된 경우에도 롱폼 추천 큐로 안전 수용
     const others = rawLongform.filter((v) => {
       if (v.type === 'other') return true;
       const text = v.desc || v.title || '';
@@ -278,377 +229,293 @@ function GanttBottomLayout({
       }
       return false;
     });
-    return allocateLongformVideos(others, activeGames, 10);
+    return allocateLongformVideos(others, activeGames, 12);
   }, [recommendedVideos, activeGamesKey]);
 
-  /* ── Index Bounds Safety ── */
+  // 방송/행사 목록이 비어 있으면 스토리 탭을 기본 선택
   useEffect(() => {
-    if (recommendedShorts.length === 0) { setCurrentShortIndex(0); }
-    else if (currentShortIndex >= recommendedShorts.length) { setCurrentShortIndex(recommendedShorts.length - 1); }
-  }, [recommendedShorts.length, currentShortIndex]);
-
-  useEffect(() => {
-    if (recentStreams.length === 0) { setCurrentStreamIndex(0); }
-    else if (currentStreamIndex >= recentStreams.length) { setCurrentStreamIndex(recentStreams.length - 1); }
-  }, [recentStreams.length, currentStreamIndex]);
-
-  useEffect(() => {
-    if (storyVideos.length === 0) { setCurrentStoryIndex(0); }
-    else if (currentStoryIndex >= storyVideos.length) { setCurrentStoryIndex(storyVideos.length - 1); }
-  }, [storyVideos.length, currentStoryIndex]);
-
-  useEffect(() => {
-    if (otherVideos.length === 0) { setCurrentOtherIndex(0); }
-    else if (currentOtherIndex >= otherVideos.length) { setCurrentOtherIndex(otherVideos.length - 1); }
-  }, [otherVideos.length, currentOtherIndex]);
-
-  /* ── Carousel Visible Items ── */
-  const visibleCount = isMobile ? 1 : 2;
-
-  const getVisibleItems = useCallback((items, currentIndex, vCount) => {
-    if (!items || items.length === 0) return [];
-    if (items.length <= vCount) return items;
-    const result = [];
-    for (let i = 0; i < vCount; i++) {
-      const targetIdx = (currentIndex + i) % items.length;
-      result.push(items[targetIdx]);
+    if (activeMediaTab === 'streams' && recentStreams.length === 0 && storyVideos.length > 0) {
+      setActiveMediaTab('stories');
     }
-    return result;
-  }, []);
+  }, [activeMediaTab, recentStreams.length, storyVideos.length]);
 
-  const visibleStreams = useMemo(() => getVisibleItems(recentStreams, currentStreamIndex, visibleCount), [recentStreams, currentStreamIndex, visibleCount, getVisibleItems]);
-  const visibleStories = useMemo(() => getVisibleItems(storyVideos, currentStoryIndex, visibleCount), [storyVideos, currentStoryIndex, visibleCount, getVisibleItems]);
-  const visibleOthers  = useMemo(() => getVisibleItems(otherVideos, currentOtherIndex, visibleCount), [otherVideos, currentOtherIndex, visibleCount, getVisibleItems]);
+  const itemsPerPage = isMobile ? 2 : 4;
+  const activeList =
+    activeMediaTab === 'streams'
+      ? recentStreams
+      : activeMediaTab === 'stories'
+      ? storyVideos
+      : otherVideos;
 
-  /* ── Carousel Navigation Handlers ── */
-  const handlePrevStream = () => { if (recentStreams.length <= visibleCount) return; setCurrentStreamIndex((prev) => (prev - 1 + recentStreams.length) % recentStreams.length); };
-  const handleNextStream = () => { if (recentStreams.length <= visibleCount) return; setCurrentStreamIndex((prev) => (prev + 1) % recentStreams.length); };
-  
-  const handlePrevStory = () => { if (storyVideos.length <= visibleCount) return; trackCarouselNavigation('story', 'prev'); setCurrentStoryIndex((prev) => (prev - 1 + storyVideos.length) % storyVideos.length); };
-  const handleNextStory = () => { if (storyVideos.length <= visibleCount) return; trackCarouselNavigation('story', 'next'); setCurrentStoryIndex((prev) => (prev + 1) % storyVideos.length); };
+  const totalPages = Math.max(1, Math.ceil(activeList.length / itemsPerPage));
+  const safePage = Math.min(pageIndex, totalPages - 1);
+  const visibleItems = activeList.slice(
+    safePage * itemsPerPage,
+    safePage * itemsPerPage + itemsPerPage
+  );
 
-  const handlePrevOther = () => { if (otherVideos.length <= visibleCount) return; trackCarouselNavigation('other', 'prev'); setCurrentOtherIndex((prev) => (prev - 1 + otherVideos.length) % otherVideos.length); };
-  const handleNextOther = () => { if (otherVideos.length <= visibleCount) return; trackCarouselNavigation('other', 'next'); setCurrentOtherIndex((prev) => (prev + 1) % otherVideos.length); };
+  const handlePrevPage = () => {
+    setPageIndex((p) => (p - 1 + totalPages) % totalPages);
+  };
+  const handleNextPage = () => {
+    setPageIndex((p) => (p + 1) % totalPages);
+  };
 
-  const handlePrevShort = () => { trackCarouselNavigation('shorts', 'prev'); setCurrentShortIndex((prev) => (prev - 1 + recommendedShorts.length) % recommendedShorts.length); };
-  const handleNextShort = () => { trackCarouselNavigation('shorts', 'next'); setCurrentShortIndex((prev) => (prev + 1) % recommendedShorts.length); };
+  const handlePrevShort = () => {
+    if (recommendedShorts.length === 0) return;
+    trackCarouselNavigation('shorts', 'prev');
+    setCurrentShortIndex(
+      (prev) => (prev - 1 + recommendedShorts.length) % recommendedShorts.length
+    );
+  };
+  const handleNextShort = () => {
+    if (recommendedShorts.length === 0) return;
+    trackCarouselNavigation('shorts', 'next');
+    setCurrentShortIndex((prev) => (prev + 1) % recommendedShorts.length);
+  };
 
-  /* ── Touch Handlers ── */
-  const streamTouch = useMemo(() => createTouchHandlers(handleNextStream, handlePrevStream), [handleNextStream, handlePrevStream]);
-  const storyTouch = useMemo(() => createTouchHandlers(handleNextStory, handlePrevStory), [handleNextStory, handlePrevStory]);
-  const otherTouch = useMemo(() => createTouchHandlers(handleNextOther, handlePrevOther), [handleNextOther, handlePrevOther]);
-  const shortsTouch = useMemo(() => createTouchHandlers(handleNextShort, handlePrevShort), [handleNextShort, handlePrevShort]);
-
-  const recentNotices = notices.slice(0, 3);
+  const recentNotices = notices.slice(0, 4);
+  const currentShort = recommendedShorts[currentShortIndex] || null;
 
   return (
-    <div className="gantt-bottom-layout">
-      {/* ═══ 1. 좌측 영역: 최근 공식 방송 리스트 및 추천 롱폼 영상 ═══ */}
-      <div className="gantt-bottom-left">
-        
-        {/* 1-1. 공식 방송 및 오프라인 행사 일정 (원래 1줄 2개 캐러셀) */}
-        {recentStreams.length > 0 && (
-          <section className="recent-streams-section">
-            <div className="section-header-carousel">
-              <h3 className="recent-streams-section__title">
-                <Radio size={15} className="recent-streams-section__title-icon" />
-                <span>공식 방송 및 오프라인 행사 일정</span>
-              </h3>
-              {recentStreams.length > visibleCount && (
-                <div className="carousel-nav-arrows">
-                  <span className="carousel-counter">{currentStreamIndex + 1} / {recentStreams.length}</span>
-                  <button onClick={handlePrevStream} className="carousel-arrow-btn" type="button" title="이전 목록 보기"><ChevronLeft size={16} /></button>
-                  <button onClick={handleNextStream} className="carousel-arrow-btn" type="button" title="다음 목록 보기"><ChevronRight size={16} /></button>
-                </div>
-              )}
-            </div>
-            <div className="recent-streams-grid" {...streamTouch}>
-              {visibleStreams.map((ev) => {
-                const color = getGameColor(ev.game);
-                const isFixed = ev.is_fixed === true;
-                const isOffline = ev.type === '오프라인이벤트';
-                const imgSrc = ev.custom_img ? `./assets/${ev.custom_img}` : gamesConfig?.[ev.game]?.defaultImg;
-
-                return (
-                  <div
-                    key={ev.id || `recent-stream-${ev.date}`}
-                    className="recent-stream-card"
-                    onClick={() => onEventClick?.(ev, isOffline ? '오프라인이벤트' : '공식방송', 'bottom_stream')}
-                    style={{ '--theme-color': color }}
-                    title="클릭하여 상세 정보 팝업 보기"
-                  >
-                    <div className="recent-stream-card__thumb-wrapper">
-                      <img src={imgSrc} alt={ev.title} className="recent-stream-card__thumb" />
-                      <div className="recent-stream-card__badge" style={{ backgroundColor: color }}>
-                        {isOffline ? <MapPin size={10} className="recent-stream-card__badge-icon" /> : <Radio size={10} className="recent-stream-card__badge-icon" />}
-                        <span>{ev.game}</span>
-                      </div>
-                      {gamesConfig?.[ev.game]?.copyright && (
-                        <span className="card-copyright-label">{gamesConfig[ev.game].copyright}</span>
-                      )}
-                    </div>
-                    <div className="recent-stream-card__content">
-                      <div className="recent-stream-card__meta-row">
-                        <span className="recent-stream-card__version">
-                          {isOffline ? '📍 오프라인 행사' : `v${ev.version} 방송`}
-                        </span>
-                        {(!isOffline && ev.date < todayStr) ? (
-                          <span className="recent-stream-card__status status-ended">종료됨</span>
-                        ) : (
-                          <span className={`recent-stream-card__status ${isFixed ? 'status-confirmed' : 'status-predicted'}`}>
-                            {isFixed ? '확정' : '예상'}
-                          </span>
-                        )}
-                      </div>
-                      <h4 className="recent-stream-card__title">
-                        {ev.title ? ev.title.replace(/「|」/g, '') : `${ev.game} 공식 특별 방송`}
-                      </h4>
-                      <p className="recent-stream-card__date">
-                        {isOffline ? '행사일자' : '방송일자'}: {ev.date} {ev.time || (isOffline ? '' : '20:00')} {!isOffline && '(KST)'}
-                      </p>
-                      {ev.detail && (
-                        <p className="recent-stream-card__detail">
-                          {ev.detail.length > 80 ? `${ev.detail.substring(0, 80)}...` : ev.detail}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* 1-2. 스토리 풀버전 바로보기 (1줄 2개 캐러셀) */}
-        {storyVideos.length > 0 && (
-          <section className="longform-videos-section">
-            <div className="section-header-carousel">
-              <h3 className="longform-videos-section__title">
-                <Youtube size={15} className="longform-videos-section__title-icon" />
-                <span>스토리 풀버전 바로보기</span>
-              </h3>
-              {storyVideos.length > visibleCount && (
-                <div className="carousel-nav-arrows">
-                  <span className="carousel-counter">{currentStoryIndex + 1} / {storyVideos.length}</span>
-                  <button onClick={handlePrevStory} className="carousel-arrow-btn" type="button" title="이전 스토리 보기"><ChevronLeft size={16} /></button>
-                  <button onClick={handleNextStory} className="carousel-arrow-btn" type="button" title="다음 스토리 보기"><ChevronRight size={16} /></button>
-                </div>
-              )}
-            </div>
-            <div className="longform-videos-grid" {...storyTouch}>
-              {visibleStories.map((video, idx) => {
-                const color = getGameColor(video.game);
-                const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
-                return (
-                  <a
-                    key={`${video.id}_${currentStoryIndex}_${idx}`}
-                    href={`https://www.youtube.com/watch?v=${video.id}`}
-                    onClick={() => trackVideoClick('story', video.game, video.title || video.desc, video.id)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="longform-video-card"
-                    style={{ '--theme-color': color }}
-                    title="클릭하여 유튜브에서 스토리 풀버전 감상하기"
-                  >
-                    <div className="longform-video-card__thumb-wrapper">
-                      <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
-                      <div className="longform-video-card__duration-badge"><span>{video.duration || '풀버전'}</span></div>
-                      <div className="longform-video-card__game-badge" style={{ backgroundColor: color }}><span>{video.game}</span></div>
-                    </div>
-                    <div className="longform-video-card__content">
-                      {video.desc && <p className="longform-video-card__desc">{video.desc}</p>}
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* 1-3. 롱폼 추천 영상 (일반 롱폼 / 하이라이트 등 - 1줄 2개 캐러셀) */}
-        <section className="longform-videos-section other-longform-section">
-          <div className="section-header-carousel">
-            <h3 className="longform-videos-section__title">
-              <Video size={15} className="longform-videos-section__title-icon" />
-              <span>롱폼 추천 영상</span>
-            </h3>
-            {otherVideos.length > visibleCount && (
-              <div className="carousel-nav-arrows">
-                <span className="carousel-counter">{currentOtherIndex + 1} / {otherVideos.length}</span>
-                <button onClick={handlePrevOther} className="carousel-arrow-btn" type="button" title="이전 영상 보기">
-                  <ChevronLeft size={16} />
-                </button>
-                <button onClick={handleNextOther} className="carousel-arrow-btn" type="button" title="다음 영상 보기">
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            )}
-          </div>
-          {otherVideos.length > 0 ? (
-            <div className="longform-videos-grid" {...otherTouch}>
-              {visibleOthers.map((video, idx) => {
-                const color = getGameColor(video.game);
-                const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
-                return (
-                  <a
-                    key={`${video.id}_${currentOtherIndex}_${idx}`}
-                    href={`https://www.youtube.com/watch?v=${video.id}`}
-                    onClick={() => trackVideoClick('other', video.game, video.title || video.desc, video.id)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="longform-video-card"
-                    style={{ '--theme-color': color }}
-                    title="클릭하여 유튜브에서 영상 감상하기"
-                  >
-                    <div className="longform-video-card__thumb-wrapper">
-                      <img src={thumbUrl} alt={video.title} className="longform-video-card__thumb" />
-                      <div className="longform-video-card__duration-badge"><span>영상</span></div>
-                      <div className="longform-video-card__game-badge" style={{ backgroundColor: color }}><span>{video.game}</span></div>
-                    </div>
-                    <div className="longform-video-card__content">
-                      {video.desc && <p className="longform-video-card__desc">{video.desc}</p>}
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="streams-no-data-card">
-              <p className="streams-no-data-card__text">현재 선택된 게임의 추천 롱폼 영상이 없습니다.</p>
-            </div>
-          )}
-        </section>
-
-      </div>
-
-      {/* ═══ 2. 우측 영역: 추천 쇼츠 슬라이더 + 공지사항 일체형 박스 ═══ */}
-      <div className="gantt-bottom-right">
-        <section className="recommended-shorts-section">
-          <h3 className="recommended-shorts-section__title">
-            <Youtube size={15} className="recommended-shorts-section__title-icon" />
-            <span>추천 인기 쇼츠</span>
-          </h3>
-          <div className="recommended-shorts-widget recommended-shorts-widget--minimal" {...shortsTouch}>
-            {recommendedShorts.length > 0 ? (
-              <>
-                <div className="shorts-slider-main">
-                  <div className="shorts-player-container">
-                    {isPlayingShort ? (
-                      <iframe
-                        width="100%" height="100%"
-                        src={`https://www.youtube.com/embed/${recommendedShorts[currentShortIndex]?.id}?autoplay=1`}
-                        title={`${recommendedShorts[currentShortIndex]?.game || '추천'} 쇼츠`}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                      ></iframe>
-                    ) : (
-                      <div
-                        className="shorts-player-thumbnail-overlay"
-                        onClick={() => {
-                          const currentShort = recommendedShorts[currentShortIndex];
-                          if (currentShort) {
-                            trackVideoClick('shorts', currentShort.game, currentShort.title || currentShort.desc, currentShort.id);
-                            trackShortsInlinePlay(currentShort.game, currentShort.id, currentShort.title || currentShort.desc);
-                          }
-                          setIsPlayingShort(true);
-                        }}
-                        title="클릭하여 쇼츠 감상하기"
-                        style={{ backgroundImage: `url(https://img.youtube.com/vi/${recommendedShorts[currentShortIndex]?.id}/hqdefault.jpg)` }}
-                      >
-                        <div className="shorts-custom-play-btn">
-                          <Youtube size={32} color="#ff0000" fill="#ff0000" className="shorts-play-icon-glow" />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* 옵션 A: 영상 위 플로팅 오버레이 넘기기 버튼 */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handlePrevShort(); }}
-                      className="shorts-overlay-arrow shorts-overlay-arrow--left"
-                      type="button"
-                      title="이전 쇼츠 보기"
-                      aria-label="이전 쇼츠 보기"
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleNextShort(); }}
-                      className="shorts-overlay-arrow shorts-overlay-arrow--right"
-                      type="button"
-                      title="다음 쇼츠 보기"
-                      aria-label="다음 쇼츠 보기"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="shorts-dot-indicators">
-                  {recommendedShorts.map((sh, idx) => {
-                    const gameColor = getGameColor(sh.game);
-                    const isActive = idx === currentShortIndex;
-                    return (
-                      <span
-                        key={sh.id || `short-dot-${idx}`}
-                        className={`shorts-dot ${isActive ? 'shorts-dot--active' : ''}`}
-                        onClick={() => setCurrentShortIndex(idx)}
-                        style={{ backgroundColor: isActive ? gameColor : undefined, borderColor: gameColor }}
-                        title={`${sh.game} 쇼츠로 이동`}
-                      />
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <div className="shorts-no-data-card">
-                <Youtube size={24} color="#64748b" style={{ marginBottom: '6px' }} />
-                <p className="shorts-no-data-card__text">선택된 게임의 추천 쇼츠가 없습니다.</p>
-                <span className="shorts-no-data-card__sub">필터바에서 다른 게임을 선택해 보세요.</span>
-              </div>
-            )}
-
-            <div className="shorts-bottom-actions">
-              <a
-                href="https://www.youtube.com/@AEIKA215"
-                onClick={() => trackChannelClick('bottom_shorts')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shorts-channel-direct-btn"
-                title="유튜브 채널 바로가기"
-              >
-                <Youtube size={14} />
-                <span>채널 바로가기</span>
-              </a>
+    <div className="media-hub">
+      {/* ═══ 좌측: 탭 전환형 미디어 & 방송 스테이션 ═══ */}
+      <div className="media-hub__left">
+        <div className="media-station">
+          <div className="media-station__header">
+            <div className="media-station__tabs" role="tablist" aria-label="미디어 카테고리">
               <button
-                onClick={() => {
-                  trackShuffleClick();
-                  handleShuffleShorts();
-                }}
-                className={`shorts-shuffle-btn ${isShuffling ? 'shorts-shuffle-btn--spinning' : ''}`}
                 type="button"
-                title="추천 쇼츠 다시 섞기"
-                aria-label="추천 쇼츠 다시 섞기"
+                role="tab"
+                aria-selected={activeMediaTab === 'streams'}
+                className={`media-station__tab ${
+                  activeMediaTab === 'streams' ? 'is-active' : ''
+                }`}
+                onClick={() => setActiveMediaTab('streams')}
               >
-                <Shuffle size={14} />
+                <Radio size={14} />
+                <span>공식 방송 · 오프라인</span>
+                <span className="media-station__tab-count">{recentStreams.length}</span>
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeMediaTab === 'stories'}
+                className={`media-station__tab ${
+                  activeMediaTab === 'stories' ? 'is-active' : ''
+                }`}
+                onClick={() => {
+                  trackCarouselNavigation('story', 'tab');
+                  setActiveMediaTab('stories');
+                }}
+              >
+                <Film size={14} />
+                <span>스토리 풀버전</span>
+                <span className="media-station__tab-count">{storyVideos.length}</span>
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeMediaTab === 'others'}
+                className={`media-station__tab ${
+                  activeMediaTab === 'others' ? 'is-active' : ''
+                }`}
+                onClick={() => {
+                  trackCarouselNavigation('other', 'tab');
+                  setActiveMediaTab('others');
+                }}
+              >
+                <Video size={14} />
+                <span>추천 롱폼</span>
+                <span className="media-station__tab-count">{otherVideos.length}</span>
               </button>
             </div>
-          </div>
-        </section>
 
-        {/* 2-2. 신규 공지사항 통합 박스 위젯 (단일 일체형 디자인) */}
+            {totalPages > 1 && (
+              <div className="media-station__pager">
+                <span className="media-station__page-num">
+                  {safePage + 1} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  className="media-station__page-btn"
+                  onClick={handlePrevPage}
+                  aria-label="이전 페이지"
+                >
+                  <ChevronLeft size={15} />
+                </button>
+                <button
+                  type="button"
+                  className="media-station__page-btn"
+                  onClick={handleNextPage}
+                  aria-label="다음 페이지"
+                >
+                  <ChevronRight size={15} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="media-station__body">
+            {activeList.length === 0 ? (
+              <div className="media-station__empty">
+                <Sparkles size={18} />
+                <p>현재 선택된 게임에 해당하는 항목이 없습니다.</p>
+              </div>
+            ) : activeMediaTab === 'streams' ? (
+              <div className="media-station__grid">
+                {visibleItems.map((ev) => {
+                  const color = getGameColor(ev.game);
+                  const isOffline = ev.type === '오프라인이벤트';
+                  const imgSrc = ev.custom_img
+                    ? `./assets/${ev.custom_img}`
+                    : gamesConfig?.[ev.game]?.defaultImg;
+                  const dDiff = diffDays(todayStr, ev.date);
+                  const isEnded = !isOffline && ev.date < todayStr;
+                  const statusLabel = isEnded
+                    ? '종료됨'
+                    : dDiff === 0
+                    ? 'TODAY'
+                    : dDiff > 0
+                    ? `D-${dDiff}`
+                    : '진행 중';
+
+                  return (
+                    <article
+                      key={ev.id || `${ev.game}-${ev.date}`}
+                      className="media-card"
+                      style={{ '--card-accent': color }}
+                      onClick={() =>
+                        onEventClick?.(
+                          ev,
+                          isOffline ? '오프라인이벤트' : '공식방송',
+                          'bottom_stream'
+                        )
+                      }
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onEventClick?.(
+                            ev,
+                            isOffline ? '오프라인이벤트' : '공식방송',
+                            'bottom_stream'
+                          );
+                        }
+                      }}
+                    >
+                      <div className="media-card__thumb-wrap">
+                        <img
+                          src={imgSrc}
+                          alt={ev.title}
+                          className="media-card__thumb"
+                          loading="lazy"
+                        />
+                        <span className="media-card__game-tag">{ev.game}</span>
+                        <span
+                          className={`media-card__status-tag ${
+                            isEnded ? 'is-ended' : dDiff === 0 ? 'is-today' : 'is-live'
+                          }`}
+                        >
+                          {statusLabel}
+                        </span>
+                      </div>
+                      <div className="media-card__info">
+                        <div className="media-card__meta">
+                          <span className="media-card__type">
+                            {isOffline ? (
+                              <>
+                                <MapPin size={11} /> 오프라인 행사
+                              </>
+                            ) : (
+                              <>
+                                <Radio size={11} /> v{ev.version} 특별 방송
+                              </>
+                            )}
+                          </span>
+                          <span className="media-card__date">
+                            {formatDisplayDate(ev.date, true)} {ev.time || ''}
+                          </span>
+                        </div>
+                        <h4 className="media-card__title">
+                          {ev.title ? ev.title.replace(/「|」/g, '') : `${ev.game} 공식 방송`}
+                        </h4>
+                        {ev.detail && (
+                          <p className="media-card__desc">
+                            {getCleanSummaryText(ev.detail, 75)}
+                          </p>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="media-station__grid">
+                {visibleItems.map((video, idx) => {
+                  const color = getGameColor(video.game);
+                  const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
+                  const isStory = activeMediaTab === 'stories';
+
+                  return (
+                    <a
+                      key={`${video.id}_${idx}`}
+                      href={`https://www.youtube.com/watch?v=${video.id}`}
+                      onClick={() =>
+                        trackVideoClick(
+                          isStory ? 'story' : 'other',
+                          video.game,
+                          video.title || video.desc,
+                          video.id
+                        )
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="media-card media-card--video"
+                      style={{ '--card-accent': color }}
+                    >
+                      <div className="media-card__thumb-wrap">
+                        <img
+                          src={thumbUrl}
+                          alt={video.desc || video.title}
+                          className="media-card__thumb"
+                          loading="lazy"
+                        />
+                        <span className="media-card__game-tag">{video.game}</span>
+                        <span className="media-card__duration-tag">
+                          {video.duration || (isStory ? '스토리 풀버전' : '추천 영상')}
+                        </span>
+                      </div>
+                      <div className="media-card__info">
+                        <h4 className="media-card__title">
+                          <span>{video.desc || video.title}</span>
+                          <ExternalLink size={12} className="media-card__ext-icon" />
+                        </h4>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 공지사항 통합 보드 (좌측 하단 배치로 우측 쇼츠와 높이 균형 확보) */}
         <section className="notice-unified-box">
           <div className="notice-unified-box__header">
             <div className="notice-unified-box__title-group">
               <Megaphone size={15} className="notice-unified-box__icon" />
-              <span className="notice-unified-box__title">공지사항</span>
+              <span className="notice-unified-box__title">대시보드 공지사항 및 업데이트 안내</span>
             </div>
             <button
+              type="button"
               className="notice-unified-box__all-btn"
               onClick={() => onOpenNotice && onOpenNotice(null)}
-              title="전체 공지사항 목록 열기"
             >
-              <span>전체보기</span>
+              <span>전체 공지 ({notices.length})</span>
               <ChevronRightIcon size={13} />
             </button>
           </div>
@@ -661,16 +528,15 @@ function GanttBottomLayout({
                     key={n.id}
                     className="notice-unified-item"
                     onClick={() => onOpenNotice && onOpenNotice(n)}
-                    title="클릭하여 상세 공지 보기"
                   >
                     <div className="notice-unified-item__meta">
                       <NoticeCategoryBadge
                         category={n.category}
                         isImportant={n.is_important}
                       />
-                      <span className="notice-unified-item__date">{n.date}</span>
+                      <span className="notice-unified-item__title">{n.title}</span>
                     </div>
-                    <p className="notice-unified-item__title">{n.title}</p>
+                    <span className="notice-unified-item__date">{n.date}</span>
                   </li>
                 ))}
               </ul>
@@ -680,6 +546,146 @@ function GanttBottomLayout({
               </div>
             )}
           </div>
+        </section>
+      </div>
+
+      {/* ═══ 우측: 추천 쇼츠 스테이션 ═══ */}
+      <div className="media-hub__right">
+        <section className="shorts-station">
+          <div className="shorts-station__header">
+            <div className="shorts-station__title-group">
+              <Youtube size={15} className="shorts-station__icon" />
+              <h3 className="shorts-station__title">추천 인기 쇼츠</h3>
+            </div>
+            <div className="shorts-station__controls">
+              <button
+                type="button"
+                className={`shorts-station__shuffle-btn ${
+                  isShuffling ? 'is-spinning' : ''
+                }`}
+                onClick={() => {
+                  trackShuffleClick();
+                  handleShuffleShorts();
+                }}
+                title="추천 쇼츠 다시 섞기"
+              >
+                <Shuffle size={13} />
+                <span>셔플</span>
+              </button>
+              <a
+                href="https://www.youtube.com/@AEIKA215"
+                onClick={() => trackChannelClick('bottom_shorts')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shorts-station__channel-btn"
+              >
+                <span>채널</span>
+                <ExternalLink size={11} />
+              </a>
+            </div>
+          </div>
+
+          {currentShort ? (
+            <div className="shorts-station__body">
+              <div className="shorts-player-container">
+                {isPlayingShort ? (
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${currentShort.id}?autoplay=1`}
+                    title={`${currentShort.game || '추천'} 쇼츠`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div
+                    className="shorts-player-thumbnail-overlay"
+                    onClick={() => {
+                      trackVideoClick(
+                        'shorts',
+                        currentShort.game,
+                        currentShort.title || currentShort.desc,
+                        currentShort.id
+                      );
+                      trackShortsInlinePlay(
+                        currentShort.game,
+                        currentShort.id,
+                        currentShort.title || currentShort.desc
+                      );
+                      setIsPlayingShort(true);
+                    }}
+                    style={{
+                      backgroundImage: `url(https://img.youtube.com/vi/${currentShort.id}/hqdefault.jpg)`,
+                    }}
+                  >
+                    <span
+                      className="shorts-player__game-pill"
+                      style={{ '--pill-color': getGameColor(currentShort.game) }}
+                    >
+                      {currentShort.game}
+                    </span>
+                    <div className="shorts-custom-play-btn">
+                      <Youtube size={28} color="#ffffff" />
+                    </div>
+                    {(currentShort.desc || currentShort.title) && (
+                      <div className="shorts-player__caption">
+                        {currentShort.desc || currentShort.title}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrevShort();
+                  }}
+                  className="shorts-overlay-arrow shorts-overlay-arrow--left"
+                  type="button"
+                  aria-label="이전 쇼츠"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNextShort();
+                  }}
+                  className="shorts-overlay-arrow shorts-overlay-arrow--right"
+                  type="button"
+                  aria-label="다음 쇼츠"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+
+              <div className="shorts-dot-indicators">
+                {recommendedShorts.map((sh, idx) => {
+                  const gameColor = getGameColor(sh.game);
+                  const isActive = idx === currentShortIndex;
+                  return (
+                    <button
+                      key={sh.id || `short-dot-${idx}`}
+                      type="button"
+                      className={`shorts-dot ${isActive ? 'shorts-dot--active' : ''}`}
+                      onClick={() => setCurrentShortIndex(idx)}
+                      style={{
+                        backgroundColor: isActive ? gameColor : undefined,
+                        borderColor: gameColor,
+                      }}
+                      aria-label={`${sh.game} 쇼츠 ${idx + 1}`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="shorts-no-data-card">
+              <Youtube size={22} />
+              <p>선택된 게임의 추천 쇼츠가 없습니다.</p>
+            </div>
+          )}
         </section>
       </div>
     </div>

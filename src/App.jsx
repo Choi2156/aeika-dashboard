@@ -3,14 +3,16 @@ import { useScheduleData } from './hooks/useScheduleData';
 import { trackModalOpen, trackScheduleEventClick, trackNoticeTickerClick, trackCalendarOpen } from './utils/analytics';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
+import GameStatusStrip from './components/GameStatusStrip';
 import GanttView from './views/GanttView';
+import CalendarView from './views/CalendarView';
 import ListView from './views/ListView';
-import LiveBannerBoard from './components/LiveBannerBoard';
-import DashboardInfoBar from './components/DashboardInfoBar';
 import Footer from './components/Footer';
 import NoticeTickerBanner from './components/NoticeTickerBanner';
+import SectionErrorBoundary from './components/common/SectionErrorBoundary';
+import { getNowKSTParts } from './utils/dateKST';
 
-// 코드 스플리팅: 초기 번들 용량 절감을 위해 5대 팝업 모달을 온디맨드 lazy 로딩
+// 코드 스플리팅: 초기 번들 용량 절감을 위해 팝업 모달을 온디맨드 lazy 로딩
 const DetailModal = lazy(() => import('./components/DetailModal'));
 const GuideModal = lazy(() => import('./components/GuideModal'));
 const LicenseModal = lazy(() => import('./components/LicenseModal'));
@@ -25,11 +27,11 @@ import './styles/base.css';
 // 🚨 [점검 모드 마스터 설정 스위치]
 // ==========================================
 export const MAINTENANCE_CONFIG = {
-  active: false, // 점검 중 상태 활성화 여부 (true = 활성화, false = 비활성화)
-  message: "임시 테스트 공개 기간 동안은 본 알림 배너가 항상 노출됩니다. 점검 중에도 기존 UI 및 차트 기능은 정상 작동하지만, 일시적인 데이터 손상이나 실시간 업데이트 지연이 발생할 수 있는 점 이용자 여러분의 너른 양해 부탁드립니다." // 상단 배너에 노출할 점검 안내 상세 텍스트
+  active: false,
+  message:
+    '임시 테스트 공개 기간 동안은 본 알림 배너가 항상 노출됩니다. 점검 중에도 기존 UI 및 차트 기능은 정상 작동하지만, 일시적인 데이터 손상이나 실시간 업데이트 지연이 발생할 수 있는 점 이용자 여러분의 너른 양해 부탁드립니다.',
 };
 
-// 확장성을 위한 마스터 설정 스키마 기본값 정의 (추후 완전히 새로운 필드가 추가되어도 크래시 없이 하위호환)
 const DEFAULT_SETTINGS = {
   theme: 'dark',
   currentView: 'gantt',
@@ -37,37 +39,42 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function App() {
-  const { events, gamesConfig, recommendedVideos, briefingData, patchNotes, notices = [], meta, loading, error } = useScheduleData();
-  
-  // 1. 모바일 기기 최초 접속 시 모바일 직관 뷰('list') 디폴트화 보증을 위한 Lazy Initializer 이식
+  const {
+    events,
+    gamesConfig,
+    recommendedVideos,
+    briefingData,
+    patchNotes,
+    notices = [],
+    meta,
+    loading,
+    error,
+  } = useScheduleData();
+
+  // 모바일 기기 최초 접속 시 상세 일정('list') 디폴트화
   const [currentView, setCurrentView] = useState(() => {
-    const isMobile = typeof window !== 'undefined' && 
+    const isMobile =
+      typeof window !== 'undefined' &&
       (window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
     return isMobile ? 'list' : 'gantt';
   });
 
   const [isGuideOpen, setIsGuideOpen] = useState(false);
-  const [isLicenseOpen, setIsLicenseOpen] = useState(false); // 신설 면책/라이선스 상세 모달
-  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false); // 공지사항 모달
-  const [selectedNotice, setSelectedNotice] = useState(null); // 선택된 공지사항
+  const [isLicenseOpen, setIsLicenseOpen] = useState(false);
+  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
+  const [selectedNotice, setSelectedNotice] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEventTypeName, setSelectedEventTypeName] = useState('');
   const appRef = useRef(null);
-  
-  // 2. 테마 모드 상태 ('dark' | 'light')
+
   const [theme, setTheme] = useState('dark');
-  
-  // 3. 로컬 스토리지 보존 동의 상태 (기본값: false)
   const [isStorageConsentEnabled, setIsStorageConsentEnabled] = useState(false);
-
-  // 3.5. 후원 모달 오픈 상태
   const [isSupportOpen, setIsSupportOpen] = useState(false);
-
-  // 3.6. 이달의 캘린더 이미지 모달 오픈 상태
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [calendarModalTarget, setCalendarModalTarget] = useState({ year: null, month: null });
+  const [jumpTodayTrigger, setJumpTodayTrigger] = useState(0);
 
-  // 4. 스크롤 스파이 훅 탑재: 헤더와 인포바가 다 넘어가는 시점에 메뉴바 콤팩트 축소
-  // 이력 현상(Hysteresis): 축소 기준점(Down)과 복원 기준점(Up)을 분리하여 경계면 무한 깜빡임 완벽 차단
+  // 스크롤 스파이 (이력 현상 적용으로 경계 깜빡임 방지)
   const [isShrunk, setIsShrunk] = useState(false);
   useEffect(() => {
     let ticking = false;
@@ -75,18 +82,13 @@ export default function App() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const isMobile = window.innerWidth <= 768;
-          // 축소(Down) 임계치와 복원(Up) 임계치 사이에 데드밴드(여유 간격)를 두어 레이아웃 변동에 따른 루프 차단
-          const shrinkThreshold = isMobile ? 300 : 180;
-          const expandThreshold = isMobile ? 180 : 100;
+          const shrinkThreshold = isMobile ? 260 : 160;
+          const expandThreshold = isMobile ? 140 : 90;
           const scrollY = window.scrollY;
 
           setIsShrunk((prev) => {
-            if (!prev && scrollY > shrinkThreshold) {
-              return true;
-            }
-            if (prev && scrollY < expandThreshold) {
-              return false;
-            }
+            if (!prev && scrollY > shrinkThreshold) return true;
+            if (prev && scrollY < expandThreshold) return false;
             return prev;
           });
           ticking = false;
@@ -98,47 +100,43 @@ export default function App() {
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
-  // 테마 변경 시 document.body 전체에 data-theme 속성을 연계 바인딩하여 배경/스크롤바 등 무결점 통합 전환 보장
+
   useEffect(() => {
     document.body.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // 간트 차트 (PC 뷰) ↔ 리스트 뷰 (모바일 뷰) 전환 시 자동으로 윈도우 스크롤을 최상단으로 복구
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentView]);
-  
-  // 게임 활성화 상태 관리
+
   const [activeGames, setActiveGames] = useState({});
-  
-  // 5. [개선] 단일 직렬화 객체 복원 엔진 (동의 유저에 한해 모바일/PC 통합 자동 복구 및 하위호환)
+
   useEffect(() => {
     const savedConsent = localStorage.getItem('subculture_dashboard_consent') === 'true';
     if (savedConsent) {
       setIsStorageConsentEnabled(true);
-      
       const savedSettingsStr = localStorage.getItem('subculture_dashboard_settings');
       if (savedSettingsStr) {
         try {
           const parsed = JSON.parse(savedSettingsStr);
-          // 마스터 템플릿과 병합함으로써 추후 신규 컬럼 필드가 추가되더라도 누락 없이 안전 융합
           const merged = { ...DEFAULT_SETTINGS, ...parsed };
-          
           if (merged.theme === 'dark' || merged.theme === 'light') {
             setTheme(merged.theme);
           }
-          if (merged.currentView === 'gantt' || merged.currentView === 'list') {
+          if (
+            merged.currentView === 'gantt' ||
+            merged.currentView === 'calendar' ||
+            merged.currentView === 'list'
+          ) {
             setCurrentView(merged.currentView);
           }
         } catch (e) {
-          console.error('Failed to restore master dashboard settings from local storage:', e);
+          console.error('Failed to restore master dashboard settings:', e);
         }
       }
     }
   }, []);
 
-  // 6. gamesConfig 로딩 시점에 활성화 게임 필터 복원
   useEffect(() => {
     if (gamesConfig) {
       const savedConsent = localStorage.getItem('subculture_dashboard_consent') === 'true';
@@ -151,28 +149,26 @@ export default function App() {
             if (savedGames) {
               const configKeys = Object.keys(gamesConfig);
               const parsedKeys = Object.keys(savedGames);
-              const isMatch = configKeys.every(k => parsedKeys.includes(k));
+              const isMatch = configKeys.every((k) => parsedKeys.includes(k));
               if (isMatch) {
                 setActiveGames(savedGames);
                 return;
               }
             }
           } catch (e) {
-            console.error('Failed to restore active games cache from master settings object:', e);
+            console.error('Failed to restore active games cache:', e);
           }
         }
       }
-      
-      // 저장된 설정이 없거나 동의하지 않은 경우 기본 활성화 상태 적용
+
       const initial = {};
-      Object.keys(gamesConfig).forEach(g => {
+      Object.keys(gamesConfig).forEach((g) => {
         initial[g] = true;
       });
       setActiveGames(initial);
     }
   }, [gamesConfig]);
 
-  // 7. [신규] 통합 저장 헬퍼: 현재 상태를 바탕으로 마스터 직렬화 객체를 안전 갱신
   const persistSettings = (partialSettings) => {
     if (!isStorageConsentEnabled) return;
     try {
@@ -183,7 +179,7 @@ export default function App() {
         theme,
         currentView,
         activeGames,
-        ...partialSettings
+        ...partialSettings,
       };
       localStorage.setItem('subculture_dashboard_settings', JSON.stringify(updated));
     } catch (e) {
@@ -191,19 +187,26 @@ export default function App() {
     }
   };
 
-  // 8. 설정 동의 토글 핸들러
   const handleToggleStorageConsent = (isEnabled) => {
     setIsStorageConsentEnabled(isEnabled);
     localStorage.setItem('subculture_dashboard_consent', isEnabled ? 'true' : 'false');
     if (isEnabled) {
-      // 즉시 현재 상태 전체 스냅샷 저장
       persistSettings({ theme, currentView, activeGames });
     } else {
       localStorage.removeItem('subculture_dashboard_settings');
     }
   };
 
-  // 9. 개별 상태 변경 시 자동 직렬화 동기화
+  const handleThemeChange = (nextTheme) => {
+    setTheme(nextTheme);
+    setTimeout(() => persistSettings({ theme: nextTheme }), 0);
+  };
+
+  const handleViewChange = (nextView) => {
+    setCurrentView(nextView);
+    setTimeout(() => persistSettings({ currentView: nextView }), 0);
+  };
+
   const handleToggleGame = (game) => {
     setActiveGames((prev) => {
       const next = { ...prev, [game]: !prev[game] };
@@ -244,54 +247,48 @@ export default function App() {
     setSelectedNotice(null);
   }, []);
 
-  // requestAnimationFrame 기반 마우스 무브 네온 안개 트래킹 (Layout Thrashing 및 버벅임 원천 차단)
-  const mouseRafRef = useRef(null);
-  const handleMouseMove = (e) => {
-    if (!appRef.current) return;
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-    if (mouseRafRef.current) return;
-    mouseRafRef.current = requestAnimationFrame(() => {
-      mouseRafRef.current = null;
-      if (!appRef.current) return;
-      const rect = appRef.current.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      appRef.current.style.setProperty('--mouse-x', `${x}px`);
-      appRef.current.style.setProperty('--mouse-y', `${y}px`);
-    });
-  };
+  const handleOpenCalendarModal = useCallback((targetYear = null, targetMonth = null) => {
+    const { year: kstY, month: kstM } = getNowKSTParts();
+    const y = targetYear || kstY;
+    const m = targetMonth || kstM;
+    setCalendarModalTarget({ year: y, month: m });
+    trackModalOpen('calendar');
+    trackCalendarOpen({ type: 'modal', source: 'control_bar', year: y, month: m });
+    setIsCalendarOpen(true);
+  }, []);
+
+  const handleJumpToToday = useCallback(() => {
+    setJumpTodayTrigger((c) => c + 1);
+  }, []);
 
   return (
-    <div 
-      ref={appRef}
-      className="app"
-      data-theme={theme}
-      onMouseMove={handleMouseMove}
-    >
+    <div ref={appRef} className="app" data-theme={theme}>
       {MAINTENANCE_CONFIG.active && (
         <div className="maintenance-banner">
           <div className="maintenance-banner__content">
             <span className="maintenance-banner__icon">⚠️</span>
             <div className="maintenance-banner__text-group">
               <span className="maintenance-banner__title">사이트 점검중</span>
-              <span className="maintenance-banner__desc">
-                {MAINTENANCE_CONFIG.message}
-              </span>
+              <span className="maintenance-banner__desc">{MAINTENANCE_CONFIG.message}</span>
             </div>
           </div>
         </div>
       )}
 
-      <Header onOpenSupport={() => { trackModalOpen('support'); setIsSupportOpen(true); }} />
-
-      <DashboardInfoBar
-        meta={meta}
-        onOpenCalendar={() => {
-          trackModalOpen('calendar');
-          trackCalendarOpen({ type: 'modal', source: 'infobar', year: 2026, month: 9 });
-          setIsCalendarOpen(true);
+      <Header
+        onOpenSupport={() => {
+          trackModalOpen('support');
+          setIsSupportOpen(true);
         }}
+        onOpenGuide={() => {
+          trackModalOpen('guide');
+          setIsGuideOpen(true);
+        }}
+        theme={theme}
+        onThemeChange={handleThemeChange}
+        isStorageConsentEnabled={isStorageConsentEnabled}
+        onToggleStorageConsent={handleToggleStorageConsent}
+        meta={meta}
       />
 
       <GameFilterBar
@@ -300,14 +297,10 @@ export default function App() {
         onToggleGame={handleToggleGame}
         onSelectAll={handleSelectAll}
         currentView={currentView}
-        onViewChange={setCurrentView}
-        onOpenGuide={() => { trackModalOpen('guide'); setIsGuideOpen(true); }}
-        meta={meta}
-        theme={theme}
-        onThemeChange={setTheme}
-        isStorageConsentEnabled={isStorageConsentEnabled}
-        onToggleStorageConsent={handleToggleStorageConsent}
-        isShrunk={isShrunk} // 스크롤 축소 신호 주입
+        onViewChange={handleViewChange}
+        onOpenCalendar={() => handleOpenCalendarModal()}
+        onJumpToToday={handleJumpToToday}
+        isShrunk={isShrunk}
       />
 
       <main className="main-content">
@@ -321,49 +314,70 @@ export default function App() {
         {error && (
           <div className="app-error">
             <p className="app-error__text">데이터를 로드하는 도중 오류가 발생했습니다.</p>
-            <span className="app-error__text" style={{ opacity: 0.7, fontSize: '0.8rem' }}>{error}</span>
+            <span className="app-error__text" style={{ opacity: 0.7, fontSize: '0.8rem' }}>
+              {error}
+            </span>
           </div>
         )}
 
         {!loading && !error && (
           <div className="main-view">
-            {/* 1. 상단 한 줄 롤링 공지 띠배너 (LiveBannerBoard 바로 위에 배치) */}
-            <NoticeTickerBanner
-              notices={notices}
-              onOpenNotice={handleOpenNotice}
-            />
+            <NoticeTickerBanner notices={notices} onOpenNotice={handleOpenNotice} />
 
-            {/* 2. 상단 게임 일정 슬라이드 박스 */}
-            {currentView === 'gantt' && (
-              <LiveBannerBoard
+            <SectionErrorBoundary
+              sectionName="GameStatusStrip"
+              sectionTitle="실시간 버전 현황판을 불러오는 중 문제가 발생했습니다."
+              resetKey={currentView}
+            >
+              <GameStatusStrip
                 events={events}
                 gamesConfig={gamesConfig}
                 activeGames={activeGames}
                 onEventClick={handleEventClick}
               />
-            )}
+            </SectionErrorBoundary>
 
-            {currentView === 'gantt' && (
-              <GanttView
-                events={events}
-                gamesConfig={gamesConfig}
-                recommendedVideos={recommendedVideos}
-                briefingData={briefingData}
-                activeGames={activeGames}
-                notices={notices}
-                onOpenNotice={handleOpenNotice}
-                onToggleGame={handleToggleGame}
-                onEventClick={handleEventClick}
-              />
-            )}
-            {currentView === 'list' && (
-              <ListView
-                events={events}
-                gamesConfig={gamesConfig}
-                activeGames={activeGames}
-                onEventClick={handleEventClick}
-              />
-            )}
+            <SectionErrorBoundary
+              sectionName={currentView}
+              sectionTitle="선택한 일정 뷰를 표시하는 중 문제가 발생했습니다."
+              resetKey={currentView}
+            >
+              {currentView === 'gantt' && (
+                <GanttView
+                  events={events}
+                  gamesConfig={gamesConfig}
+                  recommendedVideos={recommendedVideos}
+                  briefingData={briefingData}
+                  activeGames={activeGames}
+                  notices={notices}
+                  onOpenNotice={handleOpenNotice}
+                  onToggleGame={handleToggleGame}
+                  onEventClick={handleEventClick}
+                  jumpTodayTrigger={jumpTodayTrigger}
+                />
+              )}
+
+              {currentView === 'calendar' && (
+                <CalendarView
+                  events={events}
+                  gamesConfig={gamesConfig}
+                  activeGames={activeGames}
+                  onEventClick={handleEventClick}
+                  onOpenCalendarModal={handleOpenCalendarModal}
+                  jumpTodayTrigger={jumpTodayTrigger}
+                />
+              )}
+
+              {currentView === 'list' && (
+                <ListView
+                  events={events}
+                  gamesConfig={gamesConfig}
+                  activeGames={activeGames}
+                  onEventClick={handleEventClick}
+                  jumpTodayTrigger={jumpTodayTrigger}
+                />
+              )}
+            </SectionErrorBoundary>
           </div>
         )}
       </main>
@@ -388,20 +402,13 @@ export default function App() {
         )}
 
         {isLicenseOpen && (
-          <LicenseModal
-            isOpen={isLicenseOpen}
-            onClose={() => setIsLicenseOpen(false)}
-          />
+          <LicenseModal isOpen={isLicenseOpen} onClose={() => setIsLicenseOpen(false)} />
         )}
 
         {isSupportOpen && (
-          <SupportModal
-            isOpen={isSupportOpen}
-            onClose={() => setIsSupportOpen(false)}
-          />
+          <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
         )}
 
-        {/* 신규 공지사항 상세 모달 */}
         {isNoticeModalOpen && (
           <NoticeModal
             isOpen={isNoticeModalOpen}
@@ -411,17 +418,23 @@ export default function App() {
           />
         )}
 
-        {/* 📅 이달의 종합 캘린더 이미지 팝업 모달 */}
         {isCalendarOpen && (
           <CalendarModal
             isOpen={isCalendarOpen}
             onClose={() => setIsCalendarOpen(false)}
             meta={meta}
+            targetYear={calendarModalTarget.year}
+            targetMonth={calendarModalTarget.month}
           />
         )}
       </Suspense>
 
-      <Footer onOpenLicense={() => { trackModalOpen('license'); setIsLicenseOpen(true); }} />
+      <Footer
+        onOpenLicense={() => {
+          trackModalOpen('license');
+          setIsLicenseOpen(true);
+        }}
+      />
     </div>
   );
 }

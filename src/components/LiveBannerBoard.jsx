@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock } from 'lucide-react';
+import { getCleanSummaryText } from '../utils/eventTextParser';
 import '../styles/components.css';
 
 // 원신 6.x 및 기타 서브컬처 게임 버전의 프리미엄 타이틀 포맷터 헬퍼
@@ -228,7 +229,7 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
       } else {
         if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
           const fullVer = getVersionFullTitle(ev.game, ev.version, events);
-          titleText = `${ev.game} ${fullVer} 진행 중!`;
+          titleText = `${ev.game} ${fullVer} 진행 중`;
         } else if (ev.type === '공식방송') {
           if (ev.start_date === todayStr) {
             // 오늘 진행되는 공식 방송인 경우 실시간 시간에 따른 표기 분기
@@ -242,29 +243,29 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
               
               if (hasStarted) {
                 badgeText = isFixed ? 'STREAMING' : '방송 예정';
-                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중!`;
+                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중`;
                 actionIcon = <Volume2 size={11} />;
               } else {
                 badgeText = 'TODAY';
-                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 ${ev.time} 진행 예정!`;
+                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 ${ev.time} 진행 예정`;
                 actionIcon = <Clock size={11} />;
               }
             } else {
               badgeText = 'TODAY';
-              titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 진행!`;
+              titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 진행`;
               actionIcon = <Clock size={11} />;
             }
           } else {
             badgeText = isFixed ? 'STREAMING' : '방송 예정';
-            titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중!`;
+            titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중`;
             actionIcon = <Volume2 size={11} />;
           }
         } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
           badgeText = isFixed ? 'EVENT' : '행사 예정';
-          titleText = `${cleanEventTitle(ev.title)} 진행 중!`;
+          titleText = `${cleanEventTitle(ev.title)} 진행 중`;
           actionIcon = <Info size={11} />;
         } else {
-          titleText = `${ev.game} [${ev.title}] 진행 중!`;
+          titleText = `${ev.game} [${ev.title}] 진행 중`;
         }
       }
     }
@@ -371,9 +372,7 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
                 
                 {ev.detail && (
                   <p className="live-banner-detail">
-                    {ev.detail.length > 110 
-                      ? `${ev.detail.substring(0, 110)}...` 
-                      : ev.detail}
+                    {getCleanSummaryText(ev.detail, 110)}
                   </p>
                 )}
               </div>

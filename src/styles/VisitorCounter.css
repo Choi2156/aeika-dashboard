@@ -2,45 +2,26 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #ffffff !important;
-  /* 모던한 에메랄드/그린 그라데이션 테마로 차별화된 디자인 매칭 */
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.32) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.65);
-  padding: 6px 14px;
-  border-radius: var(--radius-md);
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  padding: 4px 10px;
+  border-radius: 9999px;
   cursor: default;
-  transition: all var(--transition-fast);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 12px rgba(16, 185, 129, 0.2);
-  text-decoration: none;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: opacity var(--transition-fast);
   box-sizing: border-box;
-  width: 162px;
-}
-
-/* 마우스 호버 시 은은한 광채 애니메이션 극대화 */
-.header__visitor-btn:hover {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.4) 100%);
-  border-color: rgba(52, 211, 153, 0.95);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.45);
-  transform: translateY(-2px) scale(1.02);
 }
 
 .visitor-btn__icon {
-  color: #34d399; /* 에메랄드 그린 아이콘 광채 */
-  filter: drop-shadow(0 0 4px rgba(52, 211, 153, 0.8));
-  transition: transform var(--transition-fast);
+  color: #10b981;
   flex-shrink: 0;
 }
 
-.header__visitor-btn:hover .visitor-btn__icon {
-  transform: scale(1.15);
-}
-
 .visitor-btn__label {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-muted);
   letter-spacing: -0.01em;
   white-space: nowrap;
   flex-shrink: 0;
@@ -50,24 +31,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(16, 185, 129, 0.35);
-  padding: 0 6px;
-  height: 16px; /* 절대 높이 제한으로 상하 팽창 완전 방어 */
-  line-height: 1;
-  border-radius: 4px;
-  color: #34d399;
-  font-family: 'Inter', sans-serif;
-  font-weight: 900;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 700;
   font-size: 0.7rem;
-  border: 1px solid rgba(52, 211, 153, 0.25);
-  min-width: 20px;
+  min-width: 18px;
   text-align: center;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-  box-sizing: border-box;
   flex-shrink: 0;
 }
 
-/* 로딩/에러 트랜지션 애니메이션 */
 .header__visitor-btn.loading {
   opacity: 0.6;
 }

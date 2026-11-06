@@ -7,60 +7,56 @@
  *   3순위: games_config 기본값 → 게임별 기본 패턴 주기 자동 연산
  */
 
-// ─── 유틸리티 함수 ──────────────────────────────────────
+// ─── 유틸리티 함수 (KST 표준화) ──────────────────────────
+import {
+  formatDateObj,
+  parseDateStr,
+  diffDays,
+  addDaysToDate,
+  getTodayDateKST,
+  getKoreanDayName,
+} from '../utils/dateKST.js';
 
 /**
  * Date 객체를 'YYYY-MM-DD' 문자열로 변환
  */
 export function formatDate(d) {
-  return (
-    d.getFullYear() +
-    '-' +
-    String(d.getMonth() + 1).padStart(2, '0') +
-    '-' +
-    String(d.getDate()).padStart(2, '0')
-  );
+  return formatDateObj(d);
 }
 
 /**
  * 'YYYY-MM-DD' 문자열을 Date 객체로 변환 (시간 0시 고정)
  */
 export function parseDate(dateStr) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return new Date(y, m - 1, d);
+  return parseDateStr(dateStr);
 }
 
 /**
  * 두 날짜 사이의 일수 차이 (정수)
  */
 export function getDaysDiff(startDate, endDate) {
-  const utc1 = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-  const utc2 = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-  return Math.round((utc2 - utc1) / (1000 * 60 * 60 * 24));
+  return diffDays(startDate, endDate);
 }
 
 /**
  * 기준 날짜에 일수를 더한 새 Date 반환
  */
 export function addDays(date, days) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
+  return addDaysToDate(date, days);
 }
 
 /**
- * 오늘 날짜 (시간 0시 고정) 반환
+ * 오늘 날짜 (KST 기준 0시 고정) 반환
  */
 export function getToday() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return getTodayDateKST();
 }
 
 /**
  * 요일 인덱스(0~6)를 한국어 요일명으로 변환
  */
 export function getKoreanDay(dayNum) {
-  return ['일', '월', '화', '수', '목', '금', '토'][dayNum];
+  return getKoreanDayName(dayNum);
 }
 
 // ─── 버전 번호 처리 ──────────────────────────────────────
@@ -161,11 +157,11 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
         game,
         version: `${baseVersion} 후반`,
         type: '후반업데이트',
-        title: `${baseVersion} 버전 후반기 콘텐츠 추가 및 픽업 전환`,
+        title: `${baseVersion} 버전 후반 픽업 전환`,
         date: formatDate(midDate),
         time: '',
         is_fixed: false,
-        detail: '후반기 캐릭터 전환 및 인게임 서브 수집/도전 이벤트 위주의 기간이 전개됩니다.',
+        detail: '통상 주기 기준 예상 후반 픽업 전환일',
         custom_img: '',
         link: '',
       });
@@ -231,11 +227,11 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
         game,
         version: nextVer,
         type: '전반업데이트',
-        title: `${nextVer} 버전 대규모 정기 업데이트`,
+        title: `${nextVer} 버전 업데이트`,
         date: formatDate(nextUpdateDate),
         time: '',
         is_fixed: false,
-        detail: '대규모 서버 점검 이후 정식 버전 라이브 개시일입니다.',
+        detail: '통상 주기 기준 예상 업데이트일',
         custom_img: '',
         link: '',
       });
@@ -255,11 +251,11 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
         game,
         version: nextHalfVerStr,
         type: '후반업데이트',
-        title: `${nextVer} 버전 후반기 콘텐츠 추가 및 픽업 전환`,
+        title: `${nextVer} 버전 후반 픽업 전환`,
         date: formatDate(nextHalfDate),
         time: '',
         is_fixed: false,
-        detail: '후반기 캐릭터 전환 및 인게임 서브 수집/도전 이벤트 위주의 기간이 전개됩니다.',
+        detail: '통상 주기 기준 예상 후반 픽업 전환일',
         custom_img: '',
         link: '',
       });
@@ -304,11 +300,11 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
           game,
           version: streamTargetVer,
           type: '공식방송',
-          title: `${streamTargetVer} 버전 공식 특별 방송 프로그램`,
+          title: `${streamTargetVer} 버전 특별 방송`,
           date: formatDate(targetStreamDate),
           time: '',
           is_fixed: false,
-          detail: '차기 정규 버전 스펙 선공개 안내 특별 프로그램입니다.',
+          detail: '차기 버전 프리뷰 특별 방송 예상일',
           custom_img: '',
           link: '',
         });
