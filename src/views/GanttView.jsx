@@ -187,16 +187,23 @@ export default function GanttView({
     return names;
   }, [events, gamesConfig]);
 
-  /* ── Group events by game ── */
+  /* ── Group events by game (간트 차트에서는 종료 후 14일 경과한 과거 오프라인 행사는 레인 생성 제외) ── */
+  const offlineCutoffStr = useMemo(() => formatDateStr(addDays(today, -14)), [today]);
+
   const eventsByGame = useMemo(() => {
     const map = {};
     if (!events) return map;
     gameNames.forEach((g) => (map[g] = []));
     events.forEach((ev) => {
-      if (map[ev.game]) map[ev.game].push(ev);
+      if (!map[ev.game]) return;
+      if (ev.type === '오프라인이벤트' || ev.type === '행사') {
+        const endDate = ev.end_date || ev.start_date || ev.date;
+        if (endDate < offlineCutoffStr) return;
+      }
+      map[ev.game].push(ev);
     });
     return map;
-  }, [events, gameNames]);
+  }, [events, gameNames, offlineCutoffStr]);
 
   /* ── 게임별 동적 레인 맵 생성 (오프라인 이벤트가 있는 게임만 4번째 레인 할당) ── */
   const gameLanesMap = useMemo(() => {

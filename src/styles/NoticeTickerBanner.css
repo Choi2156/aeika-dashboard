@@ -11,12 +11,12 @@
 .notice-ticker-banner__inner {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: var(--radius-md);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(18, 23, 34, 0.55);
+  border: 1px solid var(--border-subtle);
   transition: border-color var(--transition-fast), background var(--transition-fast);
   overflow: hidden;
 }

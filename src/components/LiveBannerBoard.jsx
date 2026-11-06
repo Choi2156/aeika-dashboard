@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock } from 'lucide-react';
 import { getCleanSummaryText } from '../utils/eventTextParser';
+import { getTodayStrKST, diffDays, getNowKSTParts } from '../utils/dateKST';
 import '../styles/components.css';
 
 // 원신 6.x 및 기타 서브컬처 게임 버전의 프리미엄 타이틀 포맷터 헬퍼
@@ -59,23 +60,13 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayTimerRef = useRef(null);
 
-  // 1. 오늘 날짜 기준 (시간 정보 제거한 0시 정렬 문자열)
-  const todayStr = useMemo(() => {
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  }, []);
+  // 1. 오늘 날짜 기준 (KST 0시 정렬 문자열)
+  const todayStr = useMemo(() => getTodayStrKST(), []);
 
-  // 날짜 간 일수 차이 계산 헬퍼
+  // 날짜 간 일수 차이 계산 헬퍼 (KST 기준)
   const getDaysDiff = (dateStr1, dateStr2) => {
     if (!dateStr1 || !dateStr2) return 999;
-    const d1 = new Date(dateStr1);
-    const d2 = new Date(dateStr2);
-    d1.setHours(0, 0, 0, 0);
-    d2.setHours(0, 0, 0, 0);
-    return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+    return diffDays(dateStr1, dateStr2);
   };
 
   // 2. 현재 진행 중이거나 7일 이내 도래할 일정 필터링 및 전후반 중복 제거
@@ -232,10 +223,8 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
           titleText = `${ev.game} ${fullVer} 진행 중`;
         } else if (ev.type === '공식방송') {
           if (ev.start_date === todayStr) {
-            // 오늘 진행되는 공식 방송인 경우 실시간 시간에 따른 표기 분기
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
+            // 오늘 진행되는 공식 방송인 경우 실시간 KST 시간에 따른 표기 분기
+            const { hour: currentHour, minute: currentMinute } = getNowKSTParts();
             
             if (ev.time) {
               const [sh, sm] = ev.time.split(':').map(Number);

@@ -37,6 +37,31 @@
   flex-wrap: wrap;
 }
 
+.calendar-modal__month-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendar-modal__nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.calendar-modal__nav-btn:hover {
+  border-color: var(--accent-indigo);
+  color: var(--text-primary);
+}
+
 .calendar-modal__title {
   font-size: 1rem;
   font-weight: 800;

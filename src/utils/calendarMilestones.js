@@ -21,6 +21,7 @@ const HALF_PICKUP_TERMS = {
 };
 
 function cleanOfflineTitle(title = '') {
+  if (title.includes('G-STAR') || title.includes('지스타')) return 'G-STAR 2026';
   if (title.includes('호요랜드')) return '호요랜드 2026';
   if (title.includes('메가MGC커피') || title.includes('메가커피')) return '메가커피 콜라보';
   if (title.includes('롯데시네마')) return '롯데시네마 콜라보';

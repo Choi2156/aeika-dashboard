@@ -3,7 +3,7 @@ import { useScheduleData } from './hooks/useScheduleData';
 import { trackModalOpen, trackScheduleEventClick, trackNoticeTickerClick, trackCalendarOpen } from './utils/analytics';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
-import GameStatusStrip from './components/GameStatusStrip';
+import LiveBannerBoard from './components/LiveBannerBoard';
 import GanttView from './views/GanttView';
 import CalendarView from './views/CalendarView';
 import ListView from './views/ListView';
@@ -325,11 +325,11 @@ export default function App() {
             <NoticeTickerBanner notices={notices} onOpenNotice={handleOpenNotice} />
 
             <SectionErrorBoundary
-              sectionName="GameStatusStrip"
-              sectionTitle="실시간 버전 현황판을 불러오는 중 문제가 발생했습니다."
+              sectionName="LiveBannerBoard"
+              sectionTitle="실시간 하이라이트 배너를 불러오는 중 문제가 발생했습니다."
               resetKey={currentView}
             >
-              <GameStatusStrip
+              <LiveBannerBoard
                 events={events}
                 gamesConfig={gamesConfig}
                 activeGames={activeGames}
@@ -423,6 +423,9 @@ export default function App() {
             isOpen={isCalendarOpen}
             onClose={() => setIsCalendarOpen(false)}
             meta={meta}
+            events={events}
+            gamesConfig={gamesConfig}
+            activeGames={activeGames}
             targetYear={calendarModalTarget.year}
             targetMonth={calendarModalTarget.month}
           />
