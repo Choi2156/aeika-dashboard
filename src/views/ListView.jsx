@@ -74,14 +74,14 @@ export default function ListView({
     });
   }, [events, activeGames, searchQuery]);
 
-  // 과거 종료 일정 vs 현재 진행 중 / 예정 일정 분리 (기본: 오늘 이후 또는 현재 진행 중인 일정 노출)
+  // 과거 일정 vs 오늘/예정 일정 분리 (기본: 오늘 이후 시작 예정인 미래 일정만 노출)
   const { pastEvents, currentAndFutureEvents } = useMemo(() => {
     const past = [];
     const activeOrFuture = [];
 
     sortedEvents.forEach((ev) => {
-      const isEnded = ev.end_date ? ev.end_date < todayStr : (ev.date || '') < todayStr;
-      if (isEnded) {
+      const evDate = ev.date || '';
+      if (evDate < todayStr) {
         past.push(ev);
       } else {
         activeOrFuture.push(ev);
