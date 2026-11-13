@@ -1485,6 +1485,59 @@
   text-decoration: none;
 }
 
+.install-prompt-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(56, 189, 248, 0.09);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  border-radius: var(--radius-md);
+}
+
+.install-prompt-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.install-prompt-banner__text strong {
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.install-prompt-banner__btn,
+.guide-install-inline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.18);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.install-prompt-banner__btn:hover,
+.guide-install-inline-btn:hover {
+  background: rgba(56, 189, 248, 0.28);
+  transform: translateY(-1px);
+}
+
+.guide-install-inline-btn {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
 .patch-notes-list {
   display: flex;
   flex-direction: column;

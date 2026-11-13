@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Info, Video, ExternalLink } from 'lucide-react';
+import { X, Info, Video, ExternalLink, Download } from 'lucide-react';
 import { trackOutboundLink, trackGuideTabSwitch } from '../utils/analytics';
 import ModalShell from './common/ModalShell';
 import '../styles/components.css';
@@ -7,7 +7,13 @@ import '../styles/components.css';
 /**
  * GuideModal — 대시보드 이용 안내 및 패치 노트 (v1.3.0)
  */
-export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
+export default function GuideModal({
+  isOpen,
+  onClose,
+  patchNotes = [],
+  onOpenInstall,
+  isAppInstalled = false,
+}) {
   const [activeTab, setActiveTab] = useState('guide');
 
   useEffect(() => {
@@ -100,13 +106,13 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                   </div>
                   <ul className="guide-bullet-list">
                     <li>
-                      <strong>기간 표 (간트 차트):</strong> 게임별 버전 주기와 전·후반 픽업이 겹치는 구간을 가로 타임라인으로 비교합니다. 드래그·마우스 휠 이동과 주간 이동(±7일)을 지원합니다.
+                      <strong>간트 차트:</strong> 게임별 버전 주기와 전·후반 픽업이 겹치는 구간을 가로 타임라인으로 비교합니다. 드래그·마우스 휠 이동과 주간 이동(±7일)을 지원합니다.
                     </li>
                     <li>
-                      <strong>월간 달력:</strong> 한 달간의 업데이트, 후반 픽업, 특별 방송, 오프라인 행사를 7열 달력에서 모아보고 고해상도 이미지로 저장할 수 있습니다.
+                      <strong>캘린더:</strong> 한 달간의 업데이트, 후반 픽업, 특별 방송, 오프라인 행사를 7열 달력에서 모아보고 고해상도 이미지로 저장할 수 있습니다.
                     </li>
                     <li>
-                      <strong>상세 일정:</strong> 다가오는 일정을 날짜순 타임라인 카드로 보여주며, 지난 일정 불러오기와 키워드 검색을 지원합니다.
+                      <strong>타임라인:</strong> 다가오는 일정을 날짜순 세로 카드로 보여주며, 지난 일정 불러오기와 키워드 검색을 지원합니다.
                     </li>
                     <li>
                       <strong>상단 주요 일정 배너:</strong> 현재 진행 중이거나 7일 이내 시작되는 주요 일정을 상단 슬라이드에서 빠르게 브리핑합니다.
@@ -137,6 +143,28 @@ export default function GuideModal({ isOpen, onClose, patchNotes = [] }) {
                       <strong>[예상]:</strong> 게임별 평균 업데이트 주기(통상 6주)로 산출한 추정 일정(점선 테두리)이며, 공식 발표에 따라 변경될 수 있습니다.
                     </li>
                   </ul>
+                </div>
+
+                <div className="guide-section">
+                  <div className="guide-section-heading">4. 브라우저 앱 설치(바로가기 앱)</div>
+                  <ul className="guide-bullet-list">
+                    <li>
+                      PC(Chrome·Edge) 및 모바일(Android·iOS Safari)에서 별도 스토어 없이 전용 앱 창이나 홈 화면 아이콘으로 설치할 수 있습니다.
+                    </li>
+                    <li>
+                      설치 후에도 모든 일정 데이터는 항상 최신 상태로 실시간 반영됩니다.
+                    </li>
+                  </ul>
+                  {!isAppInstalled && onOpenInstall && (
+                    <button
+                      type="button"
+                      className="guide-install-inline-btn"
+                      onClick={onOpenInstall}
+                    >
+                      <Download size={13} />
+                      <span>앱 설치 / 방법 보기</span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}

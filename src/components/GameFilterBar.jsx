@@ -225,10 +225,10 @@ export default function GameFilterBar({
             type="button"
             role="tab"
             aria-selected={currentView === 'gantt'}
-            title="기간 표 (타임라인)"
+            title="간트 차트 (기간 비교)"
           >
             <BarChart2 size={14} />
-            <span className="view-switcher__label">기간 표</span>
+            <span className="view-switcher__label">간트 차트</span>
           </button>
 
           <button
@@ -242,10 +242,10 @@ export default function GameFilterBar({
             type="button"
             role="tab"
             aria-selected={currentView === 'calendar'}
-            title="월간 달력"
+            title="캘린더 (월간 달력)"
           >
             <CalendarIcon size={14} />
-            <span className="view-switcher__label">월간 달력</span>
+            <span className="view-switcher__label">캘린더</span>
           </button>
 
           <button
@@ -259,10 +259,10 @@ export default function GameFilterBar({
             type="button"
             role="tab"
             aria-selected={currentView === 'list'}
-            title="상세 일정"
+            title="타임라인 (상세 일정)"
           >
             <ListFilter size={14} />
-            <span className="view-switcher__label">상세 일정</span>
+            <span className="view-switcher__label">타임라인</span>
           </button>
         </nav>
       </div>

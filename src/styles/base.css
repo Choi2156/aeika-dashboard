@@ -563,6 +563,26 @@ body[data-theme="light"] {
   color: var(--accent-indigo-dark);
 }
 
+.header__install-icon {
+  color: var(--accent-sky);
+  flex-shrink: 0;
+}
+
+.header__ghost-btn--install-ready {
+  border-color: rgba(56, 189, 248, 0.42);
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--text-primary);
+}
+
+.header__ghost-btn--install-ready .header__install-icon {
+  color: var(--accent-sky);
+}
+
+[data-theme="light"] .header__ghost-btn--install-ready {
+  border-color: rgba(2, 132, 199, 0.35);
+  background: rgba(56, 189, 248, 0.12);
+}
+
 .header__guide-icon {
   color: var(--text-muted);
   flex-shrink: 0;

@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Share2,
   Check,
+  Download,
 } from 'lucide-react';
 import VisitorCounter from './VisitorCounter';
 import {
@@ -38,6 +39,9 @@ export default function Header({
   meta,
   notices = [],
   onOpenNotice,
+  isInstallVisible = false,
+  canNativeInstall = false,
+  onOpenInstall,
 }) {
   const handleToggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -225,6 +229,25 @@ export default function Header({
           <HelpCircle size={14} className="header__guide-icon" />
           <span>안내</span>
         </button>
+
+        {isInstallVisible && onOpenInstall && (
+          <button
+            onClick={onOpenInstall}
+            type="button"
+            id="header-install-btn"
+            className={`header__ghost-btn ${
+              canNativeInstall ? 'header__ghost-btn--install-ready' : ''
+            }`}
+            title={
+              canNativeInstall
+                ? '현재 브라우저에서 전용 앱으로 설치하기'
+                : '브라우저 앱 설치(바탕화면·홈 화면 추가) 안내 보기'
+            }
+          >
+            <Download size={13} className="header__install-icon" />
+            <span>앱 설치</span>
+          </button>
+        )}
 
         <button
           onClick={handleToggleStorage}

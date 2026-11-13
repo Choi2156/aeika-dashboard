@@ -35,6 +35,7 @@ import {
   trackCarouselNavigation,
   trackShortsInlinePlay,
 } from '../utils/analytics';
+import '../styles/GanttView.css';
 
 function shuffleArray(array) {
   const arr = [...array];

@@ -7,7 +7,6 @@ import {
   Youtube,
   MapPin,
 } from 'lucide-react';
-import GanttBottomLayout from '../components/GanttBottomLayout';
 import {
   getTodayDateKST,
   diffDays,
@@ -735,7 +734,7 @@ export default function GanttView({
               style={{ width: `${gameColWidth}px`, minWidth: `${gameColWidth}px` }}
             >
               <span className="gantt-header-game-label">
-                {isMobile ? '게임 / 일정' : '게임 / 타임라인'}
+                게임 / 일정
               </span>
               {!isMobile && (
                 <div className="gantt-quick-nav" role="group" aria-label="타임라인 주간 빠른 이동">
@@ -968,7 +967,7 @@ export default function GanttView({
         </div>
       </div>
 
-      {/* ═══ Desktop Interactive Floating Hover Preview Tooltip ═══ */}
+      {/* Desktop Interactive Floating Hover Preview Tooltip */}
       {tooltipDetails && (
         <div
           className={`gantt-hover-tooltip ${
@@ -1012,18 +1011,6 @@ export default function GanttView({
           )}
         </div>
       )}
-
-      {/* ═══ 간트 차트 하단 영역 ═══ */}
-      <GanttBottomLayout
-        events={events}
-        gamesConfig={gamesConfig}
-        activeGames={activeGames}
-        onEventClick={onEventClick}
-        recommendedVideos={recommendedVideos}
-        notices={notices}
-        onOpenNotice={onOpenNotice}
-        isMobile={isMobile}
-      />
     </div>
   );
 }

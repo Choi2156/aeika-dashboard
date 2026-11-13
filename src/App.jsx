@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useScheduleData } from './hooks/useScheduleData';
+import { usePwaInstall } from './hooks/usePwaInstall';
 import { trackModalOpen, trackScheduleEventClick, trackNoticeTickerClick, trackCalendarOpen } from './utils/analytics';
 import Header from './components/Header';
 import GameFilterBar from './components/GameFilterBar';
@@ -7,6 +8,7 @@ import LiveBannerBoard from './components/LiveBannerBoard';
 import GanttView from './views/GanttView';
 import CalendarView from './views/CalendarView';
 import ListView from './views/ListView';
+import GanttBottomLayout from './components/GanttBottomLayout';
 import Footer from './components/Footer';
 import NoticeTickerBanner from './components/NoticeTickerBanner';
 import SectionErrorBoundary from './components/common/SectionErrorBoundary';
@@ -19,6 +21,7 @@ const LicenseModal = lazy(() => import('./components/LicenseModal'));
 const SupportModal = lazy(() => import('./components/SupportModal'));
 const NoticeModal = lazy(() => import('./components/NoticeModal'));
 const CalendarModal = lazy(() => import('./components/CalendarModal'));
+const InstallModal = lazy(() => import('./components/InstallModal'));
 
 import './styles/variables.css';
 import './styles/base.css';
@@ -72,8 +75,26 @@ export default function App() {
   const [isStorageConsentEnabled, setIsStorageConsentEnabled] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isInstallOpen, setIsInstallOpen] = useState(false);
   const [calendarModalTarget, setCalendarModalTarget] = useState({ year: null, month: null });
   const [jumpTodayTrigger, setJumpTodayTrigger] = useState(0);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
+
+  const {
+    isStandalone: isAppInstalled,
+    canNativePrompt,
+    platform: installPlatform,
+    triggerInstall,
+  } = usePwaInstall();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // 스크롤 스파이 (이력 현상 적용으로 경계 깜빡임 방지)
   const [isShrunk, setIsShrunk] = useState(false);
@@ -272,6 +293,16 @@ export default function App() {
     setJumpTodayTrigger((c) => c + 1);
   }, []);
 
+  const handleInstallAction = useCallback(async () => {
+    if (canNativePrompt) {
+      const result = await triggerInstall();
+      if (result?.outcome === 'accepted' || result?.outcome === 'dismissed') {
+        return;
+      }
+    }
+    setIsInstallOpen(true);
+  }, [canNativePrompt, triggerInstall]);
+
   return (
     <div ref={appRef} className="app" data-theme={theme}>
       <div className="app-ambient-aurora" aria-hidden="true" />
@@ -305,6 +336,9 @@ export default function App() {
         onViewChange={handleViewChange}
         notices={notices}
         onOpenNotice={handleOpenNotice}
+        isInstallVisible={!isAppInstalled}
+        canNativeInstall={canNativePrompt}
+        onOpenInstall={handleInstallAction}
       />
 
       <main className="main-content">
@@ -366,11 +400,7 @@ export default function App() {
                   <GanttView
                     events={events}
                     gamesConfig={gamesConfig}
-                    recommendedVideos={recommendedVideos}
-                    briefingData={briefingData}
                     activeGames={activeGames}
-                    notices={notices}
-                    onOpenNotice={handleOpenNotice}
                     onToggleGame={handleToggleGame}
                     onSelectAll={handleSelectAll}
                     onEventClick={handleEventClick}
@@ -400,6 +430,25 @@ export default function App() {
                 )}
               </div>
             </SectionErrorBoundary>
+
+            {(currentView === 'gantt' || currentView === 'calendar') && (
+              <SectionErrorBoundary
+                sectionName="GanttBottomLayout"
+                sectionTitle="추천 미디어 및 공지사항 영역을 불러오는 중 문제가 발생했습니다."
+                resetKey={Object.values(activeGames).join('')}
+              >
+                <GanttBottomLayout
+                  events={events}
+                  gamesConfig={gamesConfig}
+                  activeGames={activeGames}
+                  onEventClick={handleEventClick}
+                  recommendedVideos={recommendedVideos}
+                  notices={notices}
+                  onOpenNotice={handleOpenNotice}
+                  isMobile={isMobile}
+                />
+              </SectionErrorBoundary>
+            )}
           </div>
         )}
       </main>
@@ -420,6 +469,21 @@ export default function App() {
             isOpen={isGuideOpen}
             onClose={() => setIsGuideOpen(false)}
             patchNotes={patchNotes}
+            isAppInstalled={isAppInstalled}
+            onOpenInstall={() => {
+              setIsGuideOpen(false);
+              handleInstallAction();
+            }}
+          />
+        )}
+
+        {isInstallOpen && (
+          <InstallModal
+            isOpen={isInstallOpen}
+            onClose={() => setIsInstallOpen(false)}
+            canNativePrompt={canNativePrompt}
+            platform={installPlatform}
+            onNativeInstall={triggerInstall}
           />
         )}
 
