@@ -3,7 +3,7 @@ import ModalShell from './common/ModalShell';
 import '../styles/components.css';
 
 /**
- * LicenseModal — 저작권, 면책 조항 및 오픈소스/폰트 라이선스 상세 모달 (v2.0 ModalShell 통합)
+ * LicenseModal — 저작권, 면책 조항 및 오픈소스/폰트 라이선스 안내 모달 (v1.3.0)
  */
 export default function LicenseModal({ isOpen, onClose }) {
   return (
@@ -29,10 +29,10 @@ export default function LicenseModal({ isOpen, onClose }) {
             <div className="guide-sections">
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  1. 게임 자산 저작권 및 상표권 안내
+                  1. 게임 저작권 및 상표권 안내
                 </div>
                 <p className="guide-section-text">
-                  본 사이트에 사용된 모든 게임 캐릭터 이미지, 공식 아트워크, 아이콘, 로고 및 상표권에 대한 모든 지적재산권은 각 원제작사 및 공식 퍼블리셔에 귀속됩니다.
+                  대시보드에 사용된 캐릭터 이미지, 공식 아트워크, 아이콘 및 로고의 저작권과 상표권은 각 개발사 및 퍼블리셔에 있습니다.
                 </p>
                 <div className="disclaimer-copyrights">
                   <div>
@@ -44,26 +44,26 @@ export default function LicenseModal({ isOpen, onClose }) {
                   </div>
                 </div>
                 <p className="guide-section-text">
-                  본 대시보드는 게임 이용자의 편의를 위해 제작된 비영리·비공식 팬메이드 아카이브이며, 공식 게임사와 직접적인 제휴 관계가 없습니다.
+                  본 사이트는 이용자 편의를 위해 제작된 비영리 팬메이드 서비스로, 공식 게임사와 직접적인 제휴 관계가 없습니다.
                 </p>
               </div>
 
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  2. 일정 산출 기준 및 면책 조항
+                  2. 일정 산출 기준 및 면책 안내
                 </div>
                 <p className="guide-section-text">
-                  <strong>[확정]</strong> 표기 일정은 각 게임의 공식 라운지·카페·특별 방송 공지를 바탕으로 등록된 일정이며,{' '}
-                  <strong>[예상]</strong> 표기 일정은 각 게임의 통상 업데이트 주기를 기반으로 자동 산출된 추정치입니다.
+                  <strong>[확정]</strong> 일정은 각 게임의 공식 공지와 특별 방송을 바탕으로 등록하며,{' '}
+                  <strong>[예상]</strong> 일정은 통상 업데이트 주기를 기준으로 산출한 추정치입니다.
                 </p>
                 <p className="guide-section-text">
-                  개발사 사정에 따른 버전 단축·연장, 점검 시간 변경 또는 수기 입력 오차로 인해 실제 인게임 일정과 차이가 발생할 수 있으므로, 과금 및 주요 재화 소모 전에는 반드시 게임 내 공식 공지를 확인하시기 바랍니다.
+                  개발사 일정 변경이나 점검 시간 조정으로 실제 인게임 일정과 차이가 날 수 있으니, 과금이나 주요 재화 사용 전에는 게임 내 공식 공지를 꼭 확인해 주세요.
                 </p>
               </div>
 
               <div className="guide-section">
                 <div className="guide-section-heading">
-                  3. 오픈소스 소프트웨어 및 폰트 라이선스
+                  3. 오픈소스 및 폰트 라이선스
                 </div>
                 <ul className="guide-bullet-list">
                   <li>
@@ -82,9 +82,9 @@ export default function LicenseModal({ isOpen, onClose }) {
               </div>
 
               <div className="guide-section">
-                <div className="guide-section-heading">4. 후원 및 운영 안내</div>
+                <div className="guide-section-heading">4. 운영 및 후원 안내</div>
                 <p className="guide-section-text">
-                  본 서비스는 광고 없이 개인이 운영하는 무료 팬 사이트입니다. 후원은 별도의 유료 기능이나 대가가 따르지 않는 자발적 응원이며, 보내주신 후원금은 도메인·트래픽 및 아카이브 유지 관리에 사용됩니다.
+                  본 서비스는 광고 없이 운영하는 무료 팬 사이트입니다. 보내주신 자율 후원은 별도의 유료 기능이나 대가 없이 도메인·서버 유지 및 데이터 관리에 사용됩니다.
                 </p>
               </div>
             </div>

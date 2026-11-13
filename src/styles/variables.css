@@ -1,139 +1,156 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   variables.css — AEIKA ARCHIVE v2.0 Precision Utility Design System Tokens
-   Tactical Precision Archive (Dark: Deep Zinc Slate / Light: Crisp Paper)
+   variables.css — AEIKA ARCHIVE v1.3.0 Cinema Glass Portal Design System
+   Pure Deep Midnight Obsidian · Smoked Acrylic Glass · Zero Purple Cast
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* 1. Surfaces & Canvas (Dark Default) */
-  --bg-primary: #0b0e14;
-  --bg-secondary: #121722;
-  --bg-tertiary: #181f2e;
-  --bg-elevated: #1e2638;
-  --bg-card: #121722;
-  --bg-card-rgb: 18, 23, 34;
-  --bg-surface: rgba(18, 23, 34, 0.92);
+  /* 1. Surfaces & Canvas (Candidate A: Neutral Carbon-Obsidian · Zero Blue-Slate Cast) */
+  --bg-primary: #0b0c10;
+  --bg-secondary: #121319;
+  --bg-tertiary: #171921;
+  --bg-elevated: #20232d;
+  --bg-card: #13151c;
+  --bg-card-rgb: 19, 21, 28;
+  --bg-surface: rgba(20, 21, 28, 0.80);
+  --bg-glass-heavy: rgba(15, 16, 22, 0.92);
+
+  /* Dynamic Ambient Aurora Color (Updated dynamically by LiveBannerBoard) */
+  --aurora-primary: #6fe0b6;
+  --aurora-secondary: #8b5cf6;
 
   /* 2. Text Hierarchy (High-Contrast Crisp Legibility) */
-  --text-primary: #f8fafc;
+  --text-primary: #f4f4f6;
   --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-muted: #9ca3af;
+  --text-dim: #6b7280;
 
-  /* 3. Hairline Borders */
-  --border-primary: #222b3d;
-  --border-secondary: #2e3a52;
-  --border-subtle: rgba(46, 58, 82, 0.55);
+  /* 3. Specular Hairline Borders */
+  --border-primary: rgba(255, 255, 255, 0.085);
+  --border-secondary: rgba(255, 255, 255, 0.16);
+  --border-subtle: rgba(255, 255, 255, 0.045);
+  --border-specular: rgba(255, 255, 255, 0.13);
 
-  /* 4. Semantic Accents */
-  --accent-indigo: #6366f1;
-  --accent-indigo-light: #818cf8;
-  --accent-indigo-dark: #4f46e5;
-  --accent-indigo-glow: rgba(99, 102, 241, 0.16);
-  --accent-indigo-subtle: rgba(99, 102, 241, 0.1);
+  /* 4. Semantic Accents (Refined Cinema Emerald & Sky — Zero Purple Cast) */
+  --accent-indigo: #10b981;
+  --accent-indigo-light: #6ee7b7;
+  --accent-indigo-dark: #059669;
+  --accent-indigo-glow: rgba(16, 185, 129, 0.22);
+  --accent-indigo-subtle: rgba(16, 185, 129, 0.13);
   --accent-rose: #f43f5e;
   --accent-amber: #f59e0b;
   --accent-emerald: #10b981;
+  --accent-sky: #38bdf8;
 
   /* 5. Status Badges */
-  --badge-confirmed-bg: #4f46e5;
-  --badge-confirmed-text: #ffffff;
-  --badge-predicted-bg: rgba(51, 65, 85, 0.6);
+  --badge-confirmed-bg: #10b981;
+  --badge-confirmed-text: #05130d;
+  --badge-predicted-bg: rgba(30, 41, 59, 0.65);
   --badge-predicted-text: #cbd5e1;
-  --badge-predicted-border: #475569;
+  --badge-predicted-border: rgba(148, 163, 184, 0.45);
 
-  /* 6. Geometry & Radii */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
+  /* 6. Candidate A Squircle Geometry Scale */
+  --radius-sm: 6px;
+  --radius-md: 11px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
 
-  /* 7. Typography */
-  --font-sans: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  /* 7. Standardized Typography */
+  --font-sans: "Pretendard Variable", "Pretendard", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "Pretendard Variable", "Pretendard", "Inter", ui-monospace, SFMono-Regular, monospace;
 
-  /* 8. Motion & Shadows (Disciplined, No AI-Slop Neon Glows) */
-  --transition-fast: 140ms cubic-bezier(0.2, 0, 0, 1);
-  --transition-normal: 200ms cubic-bezier(0.2, 0, 0, 1);
-  --transition-slow: 280ms cubic-bezier(0.2, 0, 0, 1);
+  /* 8. Physics-Based Motion & Choreography Curves */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --transition-fast: 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-normal: 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-slow: 420ms cubic-bezier(0.16, 1, 0.3, 1);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.32), 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 12px 28px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.25);
+  --focus-ring: 0 0 0 2px rgba(110, 231, 183, 0.45);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 28px -4px rgba(0, 0, 0, 0.52), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 44px -8px rgba(0, 0, 0, 0.68), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.36);
 
   /* 9. Modal Tokens */
-  --modal-overlay-bg: rgba(6, 9, 15, 0.78);
-  --modal-body-bg: #141925;
-  --modal-body-border: #2a354b;
-  --modal-body-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.72);
+  --modal-overlay-bg: rgba(7, 8, 12, 0.74);
+  --modal-body-bg: rgba(18, 19, 25, 0.96);
+  --modal-body-border: rgba(255, 255, 255, 0.14);
+  --modal-body-shadow: 0 28px 60px -12px rgba(0, 0, 0, 0.8);
 }
 
-/* 게임별 시맨틱 컬러 토큰 */
+/* 5대 서브컬처 게임 저채도 시맨틱 컬러 토큰 (눈이 편안한 톤) */
 [data-game="원신"] {
   --game-color: #67dbed;
   --game-color-dark: #0e7490;
-  --game-text-on-bar: #0f172a;
+  --game-text-on-bar: #07090f;
 }
 [data-game="붕괴: 스타레일"] {
   --game-color: #9ca4f8;
   --game-color-dark: #4338ca;
-  --game-text-on-bar: #0f172a;
+  --game-text-on-bar: #07090f;
 }
 [data-game="젠레스 존 제로"] {
   --game-color: #ebd66b;
   --game-color-dark: #a16207;
-  --game-text-on-bar: #0f172a;
+  --game-text-on-bar: #07090f;
 }
 [data-game="명조"] {
   --game-color: #6fe0b6;
   --game-color-dark: #047857;
-  --game-text-on-bar: #0f172a;
+  --game-text-on-bar: #07090f;
 }
 [data-game="명일방주: 엔드필드"] {
   --game-color: #fcae74;
   --game-color-dark: #c2410c;
-  --game-text-on-bar: #0f172a;
+  --game-text-on-bar: #07090f;
 }
 
-/* ─── Light Theme (Crisp Paper Utility) ─── */
+/* ─── Light Theme (Soft Cool Mist Slate · Eye-Friendly Porcelain Layers) ─── */
 [data-theme="light"] {
-  --bg-primary: #f3f5f8;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f8fafc;
-  --bg-elevated: #f1f5f9;
-  --bg-card: #ffffff;
-  --bg-card-rgb: 255, 255, 255;
-  --bg-surface: rgba(255, 255, 255, 0.94);
+  --bg-primary: #e4eaf2;
+  --bg-secondary: #f2f5fa;
+  --bg-tertiary: #e9eff7;
+  --bg-elevated: #dce4f0;
+  --bg-card: #f3f6fb;
+  --bg-card-rgb: 243, 246, 251;
+  --bg-surface: rgba(243, 246, 251, 0.88);
+  --bg-glass-heavy: rgba(238, 243, 249, 0.95);
 
-  --text-primary: #0f172a;
+  --text-primary: #131c2e;
   --text-secondary: #334155;
   --text-muted: #475569;
   --text-dim: #64748b;
 
-  --border-primary: #dbe2ea;
-  --border-secondary: #cbd5e1;
-  --border-subtle: #e2e8f0;
+  --border-primary: #cbd6e4;
+  --border-secondary: #b4c3d6;
+  --border-subtle: rgba(100, 116, 139, 0.16);
+  --border-specular: rgba(255, 255, 255, 0.65);
 
-  --accent-indigo: #4f46e5;
-  --accent-indigo-light: #4338ca;
-  --accent-indigo-dark: #3730a3;
-  --accent-indigo-glow: rgba(79, 70, 229, 0.12);
-  --accent-indigo-subtle: rgba(79, 70, 229, 0.07);
+  --accent-indigo: #059669;
+  --accent-indigo-light: #047857;
+  --accent-indigo-dark: #065f46;
+  --accent-indigo-glow: rgba(5, 150, 105, 0.14);
+  --accent-indigo-subtle: rgba(5, 150, 105, 0.1);
   --accent-rose: #e11d48;
   --accent-amber: #d97706;
   --accent-emerald: #059669;
 
-  --badge-confirmed-bg: #4f46e5;
+  --badge-confirmed-bg: #059669;
   --badge-confirmed-text: #ffffff;
-  --badge-predicted-bg: #f1f5f9;
+  --badge-predicted-bg: #e7edf5;
   --badge-predicted-text: #334155;
   --badge-predicted-border: #94a3b8;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 3px 10px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
-  --shadow-xl: 0 10px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 8px 20px -4px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 16px 32px -6px rgba(15, 23, 42, 0.11), 0 4px 8px rgba(15, 23, 42, 0.05);
+  --shadow-hover: 0 10px 22px -4px rgba(15, 23, 42, 0.11), 0 2px 6px rgba(15, 23, 42, 0.05);
 
-  --modal-overlay-bg: rgba(15, 23, 42, 0.45);
-  --modal-body-bg: #ffffff;
-  --modal-body-border: #cbd5e1;
-  --modal-body-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.18);
+  --modal-overlay-bg: rgba(15, 23, 42, 0.42);
+  --modal-body-bg: #f3f6fb;
+  --modal-body-border: #c5d1e0;
+  --modal-body-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18);
 }

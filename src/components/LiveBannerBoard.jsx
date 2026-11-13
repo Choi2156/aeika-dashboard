@@ -1,26 +1,36 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock } from 'lucide-react';
-import { getCleanSummaryText } from '../utils/eventTextParser';
-import { getTodayStrKST, diffDays, getNowKSTParts } from '../utils/dateKST';
+import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock, Sparkles } from 'lucide-react';
+import {
+  getCleanSummaryText,
+  formatEventTypeLabel,
+  cleanEventDisplayTitle,
+} from '../utils/eventTextParser';
+import {
+  getTodayStrKST,
+  diffDays,
+  getNowKSTParts,
+  formatDisplayDate,
+} from '../utils/dateKST';
 import '../styles/components.css';
 
-// 원신 6.x 및 기타 서브컬처 게임 버전의 프리미엄 타이틀 포맷터 헬퍼
+// 원신 6.x 및 기타 서브컬처 게임 버전 타이틀 포맷터
 const getVersionFullTitle = (game, version, allEvents) => {
   if (!version) return '';
   const cleanVer = version.replace(' 후반', '').trim();
-  
+
   if (game === '원신' && cleanVer.match(/^6\.\d/)) {
     const match = cleanVer.match(/^6\.(\d)/);
     const minor = parseInt(match[1], 10);
-    const ordinals = ["첫", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
+    const ordinals = ['첫', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
     const ord = ordinals[minor] || `${minor + 1}`;
-    
+
     let subtitle = '???';
     if (allEvents) {
-      const mainEvent = allEvents.find(e => 
-        e.game === '원신' && 
-        e.type === '전반업데이트' && 
-        e.version.replace(' 후반', '').trim() === cleanVer
+      const mainEvent = allEvents.find(
+        (e) =>
+          e.game === '원신' &&
+          e.type === '전반업데이트' &&
+          e.version.replace(' 후반', '').trim() === cleanVer
       );
       if (mainEvent && mainEvent.title) {
         const subMatch = mainEvent.title.match(/-\s*「([^」]+)」/);
@@ -32,15 +42,15 @@ const getVersionFullTitle = (game, version, allEvents) => {
   }
 
   if (allEvents) {
-    const mainEvent = allEvents.find(e => 
-      e.game === game && 
-      e.type === '전반업데이트' && 
-      e.version.replace(' 후반', '').trim() === cleanVer
+    const mainEvent = allEvents.find(
+      (e) =>
+        e.game === game &&
+        e.type === '전반업데이트' &&
+        e.version.replace(' 후반', '').trim() === cleanVer
     );
     if (mainEvent && mainEvent.title) {
       let t = mainEvent.title;
       if (version.includes('후반')) {
-        // "3.3 버전 - ..." 형태에서 "버전"을 "버전 후반"으로 변경
         t = t.replace('버전', '버전 후반');
       }
       return t;
@@ -51,52 +61,43 @@ const getVersionFullTitle = (game, version, allEvents) => {
 };
 
 /**
- * 실시간 오늘의 라이브 소식 배너 캐러셀 (LiveBannerBoard)
- * PC 뷰에서 상단 필터바와 간트 차트 사이 공간에 와이드 형태로 렌더링됩니다.
- * 슬라이더 가로 깨짐 버그 완치 및 넷플릭스 스타일의 우측 이미지 페이드아웃 마스크 레이아웃이 적용되었습니다.
+ * 실시간 하이라이트 배너 캐러셀 (LiveBannerBoard v1.3.0)
+ * - 120px 슬림 높이 + 우측 55% 일러스트 자연스러운 다크 인디고 카드 블렌딩
+ * - 하단 5초 자동 전환 진행 바 (호버 시 일시정지)
  */
 export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEventClick }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayTimerRef = useRef(null);
 
-  // 1. 오늘 날짜 기준 (KST 0시 정렬 문자열)
   const todayStr = useMemo(() => getTodayStrKST(), []);
 
-  // 날짜 간 일수 차이 계산 헬퍼 (KST 기준)
   const getDaysDiff = (dateStr1, dateStr2) => {
     if (!dateStr1 || !dateStr2) return 999;
     return diffDays(dateStr1, dateStr2);
   };
 
-  // 2. 현재 진행 중이거나 7일 이내 도래할 일정 필터링 및 전후반 중복 제거
+  // 현재 진행 중이거나 7일 이내 도래할 주요 일정 필터링 (전·후반 중복 제거)
   const liveEvents = useMemo(() => {
     if (!events || events.length === 0) return [];
-    
+
     const activeCandidates = events.filter((ev) => {
       if (!ev.start_date) return false;
-      
-      // activeGames 필터링 추가
       if (activeGames && activeGames[ev.game] === false) {
         return false;
       }
-      
-      // A. 현재 진행 중인 일정
       if (ev.end_date && todayStr >= ev.start_date && todayStr <= ev.end_date) {
         return true;
       }
-      
-      // B. 다가오는 7일 이내의 일정 (D-7 ~ D-1)
       const diff = getDaysDiff(todayStr, ev.start_date);
       if (diff > 0 && diff <= 7) {
         return true;
       }
-      
       return false;
     });
 
     const filtered = [];
-    const cleanVersion = (v) => v ? v.replace(/\s*후반.*$/, '').trim() : '';
+    const cleanVersion = (v) => (v ? v.replace(/\s*후반.*$/, '').trim() : '');
 
     activeCandidates.forEach((ev) => {
       if (ev.type !== '전반업데이트' && ev.type !== '후반업데이트') {
@@ -124,7 +125,7 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
     return filtered;
   }, [events, todayStr, activeGames]);
 
-  // 3. 오토 플레이 제어
+  // 5초 자동 슬라이드 제어 (호버 시 정지)
   useEffect(() => {
     if (liveEvents.length <= 1 || isHovered) {
       if (autoPlayTimerRef.current) {
@@ -142,9 +143,8 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
         clearInterval(autoPlayTimerRef.current);
       }
     };
-  }, [liveEvents, isHovered]);
+  }, [liveEvents.length, isHovered, currentIndex]);
 
-  // 3-2. liveEvents 배열 축소 시 currentIndex가 범위를 초과하지 않도록 바운드 제어
   useEffect(() => {
     if (liveEvents.length === 0) {
       setCurrentIndex(0);
@@ -153,7 +153,6 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
     }
   }, [liveEvents.length, currentIndex]);
 
-  // 수동 제어 핸들러
   const handlePrev = (e) => {
     if (e) e.stopPropagation();
     setCurrentIndex((prev) => (prev - 1 + liveEvents.length) % liveEvents.length);
@@ -164,7 +163,6 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
     setCurrentIndex((prev) => (prev + 1) % liveEvents.length);
   };
 
-  // 모바일 터치 스와이프 제어 헬퍼
   const touchStartXRef = useRef(null);
   const handleTouchStart = (e) => {
     touchStartXRef.current = e.touches[0].clientX;
@@ -182,112 +180,103 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
     touchStartXRef.current = null;
   };
 
-  // 일정 타입별 배너 타이틀/뱃지 텍스트 파싱 (D-Day 연산 및 표시 내용 뱃지 정밀 분기)
   const getBannerMeta = (ev) => {
     const isFixed = ev.is_fixed === true;
     const diff = getDaysDiff(todayStr, ev.start_date);
+    const diffEnd = ev.end_date ? getDaysDiff(todayStr, ev.end_date) : 0;
     const isUpcoming = diff > 0 && diff <= 7;
-    
-    let badgeText = isFixed ? 'LIVE' : '예측 라이브';
+
+    let badgeText = isFixed ? 'LIVE' : '예상';
     let titleText = '';
     let actionIcon = <Play size={11} />;
+    const typeLabel = formatEventTypeLabel(ev.type);
+    const cleanedRawTitle = cleanEventDisplayTitle(ev.title, ev.game);
 
-    // 이벤트/오프라인 타이틀을 감싸는 헬퍼 (중복 브래킷 방지)
-    const cleanEventTitle = (title) => {
-      if (!title) return '';
-      return title.startsWith('[') ? title : `[${title}]`;
-    };
+    const periodText =
+      ev.end_date && ev.end_date !== ev.start_date && ev.type !== '공식방송'
+        ? `${formatDisplayDate(ev.start_date, false)} ~ ${formatDisplayDate(ev.end_date, false)}`
+        : `${formatDisplayDate(ev.start_date, true)}${ev.time ? ` ${ev.time}` : ''}`;
 
-    // D-Day 다가오는 스케줄의 경우 표시 내용 정밀 분기
     if (isUpcoming) {
       badgeText = `D-${diff}`;
       actionIcon = <Clock size={11} />;
-      
+
       if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
         const fullVer = getVersionFullTitle(ev.game, ev.version, events);
-        titleText = `${ev.game} ${fullVer} 업데이트 예정 (${badgeText})`;
+        titleText = `${fullVer} 업데이트 예정`;
       } else if (ev.type === '공식방송') {
-        titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 예정 (${badgeText})`;
+        titleText = cleanedRawTitle || `v${ev.version || '?'} 특별 방송 예정`;
       } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
-        titleText = `${cleanEventTitle(ev.title)} 예정 (${badgeText})`;
+        titleText = `${cleanedRawTitle} 오픈 예정`;
       } else {
-        titleText = `${ev.game} [${ev.title}] 예정 (${badgeText})`;
+        titleText = `${cleanedRawTitle} 예정`;
       }
     } else {
-      // 기존 진행 중인 LIVE 스펙 보존
+      if (diffEnd > 0 && ev.type !== '공식방송') {
+        badgeText = `진행 중 · ${diffEnd}일 남음`;
+      } else if (diffEnd === 0 && ev.end_date === todayStr) {
+        badgeText = '오늘 종료';
+      }
+
       if (ev.banner_text) {
-        titleText = ev.banner_text;
-      } else {
-        if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
-          const fullVer = getVersionFullTitle(ev.game, ev.version, events);
-          titleText = `${ev.game} ${fullVer} 진행 중`;
-        } else if (ev.type === '공식방송') {
-          if (ev.start_date === todayStr) {
-            // 오늘 진행되는 공식 방송인 경우 실시간 KST 시간에 따른 표기 분기
-            const { hour: currentHour, minute: currentMinute } = getNowKSTParts();
-            
-            if (ev.time) {
-              const [sh, sm] = ev.time.split(':').map(Number);
-              const hasStarted = (currentHour > sh) || (currentHour === sh && currentMinute >= sm);
-              
-              if (hasStarted) {
-                badgeText = isFixed ? 'STREAMING' : '방송 예정';
-                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중`;
-                actionIcon = <Volume2 size={11} />;
-              } else {
-                badgeText = 'TODAY';
-                titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 ${ev.time} 진행 예정`;
-                actionIcon = <Clock size={11} />;
-              }
+        titleText = cleanEventDisplayTitle(ev.banner_text, ev.game);
+      } else if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
+        const fullVer = getVersionFullTitle(ev.game, ev.version, events);
+        titleText = fullVer;
+      } else if (ev.type === '공식방송') {
+        if (ev.start_date === todayStr) {
+          const { hour: currentHour, minute: currentMinute } = getNowKSTParts();
+          if (ev.time) {
+            const [sh, sm] = ev.time.split(':').map(Number);
+            const hasStarted = currentHour > sh || (currentHour === sh && currentMinute >= sm);
+            if (hasStarted) {
+              badgeText = isFixed ? 'ON AIR' : '방송 예정';
+              titleText = cleanedRawTitle || `v${ev.version || '?'} 특별 방송 진행 중`;
+              actionIcon = <Volume2 size={11} />;
             } else {
-              badgeText = 'TODAY';
-              titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 오늘 진행`;
+              badgeText = `오늘 ${ev.time}`;
+              titleText = cleanedRawTitle || `v${ev.version || '?'} 특별 방송`;
               actionIcon = <Clock size={11} />;
             }
           } else {
-            badgeText = isFixed ? 'STREAMING' : '방송 예정';
-            titleText = `${ev.game} ${ev.version || '?'}버전 특별 방송 진행 중`;
-            actionIcon = <Volume2 size={11} />;
+            badgeText = 'TODAY';
+            titleText = cleanedRawTitle || `v${ev.version || '?'} 특별 방송`;
+            actionIcon = <Clock size={11} />;
           }
-        } else if (ev.type === '오프라인이벤트' || ev.type === '행사') {
-          badgeText = isFixed ? 'EVENT' : '행사 예정';
-          titleText = `${cleanEventTitle(ev.title)} 진행 중`;
-          actionIcon = <Info size={11} />;
         } else {
-          titleText = `${ev.game} [${ev.title}] 진행 중`;
+          badgeText = isFixed ? 'ON AIR' : '방송 예정';
+          titleText = cleanedRawTitle || `v${ev.version || '?'} 특별 방송`;
+          actionIcon = <Volume2 size={11} />;
         }
+      } else {
+        titleText = cleanedRawTitle || `${ev.game} 주요 일정`;
       }
     }
 
-    return { badgeText, titleText, actionIcon };
+    return { badgeText, titleText, actionIcon, typeLabel, periodText, isFixed };
   };
 
-  const getDisplayTypeName = (ev) => {
-    if (ev.type === '공식방송') return '공식방송';
-    if (ev.type === '후반업데이트') return '후반업데이트';
-    if (ev.type === '전반업데이트') return '전반업데이트';
-    return ev.type;
-  };
+  const activeEvent = liveEvents[currentIndex] || liveEvents[0] || null;
+  const activeColor = gamesConfig?.[activeEvent?.game]?.theme?.color || '#6fe0b6';
 
-  // 라이브 일정이 없을 때의 고품격 웰컴 배너 (비수기 디폴트 배너)
+  useEffect(() => {
+    if (typeof document !== 'undefined' && activeColor) {
+      document.documentElement.style.setProperty('--aurora-primary', activeColor);
+    }
+  }, [activeColor]);
+
   if (liveEvents.length === 0) {
     return (
-      <div 
-        className="live-banner-board live-banner-board--welcome"
-        style={{
-          background: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)',
-          borderColor: 'rgba(99, 102, 241, 0.2)'
-        }}
-      >
+      <div className="live-banner-board live-banner-board--welcome">
         <div className="live-banner-board__glow" />
         <div className="live-banner-board__content">
           <div className="welcome-badge">
-            <Info size={12} />
-            <span>안내</span>
+            <Sparkles size={12} />
+            <span>SPOTLIGHT STANDBY</span>
           </div>
-          <h2 className="welcome-title">현재 진행 중인 주요 일정이 없습니다.</h2>
+          <h2 className="welcome-title">선택된 게임의 진행 중이거나 임박한 하이라이트 일정이 없습니다</h2>
           <p className="welcome-subtitle">
-            다가오는 업데이트와 공식 방송 일정은 아래 타임라인에서 확인하실 수 있습니다.
+            아래 게임 필터에서 게임을 활성화하거나 타임라인에서 전체 일정을 확인해 보세요.
           </p>
         </div>
       </div>
@@ -301,34 +290,40 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      title="클릭하여 상세 정보 팝업 보기"
+      style={{
+        '--active-banner-color': activeColor,
+      }}
+      title="클릭하여 일정 상세 보기"
     >
-      {/* 1. 슬라이더 가로 트랙 레일 (자식 크기가 width: 100% 이고 고정 너비로 슬라이딩) */}
-      <div 
+      {/* 1. 슬라이더 가로 트랙 */}
+      <div
         className="live-banner-track"
-        style={{ 
-          transform: `translateX(-${currentIndex * 100}%)`,
-          width: '100%'
+        style={{
+          transform: `translate3d(-${currentIndex * 100}%, 0, 0)`,
+          width: '100%',
         }}
       >
         {liveEvents.map((ev, idx) => {
-          const { badgeText, titleText, actionIcon } = getBannerMeta(ev);
-          const displayType = getDisplayTypeName(ev);
-          const color = gamesConfig?.[ev.game]?.theme?.color || '#818cf8';
-          const imgSrc = ev.custom_img 
-            ? `./assets/${ev.custom_img}` 
+          const isSlideActive = idx === currentIndex;
+          const { badgeText, titleText, actionIcon, typeLabel, periodText, isFixed } =
+            getBannerMeta(ev);
+          const displayType = formatEventTypeLabel(ev.type);
+          const color = gamesConfig?.[ev.game]?.theme?.color || '#6fe0b6';
+          const gameIcon = gamesConfig?.[ev.game]?.icon;
+          const imgSrc = ev.custom_img
+            ? `./assets/${ev.custom_img}`
             : gamesConfig?.[ev.game]?.defaultImg;
 
           return (
             <div
               key={ev.id || `slide-${idx}`}
-              className="live-banner-slide"
+              className={`live-banner-slide ${isSlideActive ? 'live-banner-slide--active' : ''}`}
               onClick={() => onEventClick?.(ev, displayType, 'live_banner')}
               style={{
                 '--banner-theme-color': color,
               }}
             >
-              {/* 우측 이미지 컨테이너 (왼쪽으로 자연스럽게 녹아내리는 페이드아웃 마스크 장착) */}
+              {/* 우측 62% 일러스트 영역 (--bg-card 부드러운 블렌딩 마스크) */}
               <div className="live-banner-slide__img-container">
                 <img src={imgSrc} alt={ev.title} className="live-banner-slide__img" />
                 <div className="live-banner-slide__img-mask" />
@@ -339,30 +334,55 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
                 )}
               </div>
 
-              {/* 장식용 그라데이션 보더 광채 */}
-              <div 
-                className="live-banner-board__glow" 
-                style={{ boxShadow: `0 0 25px rgba(${hexToRgb(color)}, 0.08)` }} 
+              <div
+                className="live-banner-board__glow"
+                style={{ boxShadow: `inset 0 0 42px rgba(${hexToRgb(color)}, 0.14)` }}
               />
 
-              {/* 좌측 콘텐츠 텍스트 정보판 (z-index 및 max-width로 가독성 가림막 차단) */}
+              {/* 좌측 에디토리얼 텍스트 정보 영역 */}
               <div className="live-banner-board__content">
                 <div className="live-banner-meta-row">
-                  <div className="live-banner-badge" style={{ backgroundColor: color, color: '#0f172a' }}>
+                  <span
+                    className="live-banner-game-badge"
+                    style={{
+                      backgroundColor: color,
+                      color: '#07090f',
+                    }}
+                  >
+                    {gameIcon && (
+                      <img
+                        src={gameIcon}
+                        alt=""
+                        className="live-banner-game-badge__icon"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span>{ev.game}</span>
+                  </span>
+
+                  <span className="live-banner-type-pill">
+                    {typeLabel}
+                    {!isFixed && ' · 예상'}
+                  </span>
+
+                  <div
+                    className="live-banner-badge"
+                    style={{
+                      borderColor: `rgba(${hexToRgb(color)}, 0.45)`,
+                      color: color,
+                    }}
+                  >
                     {actionIcon}
                     <span>{badgeText}</span>
                   </div>
-                  <span className="live-banner-game-badge" style={{ borderColor: color, color: color }}>
-                    {ev.game}
-                  </span>
+
+                  <span className="live-banner-period-pill">{periodText}</span>
                 </div>
 
                 <h2 className="live-banner-title">{titleText}</h2>
-                
+
                 {ev.detail && (
-                  <p className="live-banner-detail">
-                    {getCleanSummaryText(ev.detail, 110)}
-                  </p>
+                  <p className="live-banner-detail">{getCleanSummaryText(ev.detail, 115)}</p>
                 )}
               </div>
             </div>
@@ -370,59 +390,92 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
         })}
       </div>
 
-      {/* 2. 네비게이션 버튼 (슬라이더 트랙 바깥 고정 오버레이) */}
+      {/* 2. 우하단 통합 글래스 컨트롤 독 (화살표가 좌측 텍스트나 캐릭터 얼굴을 가리지 않음) */}
       {liveEvents.length > 1 && (
-        <>
-          <button 
-            className="live-banner-nav live-banner-nav--prev" 
+        <div
+          className="live-banner-hud"
+          onClick={(e) => e.stopPropagation()}
+          role="group"
+          aria-label="배너 슬라이드 컨트롤"
+        >
+          <button
+            className="live-banner-hud__arrow"
             onClick={handlePrev}
             type="button"
             aria-label="이전 소식"
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={14} />
           </button>
-          <button 
-            className="live-banner-nav live-banner-nav--next" 
+
+          <div className="live-banner-indicators" role="tablist" aria-label="배너 슬라이드 선택">
+            {liveEvents.map((ev, idx) => {
+              const color = gamesConfig?.[ev.game]?.theme?.color || '#6fe0b6';
+              const isAct = idx === currentIndex;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  role="tab"
+                  aria-selected={isAct}
+                  aria-label={`${ev.game} 슬라이드 ${idx + 1}`}
+                  className={`live-banner-dot ${isAct ? 'live-banner-dot--active' : ''}`}
+                  style={{
+                    '--dot-color': color,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentIndex(idx);
+                  }}
+                >
+                  {isAct && (
+                    <span
+                      className={`live-banner-dot__fill ${
+                        isHovered ? 'live-banner-dot__fill--paused' : ''
+                      }`}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <span className="live-banner-hud__counter">
+            {String(currentIndex + 1).padStart(2, '0')} / {String(liveEvents.length).padStart(2, '0')}
+          </span>
+
+          <button
+            className="live-banner-hud__arrow"
             onClick={handleNext}
             type="button"
             aria-label="다음 소식"
           >
-            <ChevronRight size={16} />
+            <ChevronRight size={14} />
           </button>
-        </>
+        </div>
       )}
 
-      {/* 3. 점형 인디케이터 */}
+      {/* 3. 5초 자동 전환 하단 진행 바 (호버 시 일시정지) */}
       {liveEvents.length > 1 && (
-        <div className="live-banner-indicators">
-          {liveEvents.map((ev, idx) => {
-            const color = gamesConfig?.[ev.game]?.theme?.color || '#818cf8';
-            return (
-              <span
-                key={idx}
-                className={`live-banner-dot ${idx === currentIndex ? 'live-banner-dot--active' : ''}`}
-                style={{
-                  backgroundColor: idx === currentIndex ? color : undefined,
-                  opacity: idx === currentIndex ? 1 : 0.35
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentIndex(idx);
-                }}
-              />
-            );
-          })}
+        <div className="live-banner-progress" aria-hidden="true">
+          <div
+            key={currentIndex}
+            className={`live-banner-progress__bar ${
+              isHovered ? 'live-banner-progress__bar--paused' : ''
+            }`}
+            style={{
+              '--progress-color': activeColor,
+            }}
+          />
         </div>
       )}
     </div>
   );
 }
 
-// 테마 컬러 광채 처리를 위한 HEX ➔ RGB 파서 유틸리티
 function hexToRgb(hex) {
-  const c = hex.replace('#', '');
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
+  const c = (hex || '#818cf8').replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16) || 129;
+  const g = parseInt(c.substring(2, 4), 16) || 140;
+  const b = parseInt(c.substring(4, 6), 16) || 248;
   return `${r}, ${g}, ${b}`;
 }

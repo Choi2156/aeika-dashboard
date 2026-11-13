@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   NoticeTickerBanner.css — Slim Top Notice Bar (v2.0)
+   NoticeTickerBanner.css — Sleek Smoked-Glass Top Notice Ribbon (v1.3.0)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .notice-ticker-banner {
@@ -11,19 +11,34 @@
 .notice-ticker-banner__inner {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(18, 23, 34, 0.55);
-  border: 1px solid var(--border-subtle);
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  gap: 10px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  background: rgba(14, 18, 28, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-primary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast),
+    transform var(--transition-fast), box-shadow var(--transition-fast);
   overflow: hidden;
 }
 
+[data-theme="light"] .notice-ticker-banner__inner {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-sm);
+}
+
 .notice-ticker-banner:hover .notice-ticker-banner__inner {
-  border-color: var(--accent-indigo);
+  border-color: rgba(110, 231, 183, 0.4);
   background: var(--bg-tertiary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.notice-ticker-banner:active .notice-ticker-banner__inner {
+  transform: translateY(0) scale(0.996);
 }
 
 .notice-ticker-banner__badge-group {
@@ -35,6 +50,7 @@
 
 .notice-ticker-banner__icon {
   color: var(--accent-indigo-light);
+  flex-shrink: 0;
 }
 
 .notice-ticker-banner__content {
@@ -47,19 +63,19 @@
 }
 
 .notice-ticker-banner__title {
-  font-size: 0.78rem;
+  font-size: 0.77rem;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 280ms var(--ease-spring), opacity 280ms ease;
   transform: translateY(0);
   opacity: 1;
 }
 
 .notice-ticker-banner__title--sliding {
-  transform: translateY(-6px);
+  transform: translateY(-8px);
   opacity: 0;
 }
 
@@ -71,11 +87,12 @@
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-muted);
-  transition: color var(--transition-fast);
+  transition: color var(--transition-fast), transform var(--transition-fast);
 }
 
 .notice-ticker-banner:hover .notice-ticker-banner__action {
   color: var(--accent-indigo-light);
+  transform: translateX(2px);
 }
 
 @media (max-width: 768px) {

@@ -4,6 +4,38 @@ import NoticeCategoryBadge from './NoticeCategoryBadge';
 import ModalShell from './common/ModalShell';
 import '../styles/NoticeModal.css';
 
+function renderNoticeLine(rawLine, idx) {
+  const trimmed = (rawLine || '').trim();
+  if (!trimmed) {
+    return <div key={idx} className="notice-body-spacer" aria-hidden="true" />;
+  }
+  if (trimmed.startsWith('■')) {
+    return (
+      <h4 key={idx} className="notice-body-heading">
+        {trimmed.replace(/^■\s*/, '')}
+      </h4>
+    );
+  }
+  if (/^\d+\.\s+/.test(trimmed)) {
+    return (
+      <div key={idx} className="notice-body-subhead">
+        {trimmed}
+      </div>
+    );
+  }
+  if (/^[•-]\s+/.test(trimmed)) {
+    return (
+      <div key={idx} className="notice-body-bullet">
+        <span className="notice-body-bullet__dot" aria-hidden="true">
+          •
+        </span>
+        <span>{trimmed.replace(/^[•-]\s+/, '')}</span>
+      </div>
+    );
+  }
+  return <p key={idx}>{trimmed}</p>;
+}
+
 function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
   const [activeNoticeId, setActiveNoticeId] = useState(null);
 
@@ -47,7 +79,7 @@ function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
           <div className="notice-modal-body">
             <aside className="notice-modal-sidebar">
               <div className="notice-modal-sidebar__header">
-                <span>전체 공지 목록 ({notices.length})</span>
+                <span>전체 공지 ({notices.length})</span>
               </div>
               <ul className="notice-modal-list">
                 {notices.map((item) => {
@@ -109,9 +141,9 @@ function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
                   )}
 
                   <div className="notice-detail-content__body">
-                    {currentActive.content.split('\n').map((line, idx) => (
-                      <p key={idx}>{line || '\u00A0'}</p>
-                    ))}
+                    {(currentActive.content || '')
+                      .split('\n')
+                      .map((line, idx) => renderNoticeLine(line, idx))}
                   </div>
 
                   {currentActive.link && (
@@ -122,7 +154,7 @@ function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
                         rel="noopener noreferrer"
                         className="notice-detail-link-btn"
                       >
-                        <span>관련 링크 바로가기</span>
+                        <span>관련 공지 원문 보기</span>
                         <ExternalLink size={14} />
                       </a>
                     </div>
@@ -130,7 +162,7 @@ function NoticeModal({ isOpen, onClose, notices = [], selectedNotice = null }) {
                 </article>
               ) : (
                 <div className="notice-detail-empty">
-                  <p>선택된 공지사항이 없습니다.</p>
+                  <p>등록된 공지사항이 없습니다.</p>
                 </div>
               )}
             </main>

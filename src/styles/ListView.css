@@ -1,5 +1,5 @@
 /* ============================================================
-   ListView.css — v1.2.8 Vertical Timeline + Right Gradient Mask Card (v2.1)
+   ListView.css — v1.3.0 Cinema Glass Vertical Timeline + 48% Gradient Illustration Card
    ============================================================ */
 
 .list-view {
@@ -35,7 +35,9 @@
   padding: 0 12px;
   border-radius: 9999px;
   border: 1px solid var(--border-primary);
-  background: var(--bg-secondary);
+  background: var(--bg-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   color: var(--text-secondary);
   font-family: inherit;
   font-size: 0.73rem;
@@ -49,6 +51,29 @@
   border-color: var(--accent-indigo);
   color: var(--accent-indigo-light);
   background: var(--accent-indigo-subtle);
+}
+
+.list-view__past-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.list-view__past-reset-btn:hover {
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .list-view__search-box {
@@ -72,16 +97,19 @@
   padding: 0 28px 0 30px;
   border-radius: 9999px;
   border: 1px solid var(--border-primary);
-  background: var(--bg-secondary);
+  background: var(--bg-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   color: var(--text-primary);
   font-family: inherit;
   font-size: 0.74rem;
   outline: none;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .list-view__search-input:focus {
   border-color: var(--accent-indigo);
+  box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.16);
 }
 
 .list-view__search-clear {
@@ -112,8 +140,8 @@
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(148, 163, 184, 0.25) 3%,
-    rgba(148, 163, 184, 0.25) 97%,
+    rgba(255, 255, 255, 0.14) 3%,
+    rgba(255, 255, 255, 0.14) 97%,
     transparent 100%
   );
   z-index: 0;
@@ -126,6 +154,19 @@
   gap: 0;
   position: relative;
   z-index: 1;
+  animation: listRowReveal 380ms var(--ease-out-expo) backwards;
+  animation-delay: calc(var(--row-idx, 0) * 32ms);
+}
+
+@keyframes listRowReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Left column: date + connector ────────────────────────── */
@@ -142,9 +183,9 @@
 .list-view__date {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 0.81rem;
   color: var(--text-primary);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -156,7 +197,7 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: #fde047;
   margin-top: 2px;
 }
 
@@ -165,8 +206,8 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #1e293b;
-  border: 2px solid #475569;
+  background: var(--bg-secondary);
+  border: 2.5px solid var(--border-secondary);
   margin-top: 8px;
   position: relative;
   z-index: 2;
@@ -174,9 +215,9 @@
 }
 
 .list-view__row--today .list-view__dot {
-  background: #6366f1;
-  border-color: #818cf8;
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.55);
+  background: #10b981;
+  border-color: #6ee7b7;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.55);
 }
 
 /* ── Right column: event card ─────────────────────────────── */
@@ -191,29 +232,32 @@
   position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
   cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-sm);
+  transition: border-color 240ms var(--ease-out-expo),
+    transform 240ms var(--ease-spring),
+    box-shadow 240ms var(--ease-out-expo);
   overflow: hidden;
 }
 
 .list-view__card:hover {
-  border-color: var(--border-secondary);
-  transform: translateY(-1.5px);
-  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), var(--shadow-lg);
 }
 
 .list-view__card--today {
-  border-color: rgba(99, 102, 241, 0.55);
-  box-shadow: 0 0 16px rgba(99, 102, 241, 0.14);
+  border-color: rgba(16, 185, 129, 0.55);
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.15);
 }
 
 /* ── Card header row ──────────────────────────────────────── */
 .list-view__card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   margin-bottom: 6px;
   flex-wrap: wrap;
 }
@@ -226,7 +270,7 @@
   font-size: 0.675rem;
   font-weight: 800;
   letter-spacing: 0.02em;
-  color: #0f172a;
+  color: #07090f;
   white-space: nowrap;
 }
 
@@ -234,7 +278,41 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--text-secondary);
+}
+
+.list-view__type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.list-view__type-badge--update {
+  background: rgba(110, 231, 183, 0.14);
+  border: 1px solid rgba(110, 231, 183, 0.34);
+  color: #6ee7b7;
+}
+
+.list-view__type-badge--half {
+  background: rgba(56, 189, 248, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #bae6fd;
+}
+
+.list-view__type-badge--stream {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.42);
+  color: #fecaca;
+}
+
+.list-view__type-badge--offline {
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.42);
+  color: #e0f2fe;
 }
 
 .list-view__status-badge {
@@ -248,27 +326,58 @@
 }
 
 .list-view__status-badge--confirmed {
-  background: rgba(99, 102, 241, 0.85);
-  color: #e0e7ff;
+  background: var(--accent-indigo-subtle);
+  color: var(--accent-indigo-light);
+  border: 1px solid rgba(110, 231, 183, 0.32);
 }
 
 .list-view__status-badge--predicted {
-  background: rgba(51, 65, 85, 0.65);
+  background: rgba(24, 31, 46, 0.8);
   color: #cbd5e1;
-  border: 1px dashed rgba(100, 116, 139, 0.6);
+  border: 1px dashed rgba(148, 163, 184, 0.55);
 }
 
+.list-view__dday-pill,
 .list-view__today-badge {
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
-  border-radius: 6px;
-  font-size: 0.6rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, #6366f1, #818cf8);
-  color: #fff;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.list-view__dday-pill--today,
+.list-view__today-badge {
+  background: linear-gradient(135deg, #10b981, #6ee7b7);
+  color: #07090f;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+}
+
+.list-view__dday-pill--imminent {
+  background: rgba(244, 63, 94, 0.2);
+  border: 1px solid rgba(244, 63, 94, 0.48);
+  color: #fda4af;
+}
+
+.list-view__dday-pill--upcoming {
+  background: var(--accent-indigo-subtle);
+  border: 1px solid rgba(110, 231, 183, 0.34);
+  color: var(--accent-indigo-light);
+}
+
+.list-view__dday-pill--ongoing {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.42);
+  color: #6ee7b7;
+}
+
+.list-view__dday-pill--past {
+  background: rgba(24, 31, 46, 0.55);
+  color: var(--text-muted);
 }
 
 /* ── Card body text ───────────────────────────────────────── */
@@ -374,8 +483,8 @@
 
 /* ── Stream & Offline Special Card Accents ────────────────── */
 .list-view__card--stream {
-  background: linear-gradient(135deg, rgba(38, 33, 15, 0.78), rgba(18, 23, 34, 0.85)) !important;
-  border-color: rgba(250, 204, 21, 0.45) !important;
+  background: linear-gradient(135deg, rgba(28, 25, 18, 0.9), rgba(15, 19, 30, 0.95)) !important;
+  border-color: rgba(250, 204, 21, 0.42) !important;
 }
 
 .list-view__card--stream .list-view__title {
@@ -385,19 +494,19 @@
 .list-view__card--stream .list-view__card-bg-mask {
   background: linear-gradient(
     to right,
-    #1f1b10 0%,
-    rgba(31, 27, 16, 0.45) 55%,
+    #14151c 0%,
+    rgba(20, 21, 28, 0.45) 55%,
     transparent 100%
   );
 }
 
 .list-view__card--offline {
-  background: linear-gradient(135deg, rgba(29, 21, 56, 0.78), rgba(18, 23, 34, 0.85)) !important;
-  border-color: rgba(139, 92, 246, 0.45) !important;
+  background: linear-gradient(135deg, rgba(16, 26, 38, 0.9), rgba(15, 19, 30, 0.95)) !important;
+  border-color: rgba(56, 189, 248, 0.42) !important;
 }
 
 .list-view__card--offline .list-view__title {
-  color: #ddd6fe !important;
+  color: #e0f2fe !important;
 }
 
 /* ── TODAY Marker Row ─────────────────────────────────────── */
@@ -422,8 +531,8 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #818cf8);
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.55);
+  background: linear-gradient(135deg, #10b981, #6ee7b7);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.55);
   position: relative;
   z-index: 2;
 }
@@ -435,8 +544,8 @@
 }
 
 .list-view__today-marker-card {
-  background: linear-gradient(135deg, rgba(30, 27, 75, 0.82), rgba(15, 23, 42, 0.5));
-  border: 1px solid rgba(99, 102, 241, 0.45);
+  background: linear-gradient(135deg, rgba(18, 25, 36, 0.92), rgba(14, 18, 28, 0.78));
+  border: 1px solid rgba(16, 185, 129, 0.45);
   border-radius: 12px;
   padding: 9px 16px;
   display: flex;
@@ -448,20 +557,20 @@
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: #818cf8;
+  color: var(--accent-indigo-light);
 }
 
 .list-view__today-marker-date {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .list-view__today-marker-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(to right, rgba(99, 102, 241, 0.45), transparent);
+  background: linear-gradient(to right, rgba(16, 185, 129, 0.42), transparent);
 }
 
 /* ── Empty State ──────────────────────────────────────────── */
@@ -483,46 +592,46 @@
 
 /* ── Light Mode Overrides ─────────────────────────────────── */
 [data-theme="light"] .list-view__card {
-  background: #ffffff;
-  border-color: #cbd5e1;
+  background: var(--bg-card);
+  border-color: var(--border-primary);
 }
 
 [data-theme="light"] .list-view__card--stream {
-  background: linear-gradient(135deg, rgba(254, 240, 138, 0.25), #ffffff) !important;
-  border-color: rgba(234, 179, 8, 0.4) !important;
+  background: linear-gradient(135deg, rgba(254, 240, 138, 0.28), #f3f6fb) !important;
+  border-color: rgba(217, 119, 6, 0.36) !important;
 }
 
 [data-theme="light"] .list-view__card--stream .list-view__title {
-  color: #713f12 !important;
+  color: #78350f !important;
 }
 
 [data-theme="light"] .list-view__card--offline {
-  background: linear-gradient(135deg, rgba(237, 233, 254, 0.35), #ffffff) !important;
-  border-color: rgba(139, 92, 246, 0.35) !important;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), #f3f6fb) !important;
+  border-color: rgba(14, 165, 233, 0.36) !important;
 }
 
 [data-theme="light"] .list-view__card--offline .list-view__title {
-  color: #5b21b6 !important;
+  color: #075985 !important;
 }
 
 [data-theme="light"] .list-view__today-marker-card {
-  background: #ffffff;
-  border-color: #818cf8;
+  background: var(--bg-secondary);
+  border-color: var(--accent-indigo);
 }
 
 /* ── Mobile Responsive ────────────────────────────────────── */
 @media (max-width: 640px) {
   .list-view__left,
   .list-view__today-marker-left {
-    width: 78px;
+    width: 82px;
   }
 
   .list-view__timeline::before {
-    left: 38px;
+    left: 40px;
   }
 
   .list-view__date {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
   }
 
   .list-view__card {
@@ -535,7 +644,7 @@
   }
 
   .list-view__card-content {
-    max-width: 62%;
+    max-width: 64%;
   }
 
   .list-view__title {

@@ -1,6 +1,26 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { ChevronDown, ChevronRight, Radio, Globe, Youtube, MapPin } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  Radio,
+  Globe,
+  Youtube,
+  MapPin,
+} from 'lucide-react';
 import GanttBottomLayout from '../components/GanttBottomLayout';
+import {
+  getTodayDateKST,
+  diffDays,
+  formatDateObj,
+  formatDisplayDate,
+  getKoreanDayName,
+  addDaysToDate,
+} from '../utils/dateKST';
+import {
+  getCleanSummaryText,
+  formatEventTypeLabel,
+  cleanEventDisplayTitle,
+} from '../utils/eventTextParser';
 import '../styles/GanttView.css';
 
 /* ────────────────────────────────────────────
@@ -8,23 +28,15 @@ import '../styles/GanttView.css';
    ──────────────────────────────────────────── */
 const DESKTOP_CELL_WIDTH = 60;
 const MOBILE_CELL_WIDTH = 38;
-const DESKTOP_GAME_COL_WIDTH = 156;
-const MOBILE_GAME_COL_WIDTH = 68;
-const ROW_HEIGHT_COLLAPSED = 28;
+const DESKTOP_GAME_COL_WIDTH = 164;
+const MOBILE_GAME_COL_WIDTH = 72;
+const ROW_HEIGHT_COLLAPSED = 36;
 const DATE_RANGE_BEFORE = 30; // days before today
 const DATE_RANGE_AFTER = 90; // days after today
 
 /* ────────────────────────────────────────────
    Helper Functions (KST Standard)
    ──────────────────────────────────────────── */
-import {
-  getTodayDateKST,
-  diffDays,
-  formatDateObj,
-  getKoreanDayName,
-  addDaysToDate,
-} from '../utils/dateKST';
-
 function getToday() {
   return getTodayDateKST();
 }
@@ -74,22 +86,13 @@ function hexToRgb(hex) {
   return '99, 102, 241';
 }
 
-const EVENT_TYPE_LABELS = {
-  '전반업데이트': '버전 업데이트',
-  '후반업데이트': '후반 업데이트',
-  '공식방송': '방송',
-  '행사': '행사',
-  '오프라인이벤트': '오프라인 이벤트',
-};
-
 /* ────────────────────────────────────────────
-   GanttView Component (v2.0 Sticky Label & Compact Mobile)
+   GanttView Component (v1.3.0 Architectural Timeline)
    ──────────────────────────────────────────── */
 export default function GanttView({
   events,
   gamesConfig,
   recommendedVideos,
-  briefingData,
   activeGames,
   onToggleGame,
   onEventClick,
@@ -100,6 +103,7 @@ export default function GanttView({
   const scrollRef = useRef(null);
   const scrollRafRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [hoverPreview, setHoverPreview] = useState(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -187,7 +191,7 @@ export default function GanttView({
     return names;
   }, [events, gamesConfig]);
 
-  /* ── Group events by game (간트 차트에서는 종료 후 14일 경과한 과거 오프라인 행사는 레인 생성 제외) ── */
+  /* ── Group events by game (종료 후 14일 경과한 과거 오프라인 행사는 레인 생성 제외) ── */
   const offlineCutoffStr = useMemo(() => formatDateStr(addDays(today, -14)), [today]);
 
   const eventsByGame = useMemo(() => {
@@ -205,7 +209,7 @@ export default function GanttView({
     return map;
   }, [events, gameNames, offlineCutoffStr]);
 
-  /* ── 게임별 동적 레인 맵 생성 (오프라인 이벤트가 있는 게임만 4번째 레인 할당) ── */
+  /* ── 게임별 동적 레인 맵 생성 ── */
   const gameLanesMap = useMemo(() => {
     const map = {};
     gameNames.forEach((gameName) => {
@@ -257,6 +261,7 @@ export default function GanttView({
   }, []);
 
   const handleContainerScroll = useCallback(() => {
+    setHoverPreview((prev) => (prev ? null : prev));
     if (scrollRafRef.current) return;
     scrollRafRef.current = requestAnimationFrame(() => {
       scrollRafRef.current = null;
@@ -264,7 +269,7 @@ export default function GanttView({
     });
   }, [syncScrollCssVar]);
 
-  /* ── Scroll to today helper ── */
+  /* ── Scroll to today & quick week jump helpers ── */
   const scrollToToday = useCallback(
     (smooth = false) => {
       if (!scrollRef.current) return;
@@ -282,6 +287,21 @@ export default function GanttView({
       requestAnimationFrame(syncScrollCssVar);
     },
     [dateAxis, cellWidth, gameColWidth, syncScrollCssVar]
+  );
+
+  const scrollByDays = useCallback(
+    (days) => {
+      if (!scrollRef.current) return;
+      const container = scrollRef.current;
+      const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+      const target = Math.min(
+        maxScroll,
+        Math.max(0, container.scrollLeft + days * cellWidth)
+      );
+      container.scrollTo({ left: target, behavior: 'smooth' });
+      requestAnimationFrame(syncScrollCssVar);
+    },
+    [cellWidth, syncScrollCssVar]
   );
 
   /* ── Auto-scroll to today on mount / resize ── */
@@ -335,6 +355,7 @@ export default function GanttView({
 
     const handleMouseDown = (e) => {
       if (e.button !== 0) return;
+      if (e.target.closest('button, a')) return;
       isDown = true;
       container.classList.add('gantt-container--dragging');
       startX = e.pageX - container.offsetLeft;
@@ -368,6 +389,7 @@ export default function GanttView({
       const walk = (x - startX) * 1.3;
       if (Math.abs(e.pageX - dragStartX) > 5) {
         isDragging = true;
+        setHoverPreview(null);
       }
       if (isDragging) {
         e.preventDefault();
@@ -390,34 +412,67 @@ export default function GanttView({
   }, [syncScrollCssVar]);
 
   const getGameColor = useCallback(
-    (gameName) => gamesConfig?.[gameName]?.theme?.color || '#6366f1',
+    (gameName) => gamesConfig?.[gameName]?.theme?.color || '#6ee7b7',
     [gamesConfig]
   );
 
   const getGameColorDark = useCallback(
-    (gameName) => gamesConfig?.[gameName]?.theme?.colorDark || '#4338ca',
+    (gameName) => gamesConfig?.[gameName]?.theme?.colorDark || '#10b981',
     [gamesConfig]
   );
 
-  const getDisplayTypeName = useCallback((ev) => {
-    if (ev.type === '공식방송') return '공식방송';
-    if (ev.type === '후반업데이트') return '후반업데이트';
-    if (ev.type === '전반업데이트') return '전반업데이트';
-    if (ev.type === '오프라인이벤트') return '오프라인이벤트';
-    return ev.type;
+  /* ── Desktop Floating Hover Preview Handlers ── */
+  const handleBarMouseEnter = useCallback(
+    (e, ev, gameName, color, displayType) => {
+      if (isMobile) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clientX = e.clientX || rect.left + Math.min(rect.width / 2, 120);
+      const showBelow = rect.top < 185;
+      const anchorY = showBelow ? rect.bottom + 10 : rect.top - 10;
+      setHoverPreview({
+        ev,
+        gameName,
+        color,
+        displayType,
+        x: Math.min(Math.max(clientX, 175), window.innerWidth - 175),
+        y: anchorY,
+        showBelow,
+      });
+    },
+    [isMobile]
+  );
+
+  const handleBarMouseMove = useCallback(
+    (e) => {
+      if (isMobile) return;
+      const clientX = e.clientX;
+      setHoverPreview((prev) => {
+        if (!prev) return null;
+        const nextX = Math.min(Math.max(clientX, 175), window.innerWidth - 175);
+        if (Math.abs(prev.x - nextX) < 3) return prev;
+        return { ...prev, x: nextX };
+      });
+    },
+    [isMobile]
+  );
+
+  const handleBarMouseLeave = useCallback(() => {
+    setHoverPreview(null);
   }, []);
 
-  /* ── Render a single event bar ── */
+  /* ── Render a single event bar (Clean Architectural Bar without smudged image) ── */
   const renderEventBar = useCallback(
-    (ev, gameName, isCollapsed) => {
+    (ev, gameName) => {
       const bar = getBarStyle(ev);
       if (!bar) return null;
 
       const color = getGameColor(gameName);
       const colorDark = getGameColorDark(gameName);
+      const rgb = hexToRgb(color);
       const isFixed = ev.is_fixed === true;
-      const displayType = getDisplayTypeName(ev);
+      const displayType = formatEventTypeLabel(ev.type);
       const isStream = ev.type === '공식방송';
+      const isHalfUpdate = ev.type === '후반업데이트';
 
       const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
       const targetType = ev.lane_override || ev.type;
@@ -425,28 +480,17 @@ export default function GanttView({
       const topPos = `${laneIndex * lanePitch + 5}px`;
       const barHeight = isMobile ? '24px' : '27px';
 
-      if (isCollapsed) {
-        return (
-          <div
-            key={ev.id || `${gameName}-${ev.type}-${ev.start_date}`}
-            className="gantt-bar-collapsed"
-            style={{
-              left: `${bar.left}px`,
-              width: `${bar.width}px`,
-              backgroundColor: isFixed ? color : '#475569',
-              borderStyle: isFixed ? 'solid' : 'dashed',
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onEventClick?.(ev, displayType, 'gantt');
-            }}
-            title={`${ev.version || ''} ${displayType}`}
-          />
-        );
-      }
+      const hoverHandlers = isMobile
+        ? {}
+        : {
+            onMouseEnter: (e) => handleBarMouseEnter(e, ev, gameName, color, displayType),
+            onMouseMove: handleBarMouseMove,
+            onMouseLeave: handleBarMouseLeave,
+          };
 
-      const isOfflineEvent = ev.type === '오프라인이벤트';
+      const isOfflineEvent = ev.type === '오프라인이벤트' || ev.type === '행사';
       if (isOfflineEvent) {
+        const cleanOfflineTitle = cleanEventDisplayTitle(ev.title, gameName);
         return (
           <div
             key={ev.id || `${gameName}-offline-${ev.start_date}`}
@@ -457,33 +501,38 @@ export default function GanttView({
               top: topPos,
               height: barHeight,
               '--bar-color': color,
+              '--bar-color-dark': colorDark,
+              '--bar-rgb': rgb,
               '--bar-left': `${bar.left}px`,
               '--bar-width': `${bar.width}px`,
-              backgroundColor: `rgba(${hexToRgb(color)}, 0.12)`,
-              border: `1.5px solid ${color}`,
+              backgroundColor: `rgba(${rgb}, 0.14)`,
+              border: `1px solid rgba(${rgb}, 0.55)`,
+              borderLeft: `3px solid ${color}`,
             }}
             onClick={(e) => {
               e.stopPropagation();
               onEventClick?.(ev, displayType, 'gantt');
             }}
-            title={`${ev.title} (장소: ${ev.location || '—'})`}
+            {...hoverHandlers}
           >
             <span className="gantt-bar-label">
-              <MapPin size={11} style={{ display: 'inline', verticalAlign: '-1px', marginRight: '3px' }} />
-              {ev.title}
+              <MapPin size={11} style={{ flexShrink: 0, color }} />
+              <span className="gantt-bar-label__text">{cleanOfflineTitle}</span>
             </span>
           </div>
         );
       }
 
       if (isStream) {
-        const flagBgColor = isFixed ? color : '#475569';
+        const flagBgColor = isFixed ? color : 'rgba(24, 31, 46, 0.88)';
         const badgeLabel = isFixed ? 'LIVE' : '예상';
 
         return (
           <div
             key={ev.id || `${gameName}-stream-${ev.start_date}`}
-            className={`gantt-bar-stream ${isFixed ? 'gantt-bar-stream--confirmed' : 'gantt-bar-stream--predicted'}`}
+            className={`gantt-bar-stream ${
+              isFixed ? 'gantt-bar-stream--confirmed' : 'gantt-bar-stream--predicted'
+            }`}
             style={{
               left: `${bar.left}px`,
               top: `${laneIndex * lanePitch + 3}px`,
@@ -494,27 +543,29 @@ export default function GanttView({
               e.stopPropagation();
               onEventClick?.(ev, displayType, 'gantt');
             }}
+            {...hoverHandlers}
           >
             <div
               className="gantt-stream-flag"
               style={{
                 backgroundColor: flagBgColor,
-                color: isFixed ? '#0f172a' : '#ffffff',
-                border: isFixed ? 'none' : '1px solid #64748b',
+                color: isFixed ? '#07090f' : '#e2e8f0',
+                border: isFixed ? 'none' : `1px dashed rgba(${rgb}, 0.65)`,
               }}
             >
               <Radio size={10} className="gantt-live-icon" />
               <span className="gantt-live-badge">{badgeLabel}</span>
             </div>
             <span className="gantt-stream-label">
-              {ev.version ? `v${ev.version} 방송` : '방송'}
+              {ev.version ? `v${ev.version} 특별 방송` : '특별 방송'}
+              {ev.time && <span className="gantt-stream-time">{ev.time}</span>}
             </span>
           </div>
         );
       }
 
       const isSystemType = ['전반업데이트', '후반업데이트'].includes(ev.type);
-      const cleanVer = ev.version ? ev.version.replace(/\s*(전반|후반).*$/, '').trim() : '?';
+      const cleanVer = ev.version ? ev.version.replace(/\s*(전반|후반).*$/, '').trim() : '';
       const shortTypeLabel =
         ev.type === '전반업데이트'
           ? isMobile
@@ -523,35 +574,61 @@ export default function GanttView({
           : ev.type === '후반업데이트'
           ? isMobile
             ? '후반'
-            : '후반 업데이트'
-          : EVENT_TYPE_LABELS[ev.type] || ev.type;
+            : '후반 픽업'
+          : displayType;
 
-      const label = isSystemType
-        ? `${isFixed ? '' : '[예상] '}v${cleanVer} ${shortTypeLabel}`
-        : `${isFixed ? '' : '[예상] '}${ev.title}`;
+      const textLabel = isSystemType ? shortTypeLabel : cleanEventDisplayTitle(ev.title, gameName);
 
-      return (
-        <div
-          key={ev.id || `${gameName}-${ev.type}-${ev.start_date}`}
-          className={`gantt-bar ${isFixed ? 'gantt-bar-confirmed' : 'gantt-bar-predicted'}`}
-          style={{
+      const barClassName = !isFixed
+        ? 'gantt-bar gantt-bar-predicted'
+        : isHalfUpdate
+        ? 'gantt-bar gantt-bar-confirmed gantt-bar-confirmed-half'
+        : 'gantt-bar gantt-bar-confirmed gantt-bar-main';
+
+      const barInlineStyle = !isFixed
+        ? {
             left: `${bar.left}px`,
             width: `${bar.width}px`,
             top: topPos,
             height: barHeight,
             '--bar-color': color,
+            '--bar-color-dark': colorDark,
+            '--bar-rgb': rgb,
             '--bar-left': `${bar.left}px`,
             '--bar-width': `${bar.width}px`,
-            backgroundColor: isFixed ? color : undefined,
-            borderColor: isFixed ? color : undefined,
-          }}
+            backgroundColor: `rgba(${rgb}, 0.1)`,
+            borderColor: `rgba(${rgb}, 0.52)`,
+          }
+        : {
+            left: `${bar.left}px`,
+            width: `${bar.width}px`,
+            top: topPos,
+            height: barHeight,
+            '--bar-color': color,
+            '--bar-color-dark': colorDark,
+            '--bar-rgb': rgb,
+            '--bar-left': `${bar.left}px`,
+            '--bar-width': `${bar.width}px`,
+            backgroundColor: color,
+            borderColor: color,
+          };
+
+      return (
+        <div
+          key={ev.id || `${gameName}-${ev.type}-${ev.start_date}`}
+          className={barClassName}
+          style={barInlineStyle}
           onClick={(e) => {
             e.stopPropagation();
             onEventClick?.(ev, displayType, 'gantt');
           }}
-          title={label}
+          {...hoverHandlers}
         >
-          <span className="gantt-bar-label">{label}</span>
+          <span className="gantt-bar-label">
+            {!isFixed && <span className="gantt-predicted-pill">예상</span>}
+            {cleanVer && <span className="gantt-bar-ver-pill">v{cleanVer}</span>}
+            <span className="gantt-bar-label__text">{textLabel}</span>
+          </span>
         </div>
       );
     },
@@ -559,16 +636,80 @@ export default function GanttView({
       getBarStyle,
       getGameColor,
       getGameColorDark,
-      getDisplayTypeName,
       onEventClick,
       gameLanesMap,
       lanePitch,
       isMobile,
+      handleBarMouseEnter,
+      handleBarMouseMove,
+      handleBarMouseLeave,
     ]
   );
 
   const todayIndex = useMemo(() => dateAxis.findIndex((d) => d.isToday), [dateAxis]);
   const totalGridWidth = dateAxis.length * cellWidth;
+
+  /* ── Compute Floating Tooltip Details ── */
+  const tooltipDetails = useMemo(() => {
+    if (!hoverPreview) return null;
+    const { ev, gameName, color, displayType, x, y, showBelow } = hoverPreview;
+    const startStr = ev.start_date || ev.date;
+    const endStr = ev.end_date || startStr;
+    const isSingleDay = !endStr || startStr === endStr;
+
+    const dateRangeText = isSingleDay
+      ? `${formatDisplayDate(startStr, true)}${ev.time ? ` · ${ev.time}` : ''}`
+      : `${formatDisplayDate(startStr, false)} ~ ${formatDisplayDate(endStr, false)}`;
+
+    const diffStart = getDaysDiff(todayStr, startStr);
+    const diffEnd = getDaysDiff(todayStr, endStr);
+    let dDayLabel = '';
+    let dDayStatus = 'ongoing';
+
+    if (todayStr < startStr) {
+      dDayLabel = `D-${diffStart}`;
+      dDayStatus = 'upcoming';
+    } else if (isSingleDay && todayStr === startStr) {
+      dDayLabel = 'TODAY';
+      dDayStatus = 'today';
+    } else if (todayStr >= startStr && todayStr <= endStr) {
+      dDayLabel = diffEnd === 0 ? '진행 중 · 오늘 종료' : `진행 중 · ${diffEnd}일 남음`;
+      dDayStatus = 'ongoing';
+    } else {
+      dDayLabel = '종료됨';
+      dDayStatus = 'ended';
+    }
+
+    const cleanVer = ev.version ? ev.version.replace(/\s*(전반|후반).*$/, '').trim() : '';
+    const typeLabel = formatEventTypeLabel(ev.type) || displayType;
+    const cleanTitle = ev.title
+      ? cleanEventDisplayTitle(ev.title, gameName)
+      : cleanVer
+      ? `v${cleanVer} ${typeLabel}`
+      : `${gameName} ${typeLabel}`;
+
+    const summaryText = ev.detail
+      ? getCleanSummaryText(ev.detail, 92)
+      : ev.location
+      ? `장소: ${ev.location}`
+      : '';
+
+    return {
+      gameName,
+      color,
+      cleanVer,
+      typeLabel,
+      isFixed: ev.is_fixed === true,
+      cleanTitle,
+      dateRangeText,
+      dDayLabel,
+      dDayStatus,
+      summaryText,
+      x,
+      y,
+      showBelow,
+    };
+  }, [hoverPreview, todayStr]);
 
   return (
     <div className="gantt-view-wrapper">
@@ -587,7 +728,46 @@ export default function GanttView({
               className="gantt-header-game gantt-sticky-intersect"
               style={{ width: `${gameColWidth}px`, minWidth: `${gameColWidth}px` }}
             >
-              <span className="gantt-header-game-label">게임 / 타임라인</span>
+              <span className="gantt-header-game-label">
+                {isMobile ? '게임 / 일정' : '게임 / 타임라인'}
+              </span>
+              {!isMobile && (
+                <div className="gantt-quick-nav" role="group" aria-label="타임라인 주간 빠른 이동">
+                  <button
+                    type="button"
+                    className="gantt-quick-nav__btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      scrollByDays(-7);
+                    }}
+                    title="1주일 이전으로 스크롤"
+                  >
+                    ◀ -7일
+                  </button>
+                  <button
+                    type="button"
+                    className="gantt-quick-nav__btn gantt-quick-nav__btn--today"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      scrollToToday(true);
+                    }}
+                    title="오늘 날짜로 이동"
+                  >
+                    오늘
+                  </button>
+                  <button
+                    type="button"
+                    className="gantt-quick-nav__btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      scrollByDays(7);
+                    }}
+                    title="1주일 이후로 스크롤"
+                  >
+                    +7일 ▶
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="gantt-header-timeline-col">
@@ -614,7 +794,9 @@ export default function GanttView({
                 {dateAxis.map((day) => (
                   <div
                     key={day.dateStr}
-                    className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${day.isWeekend ? ' gantt-header-weekend' : ''}${day.isMonthStart ? ' gantt-header-month-start' : ''}`}
+                    className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${
+                      day.isWeekend ? ' gantt-header-weekend' : ''
+                    }${day.isMonthStart ? ' gantt-header-month-start' : ''}`}
                     style={{ width: `${cellWidth}px`, minWidth: `${cellWidth}px` }}
                   >
                     <span className="gantt-header-date">{day.label}</span>
@@ -625,23 +807,38 @@ export default function GanttView({
             </div>
           </div>
 
-          {/* ═══ Body Rows ═══ */}
+          {/* ═══ Body Rows (비활성 게임은 1줄 빈 줄로 자연 축소 + 클릭 시 재활성화) ═══ */}
           <div className="gantt-body">
-            {gameNames.map((gameName) => {
+            {gameNames.map((gameName, rowIndex) => {
               const isCollapsed = activeGames && activeGames[gameName] === false;
               const gameEvents = eventsByGame[gameName] || [];
               const color = getGameColor(gameName);
+              const gameIcon = gamesConfig?.[gameName]?.icon;
 
               const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
               const rowH = isCollapsed
                 ? ROW_HEIGHT_COLLAPSED
-                : lanes.length * lanePitch + 8;
+                : lanes.length * lanePitch + 10;
 
               return (
                 <div
                   key={gameName}
-                  className={`gantt-row${isCollapsed ? ' gantt-row-collapsed' : ''}`}
-                  style={{ height: `${rowH}px` }}
+                  className={`gantt-row${isCollapsed ? ' gantt-row--collapsed' : ''}`}
+                  style={{ height: `${rowH}px`, '--row-idx': rowIndex }}
+                  onClick={isCollapsed ? () => onToggleGame?.(gameName) : undefined}
+                  title={isCollapsed ? `${gameName} 일정 다시 활성화하기` : undefined}
+                  role={isCollapsed ? 'button' : undefined}
+                  tabIndex={isCollapsed ? 0 : undefined}
+                  onKeyDown={
+                    isCollapsed
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onToggleGame?.(gameName);
+                          }
+                        }
+                      : undefined
+                  }
                 >
                   <div
                     className="gantt-row-game gantt-sticky-col"
@@ -650,54 +847,74 @@ export default function GanttView({
                       minWidth: `${gameColWidth}px`,
                       '--game-color': color,
                     }}
-                    onClick={() => onToggleGame && onToggleGame(gameName)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleGame?.(gameName);
+                    }}
+                    title={`${gameName} ${isCollapsed ? '일정 펼치기' : '일정 접기'}`}
                   >
                     <span
                       className="gantt-game-indicator"
                       style={{ backgroundColor: color }}
                     />
 
-                    <div className="gantt-game-meta-group">
-                      <span className="gantt-game-name">
-                        {isMobile ? getShortGameName(gameName) : gameName}
-                      </span>
-                      {!isCollapsed &&
-                        (gamesConfig?.[gameName]?.officialUrl ||
-                          gamesConfig?.[gameName]?.youtubeUrl) && (
-                          <div className="gantt-game-links">
-                            {gamesConfig?.[gameName]?.officialUrl && (
-                              <a
-                                href={gamesConfig[gameName].officialUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="gantt-game-link-btn"
-                                onClick={(e) => e.stopPropagation()}
-                                title={`${gameName} 공식 사이트 / 다운로드`}
-                              >
-                                <Globe size={11} />
-                                <span>공식 사이트</span>
-                              </a>
-                            )}
-                            {gamesConfig?.[gameName]?.youtubeUrl && (
-                              <a
-                                href={gamesConfig[gameName].youtubeUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="gantt-game-youtube-btn"
-                                onClick={(e) => e.stopPropagation()}
-                                title={`${gameName} 공식 유튜브 채널`}
-                              >
-                                <Youtube size={12} />
-                              </a>
-                            )}
-                          </div>
-                        )}
+                    <div className="gantt-game-track-card">
+                      {!isMobile && gameIcon && (
+                        <img
+                          src={gameIcon}
+                          alt=""
+                          className={`gantt-game-avatar${
+                            isCollapsed ? ' gantt-game-avatar--sm' : ''
+                          }`}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
+                      <div className="gantt-game-meta-group">
+                        <span className="gantt-game-name" title={gameName}>
+                          {isMobile ? getShortGameName(gameName) : gameName}
+                        </span>
+                        {!isMobile &&
+                          !isCollapsed &&
+                          (gamesConfig?.[gameName]?.officialUrl ||
+                            gamesConfig?.[gameName]?.youtubeUrl) && (
+                            <div className="gantt-game-links">
+                              {gamesConfig?.[gameName]?.officialUrl && (
+                                <a
+                                  href={gamesConfig[gameName].officialUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="gantt-game-link-btn"
+                                  onClick={(e) => e.stopPropagation()}
+                                  title={`${gameName} 공식 사이트`}
+                                  aria-label={`${gameName} 공식 사이트`}
+                                >
+                                  <Globe size={12} />
+                                </a>
+                              )}
+                              {gamesConfig?.[gameName]?.youtubeUrl && (
+                                <a
+                                  href={gamesConfig[gameName].youtubeUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="gantt-game-youtube-btn"
+                                  onClick={(e) => e.stopPropagation()}
+                                  title={`${gameName} 공식 유튜브 채널`}
+                                  aria-label={`${gameName} 공식 유튜브 채널`}
+                                >
+                                  <Youtube size={12} />
+                                </a>
+                              )}
+                            </div>
+                          )}
+                      </div>
                     </div>
 
                     {isCollapsed ? (
-                      <ChevronRight size={14} className="gantt-chevron" />
+                      <ChevronRight size={13} className="gantt-chevron" />
                     ) : (
-                      <ChevronDown size={14} className="gantt-chevron" />
+                      <ChevronDown size={13} className="gantt-chevron" />
                     )}
                   </div>
 
@@ -705,7 +922,9 @@ export default function GanttView({
                     {dateAxis.map((day) => (
                       <div
                         key={day.dateStr}
-                        className={`gantt-cell${day.isToday ? ' gantt-cell-today' : ''}${day.isWeekend ? ' gantt-cell-weekend' : ''}${day.isMonthStart ? ' gantt-cell-month-start' : ''}`}
+                        className={`gantt-cell${day.isToday ? ' gantt-cell-today' : ''}${
+                          day.isWeekend ? ' gantt-cell-weekend' : ''
+                        }${day.isMonthStart ? ' gantt-cell-month-start' : ''}`}
                         style={{ width: `${cellWidth}px`, minWidth: `${cellWidth}px` }}
                       />
                     ))}
@@ -717,9 +936,12 @@ export default function GanttView({
                       />
                     )}
 
-                    <div className="gantt-bars-layer">
-                      {gameEvents.map((ev) => renderEventBar(ev, gameName, isCollapsed))}
-                    </div>
+                    {/* 비활성화 시 간략화 바(.gantt-bar-collapsed) 없이 깔끔한 빈 줄만 표시 */}
+                    {!isCollapsed && (
+                      <div className="gantt-bars-layer">
+                        {gameEvents.map((ev) => renderEventBar(ev, gameName))}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -727,6 +949,51 @@ export default function GanttView({
           </div>
         </div>
       </div>
+
+      {/* ═══ Desktop Interactive Floating Hover Preview Tooltip ═══ */}
+      {tooltipDetails && (
+        <div
+          className={`gantt-hover-tooltip ${
+            tooltipDetails.showBelow ? 'is-below' : 'is-above'
+          }`}
+          style={{
+            left: `${tooltipDetails.x}px`,
+            top: `${tooltipDetails.y}px`,
+            '--tooltip-accent': tooltipDetails.color,
+          }}
+          role="tooltip"
+        >
+          <div className="gantt-hover-tooltip__top">
+            <span className="gantt-hover-tooltip__game">
+              <span
+                className="gantt-hover-tooltip__dot"
+                style={{ backgroundColor: tooltipDetails.color }}
+              />
+              {tooltipDetails.gameName}
+            </span>
+            {tooltipDetails.cleanVer && (
+              <span className="gantt-hover-tooltip__ver">v{tooltipDetails.cleanVer}</span>
+            )}
+            <span className="gantt-hover-tooltip__type">{tooltipDetails.typeLabel}</span>
+            {!tooltipDetails.isFixed && (
+              <span className="gantt-hover-tooltip__status is-predicted">예상</span>
+            )}
+          </div>
+
+          <div className="gantt-hover-tooltip__title">{tooltipDetails.cleanTitle}</div>
+
+          <div className="gantt-hover-tooltip__meta">
+            <span className="gantt-hover-tooltip__period">{tooltipDetails.dateRangeText}</span>
+            <span className={`gantt-hover-tooltip__dday is-${tooltipDetails.dDayStatus}`}>
+              {tooltipDetails.dDayLabel}
+            </span>
+          </div>
+
+          {tooltipDetails.summaryText && (
+            <p className="gantt-hover-tooltip__summary">{tooltipDetails.summaryText}</p>
+          )}
+        </div>
+      )}
 
       {/* ═══ 간트 차트 하단 영역 ═══ */}
       <GanttBottomLayout

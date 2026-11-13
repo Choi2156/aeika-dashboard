@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Mail, ShieldAlert, Github } from 'lucide-react';
-import VisitorCounter from './VisitorCounter';
 import { trackOutboundLink, trackChannelClick, trackClipboardCopy } from '../utils/analytics';
 import '../styles/components.css';
 
 /**
- * Footer Component (v2.0 슬림 푸터)
- * - 상단 헤더에 있던 누적 방문수(VisitorCounter)를 푸터 우측 유틸 영역으로 이동
- * - 3개의 거대 면책 박스를 1줄 요약 + [저작권 · 면책 · 라이선스 안내] 통합 버튼으로 슬림화
+ * Footer Component (v1.3.0 슬림 푸터)
+ * - 브랜드 로고 + 저작권/면책/라이선스 모달 트리거 및 소셜 링크
  */
 export default function Footer({ onOpenLicense }) {
   const [copied, setCopied] = useState(false);
@@ -32,10 +30,9 @@ export default function Footer({ onOpenLicense }) {
           <div className="footer-brand">
             <div className="footer-brand__row">
               <span className="footer-brand__logo">AEIKA ARCHIVE</span>
-              <VisitorCounter />
             </div>
             <p className="footer-brand__sub">
-              서브컬처 게임 일정 아카이브 · 비공식 팬메이드 프로젝트 (각 게임 이미지·상표권은 원제작사에 귀속)
+              서브컬처 게임 일정 아카이브 · 비공식 팬 프로젝트 (게임 이미지·상표권은 각 원제작사에 귀속)
             </p>
           </div>
 

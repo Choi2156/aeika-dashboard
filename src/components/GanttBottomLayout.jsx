@@ -12,9 +12,14 @@ import {
   Film,
   Sparkles,
   ExternalLink,
+  Play,
 } from 'lucide-react';
 import NoticeCategoryBadge from './NoticeCategoryBadge';
-import { getCleanSummaryText } from '../utils/eventTextParser';
+import {
+  getCleanSummaryText,
+  formatEventTypeLabel,
+  cleanEventDisplayTitle,
+} from '../utils/eventTextParser';
 import {
   getTodayDateKST,
   formatDateObj,
@@ -116,10 +121,9 @@ function allocateLongformVideos(allVideos, activeGames, targetCount = 12) {
 }
 
 /**
- * GanttBottomLayout 2.0 (Unified Media & Notice Station)
- * - 기존의 3층 세로 적재 구조를 탭 기반 미디어 스테이션으로 통합하여 스크롤 길이를 대폭 단축하고 탐색성 강화
- * - 좌측(68%): [공식 방송·오프라인] / [스토리 풀버전] / [추천 롱폼] 탭 스테이션 (3열~2열 클린 카드 그리드)
- * - 우측(32%): 인라인 쇼츠 플레이어 + 공지사항 보드
+ * GanttBottomLayout (v1.3.0 Unified Media & Full-Bleed Shorts Hub)
+ * - 좌측: [공식 방송·오프라인] / [스토리 풀버전] / [추천 롱폼] 탭 스테이션 + 공지사항 보드
+ * - 우측: 여백 없이 꽉 차는 풀블리드 세로형 쇼츠 스테이션
  */
 function GanttBottomLayout({
   events,
@@ -153,7 +157,7 @@ function GanttBottomLayout({
     (gameName) =>
       gamesConfig?.[gameName]?.theme?.color ||
       gamesConfig?.[gameName]?.color ||
-      '#6366f1',
+      '#6ee7b7',
     [gamesConfig]
   );
 
@@ -276,6 +280,7 @@ function GanttBottomLayout({
 
   const recentNotices = notices.slice(0, 4);
   const currentShort = recommendedShorts[currentShortIndex] || null;
+  const currentShortColor = currentShort ? getGameColor(currentShort.game) : '#6ee7b7';
 
   return (
     <div className="media-hub">
@@ -362,13 +367,17 @@ function GanttBottomLayout({
             {activeList.length === 0 ? (
               <div className="media-station__empty">
                 <Sparkles size={18} />
-                <p>현재 선택된 게임에 해당하는 항목이 없습니다.</p>
+                <p>선택한 게임의 미디어 항목이 없습니다.</p>
               </div>
             ) : activeMediaTab === 'streams' ? (
-              <div className="media-station__grid">
+              <div
+                key={`streams-${safePage}`}
+                className="media-station__grid media-grid-enter"
+              >
                 {visibleItems.map((ev) => {
                   const color = getGameColor(ev.game);
-                  const isOffline = ev.type === '오프라인이벤트';
+                  const isOffline = ev.type === '오프라인이벤트' || ev.type === '행사';
+                  const cleanTypeLabel = formatEventTypeLabel(ev.type);
                   const imgSrc = ev.custom_img
                     ? `./assets/${ev.custom_img}`
                     : gamesConfig?.[ev.game]?.defaultImg;
@@ -382,35 +391,31 @@ function GanttBottomLayout({
                     ? `D-${dDiff}`
                     : '진행 중';
 
+                  const cleanTitle = ev.title
+                    ? cleanEventDisplayTitle(ev.title, ev.game)
+                    : `${ev.game} ${cleanTypeLabel}`;
+
                   return (
                     <article
                       key={ev.id || `${ev.game}-${ev.date}`}
                       className="media-card"
                       style={{ '--card-accent': color }}
                       onClick={() =>
-                        onEventClick?.(
-                          ev,
-                          isOffline ? '오프라인이벤트' : '공식방송',
-                          'bottom_stream'
-                        )
+                        onEventClick?.(ev, cleanTypeLabel, 'bottom_stream')
                       }
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          onEventClick?.(
-                            ev,
-                            isOffline ? '오프라인이벤트' : '공식방송',
-                            'bottom_stream'
-                          );
+                          onEventClick?.(ev, cleanTypeLabel, 'bottom_stream');
                         }
                       }}
                     >
                       <div className="media-card__thumb-wrap">
                         <img
                           src={imgSrc}
-                          alt={ev.title}
+                          alt={cleanTitle}
                           className="media-card__thumb"
                           loading="lazy"
                         />
@@ -440,12 +445,10 @@ function GanttBottomLayout({
                             {formatDisplayDate(ev.date, true)} {ev.time || ''}
                           </span>
                         </div>
-                        <h4 className="media-card__title">
-                          {ev.title ? ev.title.replace(/「|」/g, '') : `${ev.game} 공식 방송`}
-                        </h4>
+                        <h4 className="media-card__title">{cleanTitle}</h4>
                         {ev.detail && (
                           <p className="media-card__desc">
-                            {getCleanSummaryText(ev.detail, 75)}
+                            {getCleanSummaryText(ev.detail, 68)}
                           </p>
                         )}
                       </div>
@@ -454,7 +457,10 @@ function GanttBottomLayout({
                 })}
               </div>
             ) : (
-              <div className="media-station__grid">
+              <div
+                key={`${activeMediaTab}-${safePage}`}
+                className="media-station__grid media-grid-enter"
+              >
                 {visibleItems.map((video, idx) => {
                   const color = getGameColor(video.game);
                   const thumbUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
@@ -485,6 +491,9 @@ function GanttBottomLayout({
                           loading="lazy"
                         />
                         <span className="media-card__game-tag">{video.game}</span>
+                        <span className="media-card__play-badge" aria-hidden="true">
+                          <Play size={14} fill="currentColor" />
+                        </span>
                         <span className="media-card__duration-tag">
                           {video.duration || (isStory ? '스토리 풀버전' : '추천 영상')}
                         </span>
@@ -503,19 +512,19 @@ function GanttBottomLayout({
           </div>
         </div>
 
-        {/* 공지사항 통합 보드 (좌측 하단 배치로 우측 쇼츠와 높이 균형 확보) */}
+        {/* 공지사항 통합 보드 */}
         <section className="notice-unified-box">
           <div className="notice-unified-box__header">
             <div className="notice-unified-box__title-group">
               <Megaphone size={15} className="notice-unified-box__icon" />
-              <span className="notice-unified-box__title">대시보드 공지사항 및 업데이트 안내</span>
+              <span className="notice-unified-box__title">공지사항 · 패치노트</span>
             </div>
             <button
               type="button"
               className="notice-unified-box__all-btn"
               onClick={() => onOpenNotice && onOpenNotice(null)}
             >
-              <span>전체 공지 ({notices.length})</span>
+              <span>전체 보기 ({notices.length})</span>
               <ChevronRightIcon size={13} />
             </button>
           </div>
@@ -549,7 +558,7 @@ function GanttBottomLayout({
         </section>
       </div>
 
-      {/* ═══ 우측: 추천 쇼츠 스테이션 ═══ */}
+      {/* ═══ 우측: 추천 쇼츠 스테이션 (Full-Bleed Edge-to-Edge Vertical Stage) ═══ */}
       <div className="media-hub__right">
         <section className="shorts-station">
           <div className="shorts-station__header">
@@ -587,9 +596,22 @@ function GanttBottomLayout({
 
           {currentShort ? (
             <div className="shorts-station__body">
-              <div className="shorts-player-container">
+              <div
+                className="shorts-player-container"
+                style={{ '--short-accent': currentShortColor }}
+              >
+                {/* Ambient blurred backdrop so there are never empty black margins */}
+                <div
+                  className="shorts-player-ambient-bg"
+                  style={{
+                    backgroundImage: `url(https://img.youtube.com/vi/${currentShort.id}/hqdefault.jpg)`,
+                  }}
+                  aria-hidden="true"
+                />
+
                 {isPlayingShort ? (
                   <iframe
+                    className="shorts-player-iframe"
                     width="100%"
                     height="100%"
                     src={`https://www.youtube.com/embed/${currentShort.id}?autoplay=1`}
@@ -600,6 +622,7 @@ function GanttBottomLayout({
                   />
                 ) : (
                   <div
+                    key={currentShort.id}
                     className="shorts-player-thumbnail-overlay"
                     onClick={() => {
                       trackVideoClick(
@@ -615,69 +638,80 @@ function GanttBottomLayout({
                       );
                       setIsPlayingShort(true);
                     }}
-                    style={{
-                      backgroundImage: `url(https://img.youtube.com/vi/${currentShort.id}/hqdefault.jpg)`,
-                    }}
                   >
-                    <span
-                      className="shorts-player__game-pill"
-                      style={{ '--pill-color': getGameColor(currentShort.game) }}
-                    >
-                      {currentShort.game}
-                    </span>
-                    <div className="shorts-custom-play-btn">
-                      <Youtube size={28} color="#ffffff" />
+                    <div
+                      className="shorts-player-thumb-bg"
+                      style={{
+                        backgroundImage: `url(https://img.youtube.com/vi/${currentShort.id}/hqdefault.jpg)`,
+                      }}
+                    />
+                    <div className="shorts-player__top-bar">
+                      <span
+                        className="shorts-player__game-pill"
+                        style={{ '--pill-color': currentShortColor }}
+                      >
+                        {currentShort.game}
+                      </span>
+                      <span className="shorts-player__counter-pill">
+                        {String(currentShortIndex + 1).padStart(2, '0')} /{' '}
+                        {String(recommendedShorts.length).padStart(2, '0')}
+                      </span>
                     </div>
+
+                    <div className="shorts-custom-play-btn">
+                      <Play size={22} fill="currentColor" />
+                    </div>
+
                     {(currentShort.desc || currentShort.title) && (
                       <div className="shorts-player__caption">
-                        {currentShort.desc || currentShort.title}
+                        <span className="shorts-player__caption-text">
+                          {currentShort.desc || currentShort.title}
+                        </span>
                       </div>
                     )}
                   </div>
                 )}
+              </div>
 
+              {/* Clean Sleek Footer Bar (No Rainbow Hollow Dots) */}
+              <div className="shorts-hud-bar">
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrevShort();
-                  }}
-                  className="shorts-overlay-arrow shorts-overlay-arrow--left"
+                  onClick={handlePrevShort}
+                  className="shorts-hud-bar__arrow"
                   type="button"
                   aria-label="이전 쇼츠"
                 >
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={15} />
                 </button>
+
+                <div className="shorts-dot-indicators" role="tablist" aria-label="추천 쇼츠 목록">
+                  {recommendedShorts.map((sh, idx) => {
+                    const isActive = idx === currentShortIndex;
+                    return (
+                      <button
+                        key={sh.id || `short-dot-${idx}`}
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        className={`shorts-dot ${isActive ? 'shorts-dot--active' : ''}`}
+                        onClick={() => setCurrentShortIndex(idx)}
+                        style={{
+                          '--dot-accent': isActive ? getGameColor(sh.game) : undefined,
+                        }}
+                        aria-label={`${sh.game} 쇼츠 ${idx + 1}`}
+                      />
+                    );
+                  })}
+                </div>
+
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleNextShort();
-                  }}
-                  className="shorts-overlay-arrow shorts-overlay-arrow--right"
+                  onClick={handleNextShort}
+                  className="shorts-hud-bar__arrow"
                   type="button"
                   aria-label="다음 쇼츠"
                 >
-                  <ChevronRight size={16} />
+                  <ChevronRight size={15} />
                 </button>
-              </div>
-
-              <div className="shorts-dot-indicators">
-                {recommendedShorts.map((sh, idx) => {
-                  const gameColor = getGameColor(sh.game);
-                  const isActive = idx === currentShortIndex;
-                  return (
-                    <button
-                      key={sh.id || `short-dot-${idx}`}
-                      type="button"
-                      className={`shorts-dot ${isActive ? 'shorts-dot--active' : ''}`}
-                      onClick={() => setCurrentShortIndex(idx)}
-                      style={{
-                        backgroundColor: isActive ? gameColor : undefined,
-                        borderColor: gameColor,
-                      }}
-                      aria-label={`${sh.game} 쇼츠 ${idx + 1}`}
-                    />
-                  );
-                })}
               </div>
             </div>
           ) : (

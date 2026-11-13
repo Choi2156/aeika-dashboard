@@ -1,4 +1,13 @@
-import { CheckSquare, Square, BarChart2, Calendar as CalendarIcon, ListFilter, Image as ImageIcon, Crosshair } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  CheckSquare,
+  Square,
+  Image as ImageIcon,
+  Crosshair,
+  BarChart2,
+  Calendar as CalendarIcon,
+  ListFilter,
+} from 'lucide-react';
 import { getNowKSTParts } from '../utils/dateKST';
 import {
   trackGameFilterToggle,
@@ -18,25 +27,63 @@ function getShortGameName(gameName) {
 }
 
 /**
- * GameFilterBar 컴포넌트 (v2.0 통합 스티키 컨트롤 바)
- * 좌측: [전체] 스마트 토글 + 게임별 필터 칩
- * 우측: [오늘로 이동] + 3단 뷰 전환 (기간 표 / 월간 달력 / 상세 일정) + [달력 이미지]
+ * GameFilterBar 컴포넌트 (v1.3.0 Unified Schedule Workspace Bar)
+ * - 좌측: 전체 토글 + 5대 게임 필터 캡슐
+ * - 우측: 오늘 위치 이동 + 달력 이미지 + 물리 슬라이딩 글라이더 기반 3단 뷰 스위처
  */
 export default function GameFilterBar({
   activeGames,
   gamesConfig,
   onToggleGame,
   onSelectAll,
-  currentView,
+  currentView = 'gantt',
   onViewChange,
   onOpenCalendar,
   onJumpToToday,
   isShrunk,
 }) {
+  const switcherRef = useRef(null);
+  const btnRefs = useRef({});
+  const [glider, setGlider] = useState({ width: 0, left: 0, ready: false });
+
+  const updateGlider = useCallback(() => {
+    const activeBtn = btnRefs.current[currentView];
+    if (!activeBtn) return;
+    setGlider({
+      width: activeBtn.offsetWidth,
+      left: activeBtn.offsetLeft,
+      ready: true,
+    });
+  }, [currentView]);
+
+  useEffect(() => {
+    updateGlider();
+    const rafId = requestAnimationFrame(updateGlider);
+    const timerId = setTimeout(updateGlider, 180);
+
+    let ro = null;
+    if (typeof ResizeObserver !== 'undefined' && switcherRef.current) {
+      ro = new ResizeObserver(updateGlider);
+      ro.observe(switcherRef.current);
+      Object.values(btnRefs.current).forEach((el) => {
+        if (el) ro.observe(el);
+      });
+    }
+
+    window.addEventListener('resize', updateGlider);
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timerId);
+      if (ro) ro.disconnect();
+      window.removeEventListener('resize', updateGlider);
+    };
+  }, [updateGlider, isShrunk]);
+
   if (!gamesConfig || Object.keys(gamesConfig).length === 0) return null;
 
   const gameNames = Object.keys(gamesConfig);
-  const allActive = gameNames.every((g) => activeGames[g] !== false);
+  const activeCount = gameNames.filter((g) => activeGames[g] !== false).length;
+  const allActive = activeCount === gameNames.length;
 
   const handleToggleAll = () => {
     const nextState = !allActive;
@@ -44,7 +91,7 @@ export default function GameFilterBar({
     onSelectAll(nextState);
   };
 
-  const handleViewChange = (view) => {
+  const handleViewSwitch = (view) => {
     trackViewModeChange(view);
     if (onViewChange) onViewChange(view);
   };
@@ -55,38 +102,46 @@ export default function GameFilterBar({
 
   return (
     <section className={`game-filter-bar ${isShrunk ? 'game-filter-bar--shrunk' : ''}`}>
-      {/* 1. 좌측: 전체 토글 + 게임 필터 칩 */}
+      {/* 1. 좌측: 전체 토글 + 5대 게임 필터 캡슐 */}
       <div className="game-filter-bar__left">
-        <div className="game-filter-bar__buttons">
+        <div className="game-filter-bar__buttons" role="group" aria-label="게임별 일정 필터">
           <button
-            className={`game-filter-bar__control-btn ${allActive ? 'game-filter-bar__control-btn--active' : ''} ${isShrunk ? 'game-filter-bar__control-btn--icon-only' : ''}`}
+            className={`game-filter-bar__control-btn ${
+              allActive ? 'game-filter-bar__control-btn--active' : ''
+            } ${isShrunk ? 'game-filter-bar__control-btn--icon-only' : ''}`}
             onClick={handleToggleAll}
             type="button"
+            aria-pressed={allActive}
             title={allActive ? '모든 게임 필터 해제' : '모든 게임 필터 켜기'}
           >
             {allActive ? <CheckSquare size={14} /> : <Square size={14} />}
-            <span className="game-filter-bar__control-label">전체</span>
+            <span className="game-filter-bar__control-label">
+              전체 <em className="game-filter-bar__count">{activeCount}/{gameNames.length}</em>
+            </span>
           </button>
 
           {gameNames.map((gameName) => {
             const isActive = activeGames[gameName] !== false;
-            const color = gamesConfig[gameName]?.theme?.color || '#818cf8';
+            const color = gamesConfig[gameName]?.theme?.color || '#6fe0b6';
             const iconUrl = gamesConfig[gameName]?.icon;
             const shortName = getShortGameName(gameName);
 
             return (
               <button
                 key={gameName}
-                className={`game-filter-btn ${isActive ? 'game-filter-btn--active' : 'game-filter-btn--inactive'} ${isShrunk ? 'game-filter-btn--icon-only' : ''}`}
+                className={`game-filter-btn ${
+                  isActive ? 'game-filter-btn--active' : 'game-filter-btn--inactive'
+                } ${isShrunk ? 'game-filter-btn--icon-only' : ''}`}
                 onClick={() => {
                   trackGameFilterToggle(gameName, !isActive);
                   onToggleGame(gameName);
                 }}
                 type="button"
+                aria-pressed={isActive}
                 style={{
                   '--filter-color': color,
                 }}
-                title={`${gameName} 필터 ${isActive ? '끄기' : '켜기'}`}
+                title={`${gameName} 일정 ${isActive ? '숨기기' : '표시하기'}`}
               >
                 {iconUrl ? (
                   <img
@@ -103,80 +158,113 @@ export default function GameFilterBar({
                     }}
                   />
                 )}
-                <span className="game-filter-btn__label game-filter-btn__label--full">{gameName}</span>
-                <span className="game-filter-btn__label game-filter-btn__label--short">{shortName}</span>
+                <span className="game-filter-btn__label game-filter-btn__label--full">
+                  {gameName}
+                </span>
+                <span className="game-filter-btn__label game-filter-btn__label--short">
+                  {shortName}
+                </span>
+                <span
+                  className="game-filter-btn__dot"
+                  style={{ backgroundColor: color }}
+                  aria-hidden="true"
+                />
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* 2. 우측: 오늘로 이동 + 3단 뷰 전환 + 달력 이미지 */}
+      {/* 2. 우측: 오늘 위치 이동 + 달력 이미지 + 3단 메인 뷰 스위처 */}
       <div className="game-filter-bar__right">
-        {!isShrunk && (
+        <button
+          type="button"
+          className="control-bar__today-btn"
+          onClick={onJumpToToday}
+          title="오늘 날짜 위치로 즉시 이동"
+        >
+          <Crosshair size={13} className="control-bar__today-icon" />
+          <span className="control-bar__today-label">오늘 {todayLabel}</span>
+        </button>
+
+        {onOpenCalendar && !isShrunk && (
           <button
             type="button"
-            className="control-bar__today-btn"
-            onClick={onJumpToToday}
-            title="오늘 날짜 위치로 즉시 스크롤 이동"
+            className="control-bar__cal-img-btn"
+            onClick={() => onOpenCalendar()}
+            title="이달의 종합 달력 고화질 이미지 보기 및 다운로드"
           >
-            <Crosshair size={13} className="control-bar__today-icon" />
-            <span className="control-bar__today-label">오늘 {todayLabel}</span>
+            <ImageIcon size={13} />
+            <span>달력 이미지</span>
           </button>
         )}
 
-        <div className="view-switcher" role="tablist" aria-label="일정 보기 방식 전환">
+        <nav
+          className="view-switcher"
+          role="tablist"
+          aria-label="일정 표시 방식 전환"
+          ref={switcherRef}
+        >
+          <span
+            className="view-switcher__glider"
+            aria-hidden="true"
+            style={{
+              width: `${glider.width}px`,
+              transform: `translate3d(${glider.left}px, 0, 0)`,
+              opacity: glider.ready ? 1 : 0,
+            }}
+          />
           <button
+            ref={(el) => {
+              btnRefs.current.gantt = el;
+            }}
+            className={`view-switcher__btn ${
+              currentView === 'gantt' ? 'view-switcher__btn--active' : ''
+            } ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
+            onClick={() => handleViewSwitch('gantt')}
             type="button"
             role="tab"
             aria-selected={currentView === 'gantt'}
-            className={`view-switcher__btn ${currentView === 'gantt' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
-            onClick={() => handleViewChange('gantt')}
-            title="게임별 버전·픽업 기간 표 (간트 차트)"
-            id="btn-view-gantt"
+            title="기간 표 (타임라인)"
           >
             <BarChart2 size={14} />
             <span className="view-switcher__label">기간 표</span>
           </button>
 
           <button
+            ref={(el) => {
+              btnRefs.current.calendar = el;
+            }}
+            className={`view-switcher__btn ${
+              currentView === 'calendar' ? 'view-switcher__btn--active' : ''
+            } ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
+            onClick={() => handleViewSwitch('calendar')}
             type="button"
             role="tab"
             aria-selected={currentView === 'calendar'}
-            className={`view-switcher__btn ${currentView === 'calendar' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
-            onClick={() => handleViewChange('calendar')}
-            title="월간 달력으로 일정 보기"
-            id="btn-view-calendar"
+            title="월간 달력"
           >
             <CalendarIcon size={14} />
             <span className="view-switcher__label">월간 달력</span>
           </button>
 
           <button
+            ref={(el) => {
+              btnRefs.current.list = el;
+            }}
+            className={`view-switcher__btn ${
+              currentView === 'list' ? 'view-switcher__btn--active' : ''
+            } ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
+            onClick={() => handleViewSwitch('list')}
             type="button"
             role="tab"
             aria-selected={currentView === 'list'}
-            className={`view-switcher__btn ${currentView === 'list' ? 'view-switcher__btn--active' : ''} ${isShrunk ? 'view-switcher__btn--icon-only' : ''}`}
-            onClick={() => handleViewChange('list')}
-            title="날짜순 상세 타임라인 목록"
-            id="btn-view-list"
+            title="상세 일정"
           >
             <ListFilter size={14} />
             <span className="view-switcher__label">상세 일정</span>
           </button>
-        </div>
-
-        {!isShrunk && onOpenCalendar && (
-          <button
-            type="button"
-            className="control-bar__cal-img-btn"
-            onClick={() => onOpenCalendar()}
-            title="이달의 종합 캘린더 고화질 이미지 보기 및 다운로드"
-          >
-            <ImageIcon size={13} />
-            <span>달력 이미지</span>
-          </button>
-        )}
+        </nav>
       </div>
     </section>
   );

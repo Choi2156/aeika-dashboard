@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   CalendarModal.css — Monthly Calendar High-Res Export Modal (v2.0)
+   CalendarModal.css — Monthly Calendar High-Res Export Modal (v1.3.0)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .calendar-modal__dialog {
@@ -14,7 +14,7 @@
   box-shadow: var(--modal-body-shadow);
   overflow: hidden;
   transform: translateY(6px) scale(0.98);
-  transition: transform 180ms ease;
+  transition: transform 200ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .modal-overlay.modal-visible .calendar-modal__dialog {
@@ -163,18 +163,19 @@
   height: 34px;
   padding: 0 14px;
   border-radius: var(--radius-md);
-  background: var(--accent-indigo);
-  color: #ffffff;
+  background: #f8fafc;
+  color: #07090f;
   font-family: inherit;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 800;
   border: none;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
 .calendar-modal__btn-download:hover {
-  background: var(--accent-indigo-dark);
+  background: #ffffff;
+  transform: translateY(-1px);
 }
 
 .calendar-modal__btn-view {
@@ -188,14 +189,17 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
   color: var(--text-primary);
+  font-family: inherit;
   font-size: 0.78rem;
   font-weight: 600;
+  cursor: pointer;
   text-decoration: none;
   transition: all var(--transition-fast);
 }
 
 .calendar-modal__btn-view:hover {
   border-color: var(--border-secondary);
+  background: var(--bg-elevated, #181f2e);
 }
 
 @media (max-width: 768px) {

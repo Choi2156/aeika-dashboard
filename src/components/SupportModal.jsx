@@ -4,7 +4,7 @@ import ModalShell from './common/ModalShell';
 import '../styles/components.css';
 
 /**
- * SupportModal — 대시보드 투네이션(Toonation) 후원 연동 모달 (v2.0 ModalShell 통합)
+ * SupportModal — 대시보드 투네이션(Toonation) 후원 연동 모달 (v1.3.0)
  */
 export default function SupportModal({ isOpen, onClose }) {
   return (
@@ -19,7 +19,7 @@ export default function SupportModal({ isOpen, onClose }) {
           <div className="guide-header">
             <div className="guide-header-title">
               <Heart size={18} className="guide-title-icon" />
-              <span>후원하기</span>
+              <span>후원 안내</span>
             </div>
             <button className="modal-close-btn" onClick={requestClose} aria-label="닫기">
               <X size={18} />
@@ -30,7 +30,9 @@ export default function SupportModal({ isOpen, onClose }) {
             <div className="toonation-sponsor-container">
               <div className="toonation-sponsor-body">
                 <p className="toonation-sponsor-text">
-                  보내주신 후원은 사이트 유지와 데이터 관리에 소중히 사용됩니다.
+                  보내주신 후원은 서버 유지와 일정 데이터 관리에 사용됩니다.
+                  <br />
+                  QR 코드를 스캔하거나 이미지를 클릭하면 투네이션 후원 페이지로 연결됩니다.
                 </p>
 
                 <div className="toonation-qr-card">
@@ -39,7 +41,7 @@ export default function SupportModal({ isOpen, onClose }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="toonation-qr-wrapper"
-                    title="투네이션 후원 페이지 바로가기"
+                    title="투네이션 후원 페이지 열기"
                     onClick={() => {
                       trackOutboundLink({
                         linkCategory: 'donation',
@@ -65,7 +67,7 @@ export default function SupportModal({ isOpen, onClose }) {
                       size={13}
                       style={{ display: 'inline', verticalAlign: '-2px', marginRight: '5px' }}
                     />
-                    모든 기능은 후원 여부와 관계없이 항상 무료로 제공됩니다.
+                    대시보드의 모든 기능은 후원 여부와 관계없이 무료로 제공됩니다.
                   </p>
                 </div>
               </div>

@@ -58,6 +58,7 @@ export default function App() {
       (window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
     return isMobile ? 'list' : 'gantt';
   });
+  const [viewDirection, setViewDirection] = useState('center');
 
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isLicenseOpen, setIsLicenseOpen] = useState(false);
@@ -102,6 +103,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
     document.body.setAttribute('data-theme', theme);
   }, [theme]);
 
@@ -203,6 +205,12 @@ export default function App() {
   };
 
   const handleViewChange = (nextView) => {
+    const order = { gantt: 0, calendar: 1, list: 2 };
+    if (order[nextView] !== undefined && order[currentView] !== undefined) {
+      setViewDirection(order[nextView] > order[currentView] ? 'right' : 'left');
+    } else {
+      setViewDirection('center');
+    }
     setCurrentView(nextView);
     setTimeout(() => persistSettings({ currentView: nextView }), 0);
   };
@@ -263,6 +271,7 @@ export default function App() {
 
   return (
     <div ref={appRef} className="app" data-theme={theme}>
+      <div className="app-ambient-aurora" aria-hidden="true" />
       {MAINTENANCE_CONFIG.active && (
         <div className="maintenance-banner">
           <div className="maintenance-banner__content">
@@ -289,25 +298,17 @@ export default function App() {
         isStorageConsentEnabled={isStorageConsentEnabled}
         onToggleStorageConsent={handleToggleStorageConsent}
         meta={meta}
-      />
-
-      <GameFilterBar
-        activeGames={activeGames}
-        gamesConfig={gamesConfig}
-        onToggleGame={handleToggleGame}
-        onSelectAll={handleSelectAll}
         currentView={currentView}
         onViewChange={handleViewChange}
-        onOpenCalendar={() => handleOpenCalendarModal()}
-        onJumpToToday={handleJumpToToday}
-        isShrunk={isShrunk}
+        notices={notices}
+        onOpenNotice={handleOpenNotice}
       />
 
       <main className="main-content">
         {loading && (
           <div className="app-loading">
             <div className="app-loading__spinner"></div>
-            <p className="app-loading__text">스케줄 데이터를 불러오는 중입니다...</p>
+            <p className="app-loading__text">일정 데이터를 불러오는 중입니다...</p>
           </div>
         )}
 
@@ -322,12 +323,10 @@ export default function App() {
 
         {!loading && !error && (
           <div className="main-view">
-            <NoticeTickerBanner notices={notices} onOpenNotice={handleOpenNotice} />
-
             <SectionErrorBoundary
               sectionName="LiveBannerBoard"
               sectionTitle="실시간 하이라이트 배너를 불러오는 중 문제가 발생했습니다."
-              resetKey={currentView}
+              resetKey={`${currentView}-${Object.values(activeGames).join('')}`}
             >
               <LiveBannerBoard
                 events={events}
@@ -337,46 +336,66 @@ export default function App() {
               />
             </SectionErrorBoundary>
 
+            <GameFilterBar
+              activeGames={activeGames}
+              gamesConfig={gamesConfig}
+              onToggleGame={handleToggleGame}
+              onSelectAll={handleSelectAll}
+              currentView={currentView}
+              onViewChange={handleViewChange}
+              onOpenCalendar={() => handleOpenCalendarModal()}
+              onJumpToToday={handleJumpToToday}
+              isShrunk={isShrunk}
+            />
+
             <SectionErrorBoundary
               sectionName={currentView}
               sectionTitle="선택한 일정 뷰를 표시하는 중 문제가 발생했습니다."
-              resetKey={currentView}
+              resetKey={`${currentView}-${Object.values(activeGames).join('')}`}
             >
-              {currentView === 'gantt' && (
-                <GanttView
-                  events={events}
-                  gamesConfig={gamesConfig}
-                  recommendedVideos={recommendedVideos}
-                  briefingData={briefingData}
-                  activeGames={activeGames}
-                  notices={notices}
-                  onOpenNotice={handleOpenNotice}
-                  onToggleGame={handleToggleGame}
-                  onEventClick={handleEventClick}
-                  jumpTodayTrigger={jumpTodayTrigger}
-                />
-              )}
+              <div
+                key={currentView}
+                className="view-stage"
+                data-view={currentView}
+                data-dir={viewDirection}
+              >
+                {currentView === 'gantt' && (
+                  <GanttView
+                    events={events}
+                    gamesConfig={gamesConfig}
+                    recommendedVideos={recommendedVideos}
+                    briefingData={briefingData}
+                    activeGames={activeGames}
+                    notices={notices}
+                    onOpenNotice={handleOpenNotice}
+                    onToggleGame={handleToggleGame}
+                    onSelectAll={handleSelectAll}
+                    onEventClick={handleEventClick}
+                    jumpTodayTrigger={jumpTodayTrigger}
+                  />
+                )}
 
-              {currentView === 'calendar' && (
-                <CalendarView
-                  events={events}
-                  gamesConfig={gamesConfig}
-                  activeGames={activeGames}
-                  onEventClick={handleEventClick}
-                  onOpenCalendarModal={handleOpenCalendarModal}
-                  jumpTodayTrigger={jumpTodayTrigger}
-                />
-              )}
+                {currentView === 'calendar' && (
+                  <CalendarView
+                    events={events}
+                    gamesConfig={gamesConfig}
+                    activeGames={activeGames}
+                    onEventClick={handleEventClick}
+                    onOpenCalendarModal={handleOpenCalendarModal}
+                    jumpTodayTrigger={jumpTodayTrigger}
+                  />
+                )}
 
-              {currentView === 'list' && (
-                <ListView
-                  events={events}
-                  gamesConfig={gamesConfig}
-                  activeGames={activeGames}
-                  onEventClick={handleEventClick}
-                  jumpTodayTrigger={jumpTodayTrigger}
-                />
-              )}
+                {currentView === 'list' && (
+                  <ListView
+                    events={events}
+                    gamesConfig={gamesConfig}
+                    activeGames={activeGames}
+                    onEventClick={handleEventClick}
+                    jumpTodayTrigger={jumpTodayTrigger}
+                  />
+                )}
+              </div>
             </SectionErrorBoundary>
           </div>
         )}
