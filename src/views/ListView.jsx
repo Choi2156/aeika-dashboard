@@ -415,11 +415,12 @@ export default function ListView({
                           {event.game}
                         </span>
 
-                        {event.version && (
-                          <span className="list-view__version">
-                            v{event.version.replace(/^v/, '')}
-                          </span>
-                        )}
+                        {event.version &&
+                          !/^(?:행사|이벤트|콜라보)$/.test(event.version.trim()) && (
+                            <span className="list-view__version">
+                              v{event.version.replace(/^v/, '')}
+                            </span>
+                          )}
 
                         {displayTypeName && (
                           <span

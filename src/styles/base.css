@@ -18,6 +18,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: clip;
 }
 
 body {
@@ -34,7 +35,7 @@ body {
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
   transition: background-color var(--transition-normal), color var(--transition-normal);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 html[data-theme="light"] body,
@@ -91,6 +92,8 @@ body[data-theme="light"] {
   padding: 12px 14px 32px;
   position: relative;
   z-index: 1;
+  min-width: 0;
+  overflow-x: clip;
 }
 
 @media (min-width: 768px) {
@@ -127,6 +130,7 @@ body[data-theme="light"] {
 
 .main-view {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -135,6 +139,7 @@ body[data-theme="light"] {
 /* ─── View-Stage Directional Spring Choreography (v1.3.0) ─── */
 .view-stage {
   width: 100%;
+  min-width: 0;
   animation: viewStageEnterCenter 320ms var(--ease-out-expo) both;
   will-change: opacity, transform;
 }

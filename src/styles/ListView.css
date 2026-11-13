@@ -623,15 +623,21 @@
 @media (max-width: 640px) {
   .list-view__left,
   .list-view__today-marker-left {
-    width: 82px;
+    width: 60px;
   }
 
   .list-view__timeline::before {
-    left: 40px;
+    left: 29px;
   }
 
   .list-view__date {
-    font-size: 0.72rem;
+    font-size: 0.67rem;
+    letter-spacing: -0.02em;
+  }
+
+  .list-view__right,
+  .list-view__today-marker-right {
+    padding-left: 8px;
   }
 
   .list-view__card {
@@ -640,11 +646,25 @@
   }
 
   .list-view__card-bg-wrap {
-    width: 50%;
+    width: 46%;
+    opacity: 0.72;
+  }
+
+  .list-view__card-bg-mask {
+    background: linear-gradient(
+      to right,
+      var(--bg-card) 0%,
+      rgba(var(--bg-card-rgb), 0.72) 55%,
+      rgba(var(--bg-card-rgb), 0.18) 100%
+    );
   }
 
   .list-view__card-content {
-    max-width: 64%;
+    max-width: 92%;
+  }
+
+  .list-view__detail {
+    -webkit-line-clamp: 2;
   }
 
   .list-view__title {

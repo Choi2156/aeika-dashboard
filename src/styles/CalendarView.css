@@ -925,6 +925,11 @@
 }
 
 @media (max-width: 768px) {
+  .calendar-view {
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .calendar-view__header {
     padding: 9px 12px;
     gap: 8px;
@@ -936,15 +941,35 @@
     margin: 0 2px;
   }
 
+  .calendar-view__grid-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .calendar-view__weekdays,
+  .calendar-view__week-row {
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  }
+
   .calendar-view__weekday {
-    padding: 7px 4px;
+    padding: 7px 2px;
     font-size: 0.7rem;
+    min-width: 0;
   }
 
   .calendar-view__cell {
-    min-height: 82px;
-    padding: 4px 3px 5px;
+    min-width: 0;
+    overflow: hidden;
+    min-height: 76px;
+    padding: 4px 2px 5px;
     gap: 3px;
+  }
+
+  .calendar-view__cell-events {
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
   }
 
   .calendar-view__day-num {
@@ -961,9 +986,13 @@
   }
 
   .calendar-chip {
-    padding: 2px 4px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    padding: 2px 3px;
     gap: 3px;
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     min-height: 18px;
     justify-content: flex-start;
   }
@@ -975,23 +1004,72 @@
   }
 
   .calendar-chip__game {
-    font-size: 0.58rem;
+    font-size: 0.56rem;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
+  .calendar-agenda {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    overflow: hidden;
+  }
+
   .calendar-agenda__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .calendar-agenda__card {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .calendar-agenda__card-main,
+  .calendar-agenda__card-title {
+    min-width: 0;
   }
 }
 
 @media (max-width: 560px) {
-  .calendar-chip__label {
+  .calendar-view__right-controls {
+    width: 100%;
+  }
+
+  .calendar-view__export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .calendar-chip__label,
+  .calendar-chip__offline-tag {
     display: none;
+  }
+
+  .calendar-chip__live-tag {
+    width: 5px;
+    height: 5px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0;
+    line-height: 0;
   }
 
   .calendar-chip {
     justify-content: center;
-    padding: 2px 3px;
+    padding: 2px 2px;
+    gap: 2px;
+  }
+
+  .calendar-chip__game {
+    font-size: 0.55rem;
+    letter-spacing: -0.03em;
+    text-align: center;
+    flex: 1;
   }
 }
