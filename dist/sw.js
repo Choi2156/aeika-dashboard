@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aeika-dashboard-v3';
+const CACHE_NAME = 'aeika-dashboard-v4';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -8,10 +8,10 @@ self.addEventListener('install', (event) => {
         .addAll([
           './',
           './index.html',
-          './favicon.svg',
-          './favicon-192.png',
-          './icon-maskable-192.png',
-          './manifest.webmanifest',
+          './favicon.svg?v=3',
+          './favicon-192.png?v=3',
+          './icon-maskable-192.png?v=3',
+          './manifest.webmanifest?v=3',
         ])
         .catch(() => {})
     )
