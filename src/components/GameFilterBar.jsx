@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   CheckSquare,
   Square,
-  Image as ImageIcon,
   Crosshair,
   BarChart2,
   Calendar as CalendarIcon,
@@ -29,7 +28,7 @@ function getShortGameName(gameName) {
 /**
  * GameFilterBar 컴포넌트 (v1.3.0 Unified Schedule Workspace Bar)
  * - 좌측: 전체 토글 + 5대 게임 필터 캡슐
- * - 우측: 오늘 위치 이동 + 달력 이미지 + 물리 슬라이딩 글라이더 기반 3단 뷰 스위처
+ * - 우측: 오늘 위치 이동 + 물리 슬라이딩 글라이더 기반 3단 뷰 스위처
  */
 export default function GameFilterBar({
   activeGames,
@@ -38,7 +37,6 @@ export default function GameFilterBar({
   onSelectAll,
   currentView = 'gantt',
   onViewChange,
-  onOpenCalendar,
   onJumpToToday,
   isShrunk,
 }) {
@@ -175,7 +173,7 @@ export default function GameFilterBar({
         </div>
       </div>
 
-      {/* 2. 우측: 오늘 위치 이동 + 달력 이미지 + 3단 메인 뷰 스위처 */}
+      {/* 2. 우측: 오늘 위치 이동 + 3단 메인 뷰 스위처 */}
       <div className="game-filter-bar__right">
         <button
           type="button"
@@ -190,19 +188,6 @@ export default function GameFilterBar({
           </span>
           <span className="control-bar__today-label control-bar__today-label--short">오늘</span>
         </button>
-
-        {onOpenCalendar && !isShrunk && (
-          <button
-            type="button"
-            className="control-bar__cal-img-btn"
-            onClick={() => onOpenCalendar()}
-            title="이달의 종합 달력 고화질 이미지 보기 및 다운로드"
-            aria-label="이달의 종합 달력 이미지 보기"
-          >
-            <ImageIcon size={13} />
-            <span className="control-bar__cal-img-label">달력 이미지</span>
-          </button>
-        )}
 
         <nav
           className={`view-switcher ${glider.ready ? 'has-glider' : ''}`}

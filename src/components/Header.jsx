@@ -271,9 +271,9 @@ export default function Header({
         <button
           onClick={handleToggleTheme}
           type="button"
-          className="header__ghost-btn header__ghost-btn--icon"
+          className="header__ghost-btn header__ghost-btn--icon header__theme-btn"
           title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-          aria-label="테마 전환"
+          aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
         </button>

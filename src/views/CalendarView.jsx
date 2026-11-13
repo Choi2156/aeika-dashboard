@@ -467,12 +467,28 @@ export default function CalendarView({
                 cleanEventDisplayTitle(rawTitle, item.game) || item.title;
               const timeShort = item.time ? item.time.slice(0, 5) : '';
               const locationStr = item.rawEvent?.location || '';
+              const startDateStr =
+                item.rawEvent?.start_date || item.rawEvent?.date || item.date;
+              const endDateStr = item.rawEvent?.end_date || startDateStr;
+              const isMultiDay = Boolean(
+                startDateStr && endDateStr && startDateStr !== endDateStr
+              );
+              const isStartRole =
+                !item.isEnd && isMultiDay && item.category === 'offline';
+              const dateRangeText = isMultiDay
+                ? `${formatDisplayDate(startDateStr, false)} ~ ${formatDisplayDate(
+                    endDateStr,
+                    false
+                  )}`
+                : '';
 
               return (
                 <button
                   key={`agenda-${item.id}`}
                   type="button"
-                  className="calendar-agenda__card"
+                  className={`calendar-agenda__card${
+                    item.isEnd ? ' calendar-agenda__card--end' : ''
+                  }`}
                   style={{
                     '--chip-color': color,
                     '--chip-rgb': rgb,
@@ -507,6 +523,16 @@ export default function CalendarView({
                     </div>
 
                     <div className="calendar-agenda__badges">
+                      {item.isEnd && (
+                        <span className="calendar-agenda__role-pill is-end">
+                          종료일
+                        </span>
+                      )}
+                      {isStartRole && (
+                        <span className="calendar-agenda__role-pill is-start">
+                          시작일
+                        </span>
+                      )}
                       <span
                         className={`calendar-agenda__status ${
                           item.isFixed ? 'is-confirmed' : 'is-predicted'
@@ -527,8 +553,25 @@ export default function CalendarView({
                     <ArrowUpRight size={14} className="calendar-agenda__card-arrow" />
                   </div>
 
-                  {(timeShort || locationStr) && (
+                  {(dateRangeText || timeShort || locationStr) && (
                     <div className="calendar-agenda__card-meta">
+                      {dateRangeText && (
+                        <span
+                          className={`calendar-agenda__meta-chip${
+                            item.isEnd ? ' is-end' : ''
+                          }`}
+                        >
+                          <CalendarIcon size={11} />
+                          <span>
+                            {dateRangeText}
+                            {item.isEnd
+                              ? ' (종료일)'
+                              : isStartRole
+                                ? ' (시작일)'
+                                : ''}
+                          </span>
+                        </span>
+                      )}
                       {timeShort && (
                         <span className="calendar-agenda__meta-chip">
                           <Clock size={11} />

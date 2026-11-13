@@ -731,6 +731,12 @@
   transition: all var(--transition-fast);
 }
 
+.calendar-agenda__card--end {
+  border-style: dashed;
+  border-left-style: solid;
+  border-left-color: #f59e0b;
+}
+
 .calendar-agenda__card:hover {
   border-color: rgba(var(--chip-rgb), 0.75);
   border-left-color: var(--chip-color);
@@ -790,6 +796,26 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  flex-wrap: wrap;
+}
+
+.calendar-agenda__role-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.calendar-agenda__role-pill.is-end {
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fcd34d;
+}
+
+.calendar-agenda__role-pill.is-start {
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  color: #7dd3fc;
 }
 
 .calendar-agenda__status {
@@ -888,6 +914,11 @@
   color: var(--text-secondary);
 }
 
+.calendar-agenda__meta-chip.is-end {
+  color: #fcd34d;
+  font-weight: 700;
+}
+
 /* ── Light Mode Overrides ─────────────────────────────────── */
 [data-theme="light"] .calendar-view__cell--other-month {
   background: #e6ecf5;
@@ -968,6 +999,22 @@
 [data-theme="light"] .calendar-agenda__dday.is-past {
   background: var(--bg-tertiary);
   color: var(--text-muted);
+}
+
+[data-theme="light"] .calendar-agenda__role-pill.is-end {
+  background: rgba(217, 119, 6, 0.14);
+  border-color: rgba(217, 119, 6, 0.42);
+  color: #b45309;
+}
+
+[data-theme="light"] .calendar-agenda__role-pill.is-start {
+  background: rgba(2, 132, 199, 0.12);
+  border-color: rgba(2, 132, 199, 0.38);
+  color: #0369a1;
+}
+
+[data-theme="light"] .calendar-agenda__meta-chip.is-end {
+  color: #b45309;
 }
 
 /* ── Responsive (Tablet & Mobile) ─────────────────────────── */

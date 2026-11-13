@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aeika-dashboard-v2';
+const CACHE_NAME = 'aeika-dashboard-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

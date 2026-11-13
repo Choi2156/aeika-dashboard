@@ -326,8 +326,7 @@
 
 
 
-.control-bar__today-btn,
-.control-bar__cal-img-btn {
+.control-bar__today-btn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -347,26 +346,22 @@
   white-space: nowrap;
 }
 
-[data-theme="light"] .control-bar__today-btn,
-[data-theme="light"] .control-bar__cal-img-btn {
+[data-theme="light"] .control-bar__today-btn {
   background: var(--bg-tertiary);
 }
 
-.control-bar__today-btn:hover,
-.control-bar__cal-img-btn:hover {
+.control-bar__today-btn:hover {
   border-color: var(--border-secondary);
   color: var(--text-primary);
   background: var(--bg-elevated);
   transform: translateY(-1px);
 }
 
-.control-bar__today-btn:active,
-.control-bar__cal-img-btn:active {
+.control-bar__today-btn:active {
   transform: translateY(0) scale(0.95);
 }
 
-.control-bar__today-btn:focus-visible,
-.control-bar__cal-img-btn:focus-visible {
+.control-bar__today-btn:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
@@ -422,7 +417,7 @@
     display: none;
   }
 
-  /* 2행: [오늘] [달력이미지 아이콘] [간트 차트 | 캘린더 | 타임라인] 한 줄 통합 */
+  /* 2행: [오늘] [간트 차트 | 캘린더 | 타임라인] 한 줄 통합 */
   .game-filter-bar:not(.game-filter-bar--shrunk) .game-filter-bar__right {
     border-top: 1px solid var(--border-subtle);
     padding-top: 6px;
@@ -447,19 +442,6 @@
 
   .control-bar__today-label--short {
     display: inline;
-  }
-
-  .game-filter-bar:not(.game-filter-bar--shrunk) .control-bar__cal-img-btn {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    justify-content: center;
-    border-radius: 8px;
-    flex: 0 0 auto;
-  }
-
-  .control-bar__cal-img-label {
-    display: none;
   }
 
   .game-filter-bar:not(.game-filter-bar--shrunk) .view-switcher {

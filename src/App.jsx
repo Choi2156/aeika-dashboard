@@ -380,7 +380,6 @@ export default function App() {
               onSelectAll={handleSelectAll}
               currentView={currentView}
               onViewChange={handleViewChange}
-              onOpenCalendar={() => handleOpenCalendarModal()}
               onJumpToToday={handleJumpToToday}
               isShrunk={isShrunk}
             />

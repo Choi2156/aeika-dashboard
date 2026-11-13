@@ -539,6 +539,33 @@ body[data-theme="light"] {
   padding: 0;
 }
 
+/* 테마 전환 버튼은 현재 테마의 반대 톤으로 대비 표시해 전환 대상을 직관화 */
+.header__ghost-btn.header__theme-btn {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.header__ghost-btn.header__theme-btn:hover {
+  background: #ffffff;
+  color: #b45309;
+  border-color: #ffffff;
+}
+
+[data-theme="light"] .header__ghost-btn.header__theme-btn {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #1e293b;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.22);
+}
+
+[data-theme="light"] .header__ghost-btn.header__theme-btn:hover {
+  background: #1e293b;
+  color: #fde68a;
+  border-color: #334155;
+}
+
 .youtube-promo__icon {
   color: #ef4444;
   flex-shrink: 0;
