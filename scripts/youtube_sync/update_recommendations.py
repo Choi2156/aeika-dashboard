@@ -174,6 +174,43 @@ def classify_fallback_video(title, duration_seconds=0, is_shorts_api=False):
     # 4. 해시태그가 전혀 없는 영상은 쇼츠가 아니므로 모두 롱폼(other)
     return "other", False
 
+SHORTS_POOL_PER_GAME = 6
+SHORTS_RECENCY_DAYS = 30
+SHORTS_MIN_PER_GAME = 3
+
+
+def parse_published_at_utc(iso_str):
+    """ISO 8601 published_at 문자열을 UTC datetime으로 파싱합니다."""
+    if not iso_str:
+        return None
+    try:
+        normalized = iso_str.strip().replace("Z", "+00:00")
+        dt = datetime.fromisoformat(normalized)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except Exception:
+        return None
+
+
+def select_recent_shorts(shorts_items, max_count=SHORTS_POOL_PER_GAME, recency_days=SHORTS_RECENCY_DAYS, min_count=SHORTS_MIN_PER_GAME):
+    """최신순 정렬 후 최근 N일 이내 쇼츠 위주로 추출합니다 (부족 시 최소 min_count개 보장)."""
+    sorted_items = sorted(shorts_items, key=lambda x: x.get("published_at", ""), reverse=True)
+    if not sorted_items:
+        return []
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=recency_days)
+    recent_items = []
+    for item in sorted_items:
+        pub_dt = parse_published_at_utc(item.get("published_at", ""))
+        if pub_dt is not None and pub_dt >= cutoff:
+            recent_items.append(item)
+
+    if len(recent_items) >= min_count:
+        return recent_items[:max_count]
+    return sorted_items[:min(min_count, len(sorted_items))]
+
+
 def run_pipeline():
     print("=================================================================")
     print("   AEIKA Archive - 추천 영상 파이프라인 자동화 & 최적화 (v3.0.0)   ")
@@ -250,18 +287,17 @@ def run_pipeline():
     print(f"      - 제목 규칙 폴백 판별: {total_fallback}개")
 
     # 3. 3대 독립 큐 슬라이딩 추출
-    # (1) 쇼츠: 게임별 최신 10개
-    # (2) 스토리 풀버전: 게임별 최신 최대 6개
-    # (3) 롱폼 추천: 게임별 최신 최대 6개
+    # (1) 쇼츠: 게임별 최근 30일 이내 우선 · 최대 6개 (최소 3개 보장)
+    # (2) 스토리 풀버전: 게임별 최신 최대 10개
+    # (3) 롱폼 추천: 게임별 최신 최대 10개
     final_shorts = []
     final_longform = []
 
     print("\n[3/4] 게임별 독립 큐 추출 현황:")
     for game in MAIN_GAMES:
-        # 1) 쇼츠 10개
+        # 1) 쇼츠 (최근 30일 이내 우선, 최대 6개 / 최소 3개 보장)
         shorts_items = grouped_data[game]["shorts"]
-        shorts_items.sort(key=lambda x: x.get("published_at", ""), reverse=True)
-        selected_shorts = shorts_items[:10]
+        selected_shorts = select_recent_shorts(shorts_items)
         for idx, item in enumerate(selected_shorts):
             v_id = item["id"]
             final_shorts.append({

@@ -46,6 +46,29 @@ function shuffleArray(array) {
   return arr;
 }
 
+function getVideoAddedTime(video) {
+  if (!video?.addedAt) return 0;
+  const ts = new Date(video.addedAt).getTime();
+  return Number.isFinite(ts) ? ts : 0;
+}
+
+function weightedShuffle(items, getWeight) {
+  return items
+    .map((item, idx) => {
+      const weight = Math.max(0.05, getWeight(item, idx));
+      const u = Math.max(1e-9, Math.random());
+      return { item, score: Math.pow(u, 1 / weight) };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((entry) => entry.item);
+}
+
+function getRecencyAgeWeight(addedTime, nowMs) {
+  if (!addedTime) return 0.25;
+  const ageDays = Math.max(0, (nowMs - addedTime) / 86400000);
+  return 1 / (1 + ageDays / 14);
+}
+
 function allocateVideosWithShuffle(allVideos, activeGames, targetCount = 6) {
   if (!allVideos || allVideos.length === 0) return [];
 
@@ -57,25 +80,65 @@ function allocateVideosWithShuffle(allVideos, activeGames, targetCount = 6) {
   const n = activeGameNames.length;
   if (n === 0) return [];
 
+  const nowMs = Date.now();
   const gameVideoMap = {};
+  const gameLatestMap = {};
+
   activeGameNames.forEach((game) => {
-    const pool = allVideos.filter((v) => v.game === game);
-    gameVideoMap[game] = shuffleArray(pool);
+    const pool = allVideos
+      .filter((v) => v.game === game && v.id)
+      .sort((a, b) => {
+        const diff = getVideoAddedTime(b) - getVideoAddedTime(a);
+        if (diff !== 0) return diff;
+        return (a.order ?? 999) - (b.order ?? 999);
+      });
+
+    gameLatestMap[game] = pool.length > 0 ? getVideoAddedTime(pool[0]) : 0;
+    // 최신 업로드 순위 가중 셔플 (상위 1~3위가 우선 선별되되 셔플 시 풀 전체 순환)
+    gameVideoMap[game] = weightedShuffle(pool, (_, idx) => Math.max(0.2, 1 - idx * 0.16));
   });
 
   const base = Math.floor(targetCount / n);
   const remainder = targetCount % n;
-  const shuffledGameOrder = shuffleArray(activeGameNames);
-  const bonusSet = new Set(shuffledGameOrder.slice(0, remainder));
+  const weightedGameOrder = weightedShuffle(activeGameNames, (game) =>
+    getRecencyAgeWeight(gameLatestMap[game], nowMs)
+  );
+  const bonusSet = new Set(weightedGameOrder.slice(0, remainder));
 
   const selectedVideos = [];
+  const selectedIds = new Set();
+  const leftovers = [];
+
   activeGameNames.forEach((game) => {
     const limit = base + (bonusSet.has(game) ? 1 : 0);
-    const sliced = gameVideoMap[game]?.slice(0, limit) || [];
-    selectedVideos.push(...sliced);
+    const orderedPool = gameVideoMap[game] || [];
+    orderedPool.forEach((video, idx) => {
+      if (idx < limit && !selectedIds.has(video.id)) {
+        selectedVideos.push(video);
+        selectedIds.add(video.id);
+      } else if (!selectedIds.has(video.id)) {
+        leftovers.push(video);
+      }
+    });
   });
 
-  return shuffleArray(selectedVideos);
+  // 일부 게임 보유 수가 부족할 경우 타 활성 게임 최신 여분으로 슬롯 보충
+  if (selectedVideos.length < targetCount && leftovers.length > 0) {
+    const extraOrdered = weightedShuffle(leftovers, (v) =>
+      getRecencyAgeWeight(getVideoAddedTime(v), nowMs)
+    );
+    for (const extra of extraOrdered) {
+      if (selectedVideos.length >= targetCount) break;
+      if (!selectedIds.has(extra.id)) {
+        selectedVideos.push(extra);
+        selectedIds.add(extra.id);
+      }
+    }
+  }
+
+  return weightedShuffle(selectedVideos, (v) =>
+    getRecencyAgeWeight(getVideoAddedTime(v), nowMs)
+  );
 }
 
 function allocateLongformVideos(allVideos, activeGames, targetCount = 12) {
