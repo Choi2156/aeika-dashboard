@@ -32,10 +32,12 @@ export const trackVideoClick = (videoType, game, title, videoId) => {
 /**
  * 유튜브 채널 바로가기 클릭 추적
  * @param {string} location - 클릭 위치 ('header' | 'bottom_shorts' | 'footer' | 'gantt_row')
+ * @param {string} [game] - 대상 게임명 (gantt_row 클릭 시)
  */
-export const trackChannelClick = (location) => {
+export const trackChannelClick = (location, game = '') => {
   trackEvent('click_youtube_channel', {
     click_location: location,
+    ...(game ? { game } : {}),
   });
 };
 
@@ -92,7 +94,7 @@ export const trackThemeToggle = (theme) => {
 
 /**
  * 모달 팝업 열람 추적
- * @param {'notice' | 'guide' | 'license' | 'support' | 'detail'} modalName
+ * @param {'notice' | 'guide' | 'license' | 'support' | 'detail' | 'calendar'} modalName
  */
 export const trackModalOpen = (modalName) => {
   trackEvent('open_modal', {

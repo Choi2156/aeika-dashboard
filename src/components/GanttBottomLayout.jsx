@@ -260,10 +260,19 @@ function GanttBottomLayout({
     safePage * itemsPerPage + itemsPerPage
   );
 
+  const activeMediaCategory =
+    activeMediaTab === 'streams'
+      ? 'streams'
+      : activeMediaTab === 'stories'
+      ? 'story'
+      : 'other';
+
   const handlePrevPage = () => {
+    trackCarouselNavigation(activeMediaCategory, 'prev');
     setPageIndex((p) => (p - 1 + totalPages) % totalPages);
   };
   const handleNextPage = () => {
+    trackCarouselNavigation(activeMediaCategory, 'next');
     setPageIndex((p) => (p + 1) % totalPages);
   };
 
@@ -298,7 +307,10 @@ function GanttBottomLayout({
                 className={`media-station__tab ${
                   activeMediaTab === 'streams' ? 'is-active' : ''
                 }`}
-                onClick={() => setActiveMediaTab('streams')}
+                onClick={() => {
+                  trackCarouselNavigation('streams', 'tab');
+                  setActiveMediaTab('streams');
+                }}
               >
                 <Radio size={14} />
                 <span>공식 방송 · 오프라인</span>

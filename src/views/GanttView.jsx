@@ -22,6 +22,7 @@ import {
   cleanEventDisplayTitle,
   formatEventVersion,
 } from '../utils/eventTextParser';
+import { trackChannelClick, trackOutboundLink } from '../utils/analytics';
 import '../styles/GanttView.css';
 
 /* ────────────────────────────────────────────
@@ -891,7 +892,16 @@ export default function GanttView({
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="gantt-game-link-btn"
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    trackOutboundLink({
+                                      linkCategory: 'official_site',
+                                      platform: 'official_site',
+                                      targetUrl: gamesConfig[gameName].officialUrl,
+                                      game: gameName,
+                                      title: `${gameName} 공식 사이트`,
+                                    });
+                                  }}
                                   title={`${gameName} 공식 사이트`}
                                   aria-label={`${gameName} 공식 사이트`}
                                 >
@@ -904,7 +914,10 @@ export default function GanttView({
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="gantt-game-youtube-btn"
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    trackChannelClick('gantt_row', gameName);
+                                  }}
                                   title={`${gameName} 공식 유튜브 채널`}
                                   aria-label={`${gameName} 공식 유튜브 채널`}
                                 >

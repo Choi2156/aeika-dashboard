@@ -12,6 +12,7 @@ import {
 import { extractCalendarMilestones, buildMonthGrid } from '../utils/calendarMilestones';
 import { cleanEventDisplayTitle } from '../utils/eventTextParser';
 import { getTodayStrKST, diffDays, formatDisplayDate } from '../utils/dateKST';
+import { trackCalendarMonthChange } from '../utils/analytics';
 import '../styles/CalendarView.css';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -123,28 +124,34 @@ export default function CalendarView({
   }, [milestones, monthPrefix]);
 
   const handlePrevMonth = () => {
+    const toYear = month === 1 ? year - 1 : year;
+    const toMonth = month === 1 ? 12 : month - 1;
+    trackCalendarMonthChange({ fromYear: year, fromMonth: month, toYear, toMonth });
     setTransitionDir('prev');
     setSelectedDateStr(null);
-    if (month === 1) {
-      setYear((y) => y - 1);
-      setMonth(12);
-    } else {
-      setMonth((m) => m - 1);
-    }
+    setYear(toYear);
+    setMonth(toMonth);
   };
 
   const handleNextMonth = () => {
+    const toYear = month === 12 ? year + 1 : year;
+    const toMonth = month === 12 ? 1 : month + 1;
+    trackCalendarMonthChange({ fromYear: year, fromMonth: month, toYear, toMonth });
     setTransitionDir('next');
     setSelectedDateStr(null);
-    if (month === 12) {
-      setYear((y) => y + 1);
-      setMonth(1);
-    } else {
-      setMonth((m) => m + 1);
-    }
+    setYear(toYear);
+    setMonth(toMonth);
   };
 
   const handleGoCurrentMonth = () => {
+    if (year !== todayYear || month !== todayMonth) {
+      trackCalendarMonthChange({
+        fromYear: year,
+        fromMonth: month,
+        toYear: todayYear,
+        toMonth: todayMonth,
+      });
+    }
     setTransitionDir('reset');
     setSelectedDateStr(null);
     setYear(todayYear);
@@ -241,7 +248,7 @@ export default function CalendarView({
             <button
               type="button"
               className="calendar-view__export-btn"
-              onClick={() => onOpenCalendarModal(year, month)}
+              onClick={() => onOpenCalendarModal(year, month, 'calendar_view')}
               title={`${year}년 ${month}월 고해상도 달력 이미지 보기 및 저장`}
             >
               <ImageIcon size={13} />

@@ -14,7 +14,6 @@ import {
   trackChannelClick,
   trackEvent,
   trackThemeToggle,
-  trackModalOpen,
   trackStorageConsentToggle,
 } from '../utils/analytics';
 
@@ -57,7 +56,6 @@ export default function Header({
   };
 
   const handleOpenGuide = () => {
-    trackModalOpen('guide');
     if (onOpenGuide) onOpenGuide();
   };
 

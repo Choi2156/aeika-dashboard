@@ -255,15 +255,18 @@ export default function App() {
     setSelectedNotice(null);
   }, []);
 
-  const handleOpenCalendarModal = useCallback((targetYear = null, targetMonth = null) => {
-    const { year: kstY, month: kstM } = getNowKSTParts();
-    const y = targetYear || kstY;
-    const m = targetMonth || kstM;
-    setCalendarModalTarget({ year: y, month: m });
-    trackModalOpen('calendar');
-    trackCalendarOpen({ type: 'modal', source: 'control_bar', year: y, month: m });
-    setIsCalendarOpen(true);
-  }, []);
+  const handleOpenCalendarModal = useCallback(
+    (targetYear = null, targetMonth = null, source = 'control_bar') => {
+      const { year: kstY, month: kstM } = getNowKSTParts();
+      const y = targetYear || kstY;
+      const m = targetMonth || kstM;
+      setCalendarModalTarget({ year: y, month: m });
+      trackModalOpen('calendar');
+      trackCalendarOpen({ type: 'modal', source, year: y, month: m });
+      setIsCalendarOpen(true);
+    },
+    []
+  );
 
   const handleJumpToToday = useCallback(() => {
     setJumpTodayTrigger((c) => c + 1);

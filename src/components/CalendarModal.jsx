@@ -7,7 +7,11 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { trackCalendarDownload, trackCalendarFullView } from '../utils/analytics';
+import {
+  trackCalendarDownload,
+  trackCalendarFullView,
+  trackCalendarMonthChange,
+} from '../utils/analytics';
 import { getNowKSTParts, getTodayStrKST } from '../utils/dateKST';
 import { extractCalendarMilestones, buildMonthGrid } from '../utils/calendarMilestones';
 import ModalShell from './common/ModalShell';
@@ -606,21 +610,19 @@ export default function CalendarModal({
   const downloadFileName = `게임일정_${String(viewYear).slice(-2)}년${viewMonth}월.png`;
 
   const handlePrevMonth = () => {
-    if (viewMonth === 1) {
-      setViewYear((y) => y - 1);
-      setViewMonth(12);
-    } else {
-      setViewMonth((m) => m - 1);
-    }
+    const toYear = viewMonth === 1 ? viewYear - 1 : viewYear;
+    const toMonth = viewMonth === 1 ? 12 : viewMonth - 1;
+    trackCalendarMonthChange({ fromYear: viewYear, fromMonth: viewMonth, toYear, toMonth });
+    setViewYear(toYear);
+    setViewMonth(toMonth);
   };
 
   const handleNextMonth = () => {
-    if (viewMonth === 12) {
-      setViewYear((y) => y + 1);
-      setViewMonth(1);
-    } else {
-      setViewMonth((m) => m + 1);
-    }
+    const toYear = viewMonth === 12 ? viewYear + 1 : viewYear;
+    const toMonth = viewMonth === 12 ? 1 : viewMonth + 1;
+    trackCalendarMonthChange({ fromYear: viewYear, fromMonth: viewMonth, toYear, toMonth });
+    setViewYear(toYear);
+    setViewMonth(toMonth);
   };
 
   const handleDownloadClick = () => {
