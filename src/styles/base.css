@@ -518,6 +518,22 @@ body[data-theme="light"] {
   background: var(--accent-indigo-subtle);
 }
 
+.header__ghost-btn--copied {
+  border-color: rgba(16, 185, 129, 0.55);
+  color: var(--accent-indigo-light);
+  background: rgba(16, 185, 129, 0.16);
+}
+
+[data-theme="light"] .header__ghost-btn--copied {
+  border-color: rgba(5, 150, 105, 0.45);
+  color: var(--accent-indigo-dark);
+  background: rgba(16, 185, 129, 0.14);
+}
+
+.header__ghost-btn--share {
+  min-width: 66px;
+}
+
 .header__ghost-btn--icon {
   width: 32px;
   padding: 0;
@@ -536,6 +552,15 @@ body[data-theme="light"] {
 .header__support-icon {
   color: var(--accent-rose);
   flex-shrink: 0;
+}
+
+.header__share-icon {
+  color: var(--accent-indigo-light);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .header__share-icon {
+  color: var(--accent-indigo-dark);
 }
 
 .header__guide-icon {

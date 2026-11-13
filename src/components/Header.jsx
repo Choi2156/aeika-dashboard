@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import {
   Youtube,
   MessageSquare,
@@ -8,6 +9,8 @@ import {
   Database,
   Megaphone,
   ChevronRight,
+  Share2,
+  Check,
 } from 'lucide-react';
 import VisitorCounter from './VisitorCounter';
 import {
@@ -15,6 +18,7 @@ import {
   trackEvent,
   trackThemeToggle,
   trackStorageConsentToggle,
+  trackShareClick,
 } from '../utils/analytics';
 
 const APP_VERSION = 'v1.3.0';
@@ -55,8 +59,62 @@ export default function Header({
     }
   };
 
+  const [isShareCopied, setIsShareCopied] = useState(false);
+  const shareTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (shareTimerRef.current) clearTimeout(shareTimerRef.current);
+    };
+  }, []);
+
   const handleOpenGuide = () => {
     if (onOpenGuide) onOpenGuide();
+  };
+
+  const handleShareLink = async () => {
+    const shareUrl =
+      typeof window !== 'undefined' &&
+      window.location?.origin &&
+      !window.location.hostname.includes('localhost') &&
+      window.location.hostname !== '127.0.0.1'
+        ? `${window.location.origin}${window.location.pathname}`
+        : 'https://choi2156.github.io/aeika-dashboard/';
+
+    let copiedOk = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        copiedOk = true;
+      }
+    } catch {
+      copiedOk = false;
+    }
+
+    if (!copiedOk) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = shareUrl;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        copiedOk = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch {
+        copiedOk = false;
+      }
+    }
+
+    if (copiedOk) {
+      trackShareClick('header', 'clipboard');
+      setIsShareCopied(true);
+      if (shareTimerRef.current) clearTimeout(shareTimerRef.current);
+      shareTimerRef.current = setTimeout(() => {
+        setIsShareCopied(false);
+      }, 1800);
+    }
   };
 
   const primaryNotice = notices && notices.length > 0 ? notices[0] : null;
@@ -130,6 +188,29 @@ export default function Header({
         >
           <Heart size={13} className="header__support-icon" />
           <span>후원</span>
+        </button>
+
+        <button
+          onClick={handleShareLink}
+          type="button"
+          id="header-share-btn"
+          className={`header__ghost-btn header__ghost-btn--share ${
+            isShareCopied ? 'header__ghost-btn--copied' : ''
+          }`}
+          title="대시보드 주소 링크 복사하기"
+          aria-live="polite"
+        >
+          {isShareCopied ? (
+            <>
+              <Check size={13} className="header__share-icon" />
+              <span>복사됨</span>
+            </>
+          ) : (
+            <>
+              <Share2 size={13} className="header__share-icon" />
+              <span>공유</span>
+            </>
+          )}
         </button>
 
         <span className="header__divider" aria-hidden="true" />

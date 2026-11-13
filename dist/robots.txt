@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://choi2156.github.io/aeika-dashboard/sitemap.xml

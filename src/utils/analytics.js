@@ -299,4 +299,16 @@ export const trackCalendarMonthChange = ({ fromYear, fromMonth, toYear, toMonth 
   });
 };
 
+/**
+ * 대시보드 링크 공유(복사) 버튼 클릭 추적
+ * @param {string} [location='header'] - 클릭 위치
+ * @param {string} [method='clipboard'] - 공유 방식
+ */
+export const trackShareClick = (location = 'header', method = 'clipboard') => {
+  trackEvent('share_dashboard', {
+    share_location: location,
+    share_method: method,
+  });
+};
+
 
