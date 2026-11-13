@@ -250,9 +250,10 @@ export default function CalendarView({
               className="calendar-view__export-btn"
               onClick={() => onOpenCalendarModal(year, month, 'calendar_view')}
               title={`${year}년 ${month}월 고해상도 달력 이미지 보기 및 저장`}
+              aria-label={`${month}월 달력 이미지 보기 및 저장`}
             >
               <ImageIcon size={13} />
-              <span>{month}월 달력 이미지</span>
+              <span className="calendar-view__export-label">{month}월 달력 이미지</span>
             </button>
           )}
         </div>

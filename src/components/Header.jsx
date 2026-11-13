@@ -167,9 +167,10 @@ export default function Header({
           rel="noopener noreferrer"
           className="header__ghost-btn"
           title="애이카 아카이브 유튜브 채널 바로가기"
+          aria-label="애이카 아카이브 유튜브 채널"
         >
           <Youtube size={14} className="youtube-promo__icon" />
-          <span>채널</span>
+          <span className="header__btn-label">채널</span>
         </a>
 
         <a
@@ -179,9 +180,10 @@ export default function Header({
           rel="noopener noreferrer"
           className="header__ghost-btn"
           title="대시보드 피드백 및 일정 오류 제보하기"
+          aria-label="일정 오류 제보 및 피드백"
         >
           <MessageSquare size={13} className="header__feedback-icon" />
-          <span>제보</span>
+          <span className="header__btn-label">제보</span>
         </a>
 
         <button
@@ -189,9 +191,10 @@ export default function Header({
           type="button"
           className="header__ghost-btn"
           title="대시보드 운영 및 개발 후원하기"
+          aria-label="운영 후원"
         >
           <Heart size={13} className="header__support-icon" />
-          <span>후원</span>
+          <span className="header__btn-label">후원</span>
         </button>
 
         <button
@@ -202,17 +205,18 @@ export default function Header({
             isShareCopied ? 'header__ghost-btn--copied' : ''
           }`}
           title="대시보드 주소 링크 복사하기"
+          aria-label={isShareCopied ? '링크 복사됨' : '대시보드 주소 공유'}
           aria-live="polite"
         >
           {isShareCopied ? (
             <>
               <Check size={13} className="header__share-icon" />
-              <span>복사됨</span>
+              <span className="header__btn-label">복사됨</span>
             </>
           ) : (
             <>
               <Share2 size={13} className="header__share-icon" />
-              <span>공유</span>
+              <span className="header__btn-label">공유</span>
             </>
           )}
         </button>
@@ -225,9 +229,10 @@ export default function Header({
           className="header__ghost-btn"
           id="open-guide-btn"
           title="이용 안내 및 패치노트 보기"
+          aria-label="이용 안내 및 패치노트"
         >
           <HelpCircle size={14} className="header__guide-icon" />
-          <span>안내</span>
+          <span className="header__btn-label">안내</span>
         </button>
 
         {isInstallVisible && onOpenInstall && (
@@ -243,9 +248,10 @@ export default function Header({
                 ? '현재 브라우저에서 전용 앱으로 설치하기'
                 : '브라우저 앱 설치(바탕화면·홈 화면 추가) 안내 보기'
             }
+            aria-label="브라우저 앱 설치"
           >
             <Download size={13} className="header__install-icon" />
-            <span>앱 설치</span>
+            <span className="header__btn-label">앱 설치</span>
           </button>
         )}
 
@@ -256,9 +262,10 @@ export default function Header({
             isStorageConsentEnabled ? 'header__ghost-btn--active' : ''
           }`}
           title="설정 저장 (필터 및 테마 브라우저 보관)"
+          aria-label="설정 저장 켜기/끄기"
         >
           <Database size={13} />
-          <span>저장</span>
+          <span className="header__btn-label">저장</span>
         </button>
 
         <button

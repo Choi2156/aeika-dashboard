@@ -588,6 +588,94 @@ body[data-theme="light"] {
   flex-shrink: 0;
 }
 
+@media (max-width: 768px) {
+  .app {
+    padding: 8px 10px 24px;
+  }
+
+  .main-view {
+    gap: 8px;
+  }
+
+  .header {
+    padding: 8px 10px;
+    gap: 6px;
+    margin-bottom: 8px;
+    border-radius: 14px;
+  }
+
+  .header__brand-cluster {
+    gap: 7px;
+  }
+
+  .header__emblem {
+    width: 5px;
+    height: 15px;
+  }
+
+  .header__title-group {
+    gap: 3px;
+  }
+
+  .header__title-row {
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+
+  .header__title {
+    font-size: 0.89rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header__version {
+    font-size: 0.58rem;
+    padding: 1px 5px;
+  }
+
+  .header__updated {
+    font-size: 0.61rem;
+    margin-left: auto;
+  }
+
+  .header__notice-inline {
+    width: 100%;
+    padding: 2px 7px 2px 5px;
+    font-size: 0.66rem;
+    gap: 5px;
+  }
+
+  .header__notice-tag {
+    font-size: 0.56rem;
+    padding: 0.5px 5px;
+  }
+
+  .header__actions {
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .header__divider {
+    display: none;
+  }
+
+  .header__ghost-btn,
+  .header__ghost-btn--share,
+  .header__ghost-btn--icon {
+    min-width: 0;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 8px;
+  }
+
+  .header__btn-label {
+    display: none;
+  }
+}
+
 /* ─── View Switcher (Floating Pill Segmented Control with Glider) ─── */
 .view-switcher {
   position: relative;

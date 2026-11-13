@@ -104,8 +104,8 @@ export default function App() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const isMobile = window.innerWidth <= 768;
-          const shrinkThreshold = isMobile ? 260 : 160;
-          const expandThreshold = isMobile ? 140 : 90;
+          const shrinkThreshold = isMobile ? 165 : 160;
+          const expandThreshold = 90;
           const scrollY = window.scrollY;
 
           setIsShrunk((prev) => {

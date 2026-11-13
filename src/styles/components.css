@@ -249,25 +249,9 @@
   flex-shrink: 0;
 }
 
-.game-filter-btn__label--short {
+.game-filter-btn__label--short,
+.control-bar__today-label--short {
   display: none;
-}
-
-@media (max-width: 768px) {
-  .game-filter-btn {
-    padding: 0 9px 0 6px;
-    height: 31px;
-    font-size: 0.71rem;
-  }
-  .game-filter-btn__label--full {
-    display: none;
-  }
-  .game-filter-btn__label--short {
-    display: inline;
-  }
-  .game-filter-btn__dot {
-    display: none;
-  }
 }
 
 .game-filter-btn--icon-only {
@@ -338,32 +322,7 @@
   }
 }
 
-@media (max-width: 640px) {
-  .game-filter-bar:not(.game-filter-bar--shrunk) {
-    padding: 9px 11px;
-    gap: 8px;
-  }
-  .game-filter-bar:not(.game-filter-bar--shrunk) .game-filter-bar__right {
-    justify-content: stretch;
-    gap: 7px;
-  }
-  .game-filter-bar:not(.game-filter-bar--shrunk) .control-bar__today-btn,
-  .game-filter-bar:not(.game-filter-bar--shrunk) .control-bar__cal-img-btn {
-    flex: 1 1 calc(50% - 4px);
-    justify-content: center;
-    padding: 0 8px;
-  }
-  .game-filter-bar:not(.game-filter-bar--shrunk) .view-switcher {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .game-filter-bar:not(.game-filter-bar--shrunk) .view-switcher__btn {
-    justify-content: center;
-    padding: 6px 4px;
-    font-size: 0.72rem;
-  }
-}
+/* (모바일 비축소 필터바 규칙은 상단 @media (max-width: 768px) 블록에서 단일 행으로 통합 처리) */
 
 
 
@@ -414,6 +373,123 @@
 
 .control-bar__today-icon {
   color: var(--accent-indigo-light);
+}
+
+@media (max-width: 768px) {
+  .game-filter-bar:not(.game-filter-bar--shrunk) {
+    padding: 7px 9px;
+    gap: 6px;
+    margin-bottom: 8px;
+    border-radius: 14px;
+    top: 6px;
+  }
+
+  .game-filter-bar__buttons {
+    gap: 4px;
+  }
+
+  .game-filter-bar__control-btn {
+    height: 27px;
+    padding: 0 8px;
+    font-size: 0.67rem;
+    gap: 4px;
+    border-radius: 8px;
+  }
+
+  .game-filter-btn {
+    padding: 0 7px 0 5px;
+    height: 27px;
+    gap: 5px;
+    font-size: 0.67rem;
+    border-radius: 8px;
+  }
+
+  .game-filter-btn__icon-img {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  .game-filter-btn__label--full {
+    display: none;
+  }
+
+  .game-filter-btn__label--short {
+    display: inline;
+  }
+
+  .game-filter-btn__dot {
+    display: none;
+  }
+
+  /* 2행: [오늘] [달력이미지 아이콘] [간트 차트 | 캘린더 | 타임라인] 한 줄 통합 */
+  .game-filter-bar:not(.game-filter-bar--shrunk) .game-filter-bar__right {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 6px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .game-filter-bar:not(.game-filter-bar--shrunk) .control-bar__today-btn {
+    height: 28px;
+    padding: 0 8px;
+    gap: 3px;
+    font-size: 0.67rem;
+    border-radius: 8px;
+    flex: 0 0 auto;
+  }
+
+  .control-bar__today-label--full {
+    display: none;
+  }
+
+  .control-bar__today-label--short {
+    display: inline;
+  }
+
+  .game-filter-bar:not(.game-filter-bar--shrunk) .control-bar__cal-img-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+    flex: 0 0 auto;
+  }
+
+  .control-bar__cal-img-label {
+    display: none;
+  }
+
+  .game-filter-bar:not(.game-filter-bar--shrunk) .view-switcher {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    padding: 2px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-self: center;
+  }
+
+  .game-filter-bar:not(.game-filter-bar--shrunk) .view-switcher__glider {
+    top: 2px;
+    bottom: 2px;
+  }
+
+  .game-filter-bar:not(.game-filter-bar--shrunk) .view-switcher__btn {
+    justify-content: center;
+    padding: 4px 2px;
+    gap: 3px;
+    font-size: 0.67rem;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .game-filter-bar:not(.game-filter-bar--shrunk) .view-switcher__btn svg {
+    display: none;
+  }
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
@@ -878,34 +954,74 @@
 
 @media (max-width: 768px) {
   .live-banner-board {
-    height: 150px;
-    border-radius: var(--radius-lg);
+    height: 82px;
+    border-radius: 14px;
+    margin-bottom: 8px;
   }
   .live-banner-slide {
-    padding: 0.72rem 1rem 2.2rem;
+    padding: 8px 11px;
     justify-content: center;
   }
-  .live-banner-title {
-    font-size: 0.9rem;
-    margin-bottom: 3px;
-  }
-  .live-banner-detail {
-    font-size: 0.7rem;
-    max-width: 100%;
-  }
-  .live-banner-slide__img-container {
-    width: 48%;
-  }
   .live-banner-board__content {
-    max-width: 96%;
+    max-width: 100%;
+    gap: 4px;
+    min-width: 0;
   }
-  .live-banner-hud {
-    right: 10px;
-    bottom: 7px;
-    padding: 2px 6px;
+  .live-banner-meta-row {
+    gap: 5px;
+    flex-wrap: nowrap;
+    overflow: hidden;
   }
+  .live-banner-game-badge {
+    padding: 1px 7px 1px 5px;
+    font-size: 0.62rem;
+    flex-shrink: 0;
+  }
+  .live-banner-game-badge__icon {
+    width: 12px;
+    height: 12px;
+  }
+  .live-banner-type-pill,
+  .live-banner-detail,
+  .live-banner-copyright-label,
   .live-banner-indicators {
     display: none;
+  }
+  .live-banner-badge {
+    padding: 1px 7px;
+    font-size: 0.6rem;
+    flex-shrink: 0;
+  }
+  .live-banner-period-pill {
+    font-size: 0.62rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .live-banner-title {
+    font-size: 0.84rem;
+    line-height: 1.25;
+    margin: 0;
+    padding-right: 78px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .live-banner-slide__img-container {
+    width: 40%;
+  }
+  .live-banner-hud {
+    right: 8px;
+    bottom: 7px;
+    padding: 2px 5px;
+    gap: 4px;
+  }
+  .live-banner-hud__arrow {
+    width: 18px;
+    height: 18px;
+  }
+  .live-banner-hud__counter {
+    font-size: 0.58rem;
   }
 }
 

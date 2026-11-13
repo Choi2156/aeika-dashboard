@@ -182,9 +182,13 @@ export default function GameFilterBar({
           className="control-bar__today-btn"
           onClick={onJumpToToday}
           title="오늘 날짜 위치로 즉시 이동"
+          aria-label={`오늘 (${todayLabel}) 위치로 이동`}
         >
           <Crosshair size={13} className="control-bar__today-icon" />
-          <span className="control-bar__today-label">오늘 {todayLabel}</span>
+          <span className="control-bar__today-label control-bar__today-label--full">
+            오늘 {todayLabel}
+          </span>
+          <span className="control-bar__today-label control-bar__today-label--short">오늘</span>
         </button>
 
         {onOpenCalendar && !isShrunk && (
@@ -193,9 +197,10 @@ export default function GameFilterBar({
             className="control-bar__cal-img-btn"
             onClick={() => onOpenCalendar()}
             title="이달의 종합 달력 고화질 이미지 보기 및 다운로드"
+            aria-label="이달의 종합 달력 이미지 보기"
           >
             <ImageIcon size={13} />
-            <span>달력 이미지</span>
+            <span className="control-bar__cal-img-label">달력 이미지</span>
           </button>
         )}
 

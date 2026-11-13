@@ -984,14 +984,54 @@
   }
 
   .calendar-view__header {
-    padding: 9px 12px;
-    gap: 8px;
+    padding: 7px 10px;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .calendar-view__nav-group {
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .calendar-view__nav-btn {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
   }
 
   .calendar-view__month-title {
-    font-size: 0.92rem;
-    gap: 6px;
+    font-size: 0.86rem;
+    gap: 5px;
     margin: 0 2px;
+    white-space: nowrap;
+  }
+
+  .calendar-view__month-count {
+    font-size: 0.64rem;
+    padding: 1px 6px;
+  }
+
+  .calendar-view__today-pill {
+    padding: 2px 8px;
+    font-size: 0.66rem;
+    white-space: nowrap;
+  }
+
+  .calendar-view__right-controls {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .calendar-view__export-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .calendar-view__export-label {
+    display: none;
   }
 
   .calendar-view__grid-wrapper {
@@ -1090,15 +1130,6 @@
 }
 
 @media (max-width: 560px) {
-  .calendar-view__right-controls {
-    width: 100%;
-  }
-
-  .calendar-view__export-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
   .calendar-chip__label,
   .calendar-chip__offline-tag {
     display: none;

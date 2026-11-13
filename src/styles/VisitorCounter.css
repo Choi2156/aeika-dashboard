@@ -64,10 +64,22 @@
   opacity: 1;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .header__visitor-btn {
-    min-width: 138px;
-    padding: 0 11px;
-    gap: 8px;
+    min-width: auto;
+    height: 28px;
+    padding: 0 8px;
+    gap: 5px;
+    border-radius: 8px;
+    font-size: 0.68rem;
+  }
+
+  .visitor-btn__label {
+    display: none;
+  }
+
+  .visitor-btn__count {
+    min-width: 0;
+    font-size: 0.69rem;
   }
 }
