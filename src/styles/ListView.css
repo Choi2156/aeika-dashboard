@@ -596,6 +596,67 @@
   border-color: var(--border-primary);
 }
 
+[data-theme="light"] .list-view__timeline::before {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(100, 116, 139, 0.28) 3%,
+    rgba(100, 116, 139, 0.28) 97%,
+    transparent 100%
+  );
+}
+
+[data-theme="light"] .list-view__time {
+  color: #b45309;
+}
+
+[data-theme="light"] .list-view__type-badge--update {
+  background: rgba(5, 150, 105, 0.12);
+  border-color: rgba(5, 150, 105, 0.34);
+  color: #047857;
+}
+
+[data-theme="light"] .list-view__type-badge--half {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(14, 165, 233, 0.34);
+  color: #0369a1;
+}
+
+[data-theme="light"] .list-view__type-badge--stream {
+  background: rgba(225, 29, 72, 0.12);
+  border-color: rgba(225, 29, 72, 0.32);
+  color: #be123c;
+}
+
+[data-theme="light"] .list-view__type-badge--offline {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(14, 165, 233, 0.35);
+  color: #0369a1;
+}
+
+[data-theme="light"] .list-view__status-badge--predicted {
+  background: var(--badge-predicted-bg);
+  color: var(--badge-predicted-text);
+  border-color: var(--badge-predicted-border);
+}
+
+[data-theme="light"] .list-view__dday-pill--imminent {
+  background: rgba(225, 29, 72, 0.12);
+  border-color: rgba(225, 29, 72, 0.32);
+  color: #be123c;
+}
+
+[data-theme="light"] .list-view__dday-pill--ongoing {
+  background: rgba(5, 150, 105, 0.12);
+  border-color: rgba(5, 150, 105, 0.34);
+  color: #047857;
+}
+
+[data-theme="light"] .list-view__dday-pill--past {
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+
 [data-theme="light"] .list-view__card--stream {
   background: linear-gradient(135deg, rgba(254, 240, 138, 0.28), #f3f6fb) !important;
   border-color: rgba(217, 119, 6, 0.36) !important;
@@ -603,6 +664,15 @@
 
 [data-theme="light"] .list-view__card--stream .list-view__title {
   color: #78350f !important;
+}
+
+[data-theme="light"] .list-view__card--stream .list-view__card-bg-mask {
+  background: linear-gradient(
+    to right,
+    #f3f6fb 0%,
+    rgba(243, 246, 251, 0.72) 55%,
+    rgba(243, 246, 251, 0.12) 100%
+  );
 }
 
 [data-theme="light"] .list-view__card--offline {

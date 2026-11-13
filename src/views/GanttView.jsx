@@ -20,6 +20,7 @@ import {
   getCleanSummaryText,
   formatEventTypeLabel,
   cleanEventDisplayTitle,
+  formatEventVersion,
 } from '../utils/eventTextParser';
 import '../styles/GanttView.css';
 
@@ -557,7 +558,10 @@ export default function GanttView({
               <span className="gantt-live-badge">{badgeLabel}</span>
             </div>
             <span className="gantt-stream-label">
-              {ev.version ? `v${ev.version} 특별 방송` : '특별 방송'}
+              {(() => {
+                const verTag = formatEventVersion(ev.version, { stripPhase: true });
+                return verTag ? `${verTag} 특별 방송` : '특별 방송';
+              })()}
               {ev.time && <span className="gantt-stream-time">{ev.time}</span>}
             </span>
           </div>
@@ -565,7 +569,7 @@ export default function GanttView({
       }
 
       const isSystemType = ['전반업데이트', '후반업데이트'].includes(ev.type);
-      const cleanVer = ev.version ? ev.version.replace(/\s*(전반|후반).*$/, '').trim() : '';
+      const verTag = formatEventVersion(ev.version, { stripPhase: true });
       const shortTypeLabel =
         ev.type === '전반업데이트'
           ? isMobile
@@ -626,7 +630,7 @@ export default function GanttView({
         >
           <span className="gantt-bar-label">
             {!isFixed && <span className="gantt-predicted-pill">예상</span>}
-            {cleanVer && <span className="gantt-bar-ver-pill">v{cleanVer}</span>}
+            {verTag && <span className="gantt-bar-ver-pill">{verTag}</span>}
             <span className="gantt-bar-label__text">{textLabel}</span>
           </span>
         </div>
@@ -680,16 +684,17 @@ export default function GanttView({
       dDayStatus = 'ended';
     }
 
-    const cleanVer = ev.version ? ev.version.replace(/\s*(전반|후반).*$/, '').trim() : '';
+    const verTag = formatEventVersion(ev.version, { stripPhase: true });
     const typeLabel = formatEventTypeLabel(ev.type) || displayType;
     const cleanTitle = ev.title
       ? cleanEventDisplayTitle(ev.title, gameName)
-      : cleanVer
-      ? `v${cleanVer} ${typeLabel}`
+      : verTag
+      ? `${verTag} ${typeLabel}`
       : `${gameName} ${typeLabel}`;
 
-    const summaryText = ev.detail
-      ? getCleanSummaryText(ev.detail, 92)
+    const rawDetailSource = ev.details || ev.detail;
+    const summaryText = rawDetailSource
+      ? getCleanSummaryText(rawDetailSource, 92)
       : ev.location
       ? `장소: ${ev.location}`
       : '';
@@ -697,7 +702,7 @@ export default function GanttView({
     return {
       gameName,
       color,
-      cleanVer,
+      verTag,
       typeLabel,
       isFixed: ev.is_fixed === true,
       cleanTitle,
@@ -971,8 +976,8 @@ export default function GanttView({
               />
               {tooltipDetails.gameName}
             </span>
-            {tooltipDetails.cleanVer && (
-              <span className="gantt-hover-tooltip__ver">v{tooltipDetails.cleanVer}</span>
+            {tooltipDetails.verTag && (
+              <span className="gantt-hover-tooltip__ver">{tooltipDetails.verTag}</span>
             )}
             <span className="gantt-hover-tooltip__type">{tooltipDetails.typeLabel}</span>
             {!tooltipDetails.isFixed && (

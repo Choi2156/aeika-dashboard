@@ -65,6 +65,7 @@ export function getKoreanDay(dayNum) {
  * 버전 문자열에서 "X.Y 후반" 같은 접미사를 제거하고 순수 버전 번호만 추출
  */
 export function cleanVersion(versionStr) {
+  if (!versionStr || typeof versionStr !== 'string') return '';
   return versionStr.replace(/\s*후반.*$/, '').trim();
 }
 

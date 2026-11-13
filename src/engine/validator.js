@@ -154,8 +154,18 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
 
   // ② 게임별 통상 점검 요일 및 주기 검사
   for (const u of majorUpdates) {
+    if (!isValidCalendarDate(u.date)) continue;
     const config = gamesConfig[u.game];
     if (!config) continue;
+
+    if (u.end_date && u.date > u.end_date) {
+      errors.push({
+        type: 'DATE_RANGE_INVERTED',
+        game: u.game,
+        version: u.version,
+        message: `${u.game} ${u.version} 배너 종료일(${u.end_date})이 시작일(${u.date})보다 앞서 있습니다.`,
+      });
+    }
 
     const uDate = parseDate(u.date);
     const dayOfWeek = uDate.getDay();

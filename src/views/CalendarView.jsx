@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { extractCalendarMilestones, buildMonthGrid } from '../utils/calendarMilestones';
+import { cleanEventDisplayTitle } from '../utils/eventTextParser';
 import { getTodayStrKST, diffDays, formatDisplayDate } from '../utils/dateKST';
 import '../styles/CalendarView.css';
 
@@ -18,7 +19,7 @@ const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 const CATEGORY_DISPLAY = {
   update: '신규 버전 업데이트',
   half: '후반 픽업 전환',
-  broadcast: '특별방송',
+  broadcast: '특별 방송',
   offline: '오프라인 행사',
 };
 
@@ -454,6 +455,8 @@ export default function CalendarView({
               const iconSrc = gameConf.icon || null;
               const ddayInfo = getMilestoneDDayBadge(item, todayStr);
               const rawTitle = item.rawEvent?.title || item.title;
+              const cleanAgendaTitle =
+                cleanEventDisplayTitle(rawTitle, item.game) || item.title;
               const timeShort = item.time ? item.time.slice(0, 5) : '';
               const locationStr = item.rawEvent?.location || '';
 
@@ -512,7 +515,7 @@ export default function CalendarView({
                   </div>
 
                   <div className="calendar-agenda__card-main">
-                    <div className="calendar-agenda__card-title">{rawTitle}</div>
+                    <div className="calendar-agenda__card-title">{cleanAgendaTitle}</div>
                     <ArrowUpRight size={14} className="calendar-agenda__card-arrow" />
                   </div>
 

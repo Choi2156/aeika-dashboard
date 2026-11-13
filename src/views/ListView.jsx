@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { History, ChevronDown, RotateCcw, Search, X } from 'lucide-react';
-import { getCleanSummaryText, cleanEventDisplayTitle } from '../utils/eventTextParser';
+import {
+  getCleanSummaryText,
+  cleanEventDisplayTitle,
+  formatEventVersion,
+} from '../utils/eventTextParser';
 import {
   getTodayStrKST,
   formatDisplayDate,
@@ -11,17 +15,19 @@ import {
 import '../styles/ListView.css';
 
 const TYPE_DISPLAY_NAMES = {
-  '전반업데이트': '버전 업데이트',
-  '후반업데이트': '후반 픽업',
-  '공식방송': '특별 방송',
-  '오프라인이벤트': '오프라인 행사',
+  전반업데이트: '버전 업데이트',
+  후반업데이트: '후반 픽업',
+  공식방송: '특별 방송',
+  오프라인이벤트: '오프라인 행사',
+  행사: '오프라인 행사',
 };
 
 const TYPE_BADGE_MODIFIERS = {
-  '전반업데이트': 'update',
-  '후반업데이트': 'half',
-  '공식방송': 'stream',
-  '오프라인이벤트': 'offline',
+  전반업데이트: 'update',
+  후반업데이트: 'half',
+  공식방송: 'stream',
+  오프라인이벤트: 'offline',
+  행사: 'offline',
 };
 
 function getCardStatusPill(event, todayStr) {
@@ -328,8 +334,9 @@ export default function ListView({
             const typeModifier = TYPE_BADGE_MODIFIERS[event.type] || 'update';
             const imgSrc = getImageSrc(event);
             const gameTheme = getGameTheme(event.game);
-            const cleanDetail = getCleanSummaryText(event.detail, 130);
+            const cleanDetail = getCleanSummaryText(event.details || event.detail, 130);
             const statusPill = getCardStatusPill(event, todayStr);
+            const versionLabel = formatEventVersion(event.version);
 
             return (
               <div
@@ -415,12 +422,9 @@ export default function ListView({
                           {event.game}
                         </span>
 
-                        {event.version &&
-                          !/^(?:행사|이벤트|콜라보)$/.test(event.version.trim()) && (
-                            <span className="list-view__version">
-                              v{event.version.replace(/^v/, '')}
-                            </span>
-                          )}
+                        {versionLabel && (
+                          <span className="list-view__version">{versionLabel}</span>
+                        )}
 
                         {displayTypeName && (
                           <span
@@ -449,11 +453,12 @@ export default function ListView({
                         <div className="list-view__title">
                           {cleanEventDisplayTitle(event.title, event.game) || displayTypeName}
                         </div>
-                        {event.type === '오프라인이벤트' && event.location && (
-                          <div className="list-view__offline-location">
-                            <span>📍 {event.location}</span>
-                          </div>
-                        )}
+                        {(event.type === '오프라인이벤트' || event.type === '행사') &&
+                          event.location && (
+                            <div className="list-view__offline-location">
+                              <span>📍 {event.location}</span>
+                            </div>
+                          )}
                         {cleanDetail && (
                           <div className="list-view__detail">{cleanDetail}</div>
                         )}

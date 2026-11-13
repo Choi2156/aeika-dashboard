@@ -51,7 +51,7 @@ const getVersionFullTitle = (game, version, allEvents) => {
     if (mainEvent && mainEvent.title) {
       let t = mainEvent.title;
       if (version.includes('후반')) {
-        t = t.replace('버전', '버전 후반');
+        t = t.includes('버전') ? t.replace('버전', '버전 후반') : `${t} (후반)`;
       }
       return t;
     }
@@ -225,7 +225,7 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
         titleText = fullVer;
       } else if (ev.type === '공식방송') {
         if (ev.start_date === todayStr) {
-          const { hour: currentHour, minute: currentMinute } = getNowKSTParts();
+          const { hours: currentHour, minutes: currentMinute } = getNowKSTParts();
           if (ev.time) {
             const [sh, sm] = ev.time.split(':').map(Number);
             const hasStarted = currentHour > sh || (currentHour === sh && currentMinute >= sm);
@@ -325,7 +325,17 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
             >
               {/* 우측 62% 일러스트 영역 (--bg-card 부드러운 블렌딩 마스크) */}
               <div className="live-banner-slide__img-container">
-                <img src={imgSrc} alt={ev.title} className="live-banner-slide__img" />
+                <img
+                  src={imgSrc}
+                  alt={ev.title}
+                  className="live-banner-slide__img"
+                  onError={(e) => {
+                    const fallback = gamesConfig?.[ev.game]?.defaultImg;
+                    if (fallback && e.currentTarget.src !== fallback) {
+                      e.currentTarget.src = fallback;
+                    }
+                  }}
+                />
                 <div className="live-banner-slide__img-mask" />
                 {gamesConfig?.[ev.game]?.copyright && (
                   <span className="live-banner-copyright-label">
@@ -381,8 +391,10 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
 
                 <h2 className="live-banner-title">{titleText}</h2>
 
-                {ev.detail && (
-                  <p className="live-banner-detail">{getCleanSummaryText(ev.detail, 115)}</p>
+                {(ev.details || ev.detail) && (
+                  <p className="live-banner-detail">
+                    {getCleanSummaryText(ev.details || ev.detail, 115)}
+                  </p>
                 )}
               </div>
             </div>

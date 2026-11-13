@@ -367,8 +367,8 @@ export function parseDetailLines(detail) {
     const text = cleanDetailLine(raw);
     if (!text) continue;
 
-    // "※ ..." 또는 "참고: ...", "유의: ..." 모두 note 카드로 통일 파싱
-    const noteKeyMatch = text.match(/^(참고|유의|안내|주의)\s*:\s*(.+)$/);
+    // "※ ..." 또는 "참고: ...", "유의: ..." (선택적 색상 힌트 포함) 모두 note 카드로 통일 파싱
+    const noteKeyMatch = text.match(/^(참고|유의|안내|주의)(?:\s*\([^)]+\))?\s*:\s*(.+)$/);
     const isNote = rawTrimmed.startsWith('※') || Boolean(noteKeyMatch);
 
     if (isNote) {
@@ -552,7 +552,23 @@ export function parseStructuredDetail(detail) {
  * - 불필요한 기호(✦, ■), 중복 대괄호([전반], [한정/전반]), URL, (※ ...) 주석을 제거하고 자연스러운 한국어 요약을 반환합니다.
  */
 export function getCleanSummaryText(detail, maxLength = 100) {
-  const lines = parseDetailLines(detail).filter((l) => !l.isNote && !l.isHeader);
+  let lines;
+  if (Array.isArray(detail)) {
+    lines = detail
+      .filter((item) => item && typeof item === 'object')
+      .map((item) => {
+        const rawLabel = String(item.label || item.category || '').trim();
+        const category = rawLabel.replace(/\s*\([^)]+\)\s*$/, '').trim();
+        const isNote = /^(?:참고|유의|안내|주의)$/.test(category);
+        const content = Array.isArray(item.items)
+          ? item.items.filter(Boolean).join(', ')
+          : String(item.text || item.content || '').trim();
+        return { category, content, text: content, isNote, isHeader: false };
+      })
+      .filter((l) => !l.isNote && Boolean(l.text || l.content));
+  } else {
+    lines = parseDetailLines(detail).filter((l) => !l.isNote && !l.isHeader);
+  }
   if (lines.length === 0) return '';
 
   // 핵심 요약 라인 선별 (단순 방송 채널/일시 중복 줄보다 실제 콘텐츠 줄 우선)
@@ -589,6 +605,22 @@ export function getCleanSummaryText(detail, maxLength = 100) {
   return `${joined.slice(0, maxLength).trim()}…`;
 }
 
+/**
+ * 버전 문자열을 일관된 표시용 태그('v4.7' 등)로 정규화합니다.
+ * - '행사', '이벤트', '콜라보' 등 비버전 표기는 빈 문자열('')을 반환해 'v이벤트' 오표기를 원천 차단합니다.
+ */
+export function formatEventVersion(rawVersion, { stripPhase = false } = {}) {
+  if (!rawVersion || typeof rawVersion !== 'string') return '';
+  let trimmed = rawVersion.trim();
+  if (!trimmed || /^(?:행사|이벤트|콜라보)$/.test(trimmed)) return '';
+  if (stripPhase) {
+    trimmed = trimmed.replace(/\s*(전반|후반).*$/, '').trim();
+  }
+  const normalized = trimmed.replace(/^v/i, '');
+  if (!/^\d/.test(normalized)) return '';
+  return `v${normalized}`;
+}
+
 const EVENT_TYPE_HUMAN_MAP = {
   전반업데이트: '버전 업데이트',
   후반업데이트: '후반 픽업',
@@ -612,16 +644,16 @@ export function cleanEventDisplayTitle(rawTitle, gameName = '') {
   if (!rawTitle || typeof rawTitle !== 'string') return '';
   let t = rawTitle.replace(/^\s*\[예상\]\s*/, '').trim();
 
+  // [명조 | 도미노피자 콜라보] - 「...」 -> 도미노피자 콜라보 · 「...」 (먼저 매칭하여 닫는 대괄호 잔여 방지)
+  t = t.replace(/^\[(?:명조|원신|스타레일|젠존제|엔드필드)\s*\|\s*([^\]]+)\]\s*-\s*/i, '$1 · ');
+
   // 〈붕괴: 스타레일〉 × 메가MGC커피 콜라보 -> 메가MGC커피 콜라보
   t = t.replace(
     /^(?:[〈《『「[])?(?:붕괴:\s*스타레일|스타레일|젠레스\s*존\s*제로|젠존제|명조:\s*워더링\s*웨이브|명조|명일방주:\s*엔드필드|엔드필드|원신)(?:[〉》』」\]])?\s*(?:[×xX|·-]\s*)?/i,
     ''
   );
 
-  // [명조 | 도미노피자 콜라보] - 「...」 -> 도미노피자 콜라보 - 「...」
-  t = t.replace(/^\[(?:명조|원신|스타레일|젠존제|엔드필드)\s*\|\s*([^\]]+)\]\s*-\s*/i, '$1 · ');
-
-  // 지스타 2026 - 원신 무대 이벤트 -> 지스타 2026 무대 이벤트
+  // 지스타 2026 - 원신 무대 이벤트 -> 지스타 2026 · 무대 이벤트
   if (gameName) {
     const shortGame = gameName.replace(/^.*:\s*/, '').trim();
     const redundantDashRegex = new RegExp(`(지스타\\s*\\d{4})\\s*-\\s*(?:${gameName}|${shortGame})\\s*`, 'i');

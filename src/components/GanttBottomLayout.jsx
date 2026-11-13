@@ -19,6 +19,7 @@ import {
   getCleanSummaryText,
   formatEventTypeLabel,
   cleanEventDisplayTitle,
+  formatEventVersion,
 } from '../utils/eventTextParser';
 import {
   getTodayDateKST,
@@ -167,13 +168,14 @@ function GanttBottomLayout({
     const rangeStart = formatDateObj(addDaysToDate(today, -14));
     const rangeEnd = formatDateObj(addDaysToDate(today, 21));
     const filtered = events.filter((ev) => {
-      if (ev.type !== '공식방송' && ev.type !== '오프라인이벤트') return false;
-      if (ev.is_fixed !== true) return false;
+      const isOffline = ev.type === '오프라인이벤트' || ev.type === '행사';
+      if (ev.type !== '공식방송' && !isOffline) return false;
+      if (ev.is_fixed !== true && ev.is_fixed !== 'true') return false;
       if (activeGames && activeGames[ev.game] === false) return false;
 
       if (ev.type === '공식방송') {
         if (ev.date < rangeStart || ev.date > rangeEnd) return false;
-      } else if (ev.type === '오프라인이벤트') {
+      } else if (isOffline) {
         const isEnded = ev.end_date ? ev.end_date < todayStr : ev.date < todayStr;
         if (isEnded) return false;
       }
@@ -418,6 +420,12 @@ function GanttBottomLayout({
                           alt={cleanTitle}
                           className="media-card__thumb"
                           loading="lazy"
+                          onError={(e) => {
+                            const fallback = gamesConfig?.[ev.game]?.defaultImg;
+                            if (fallback && e.currentTarget.src !== fallback) {
+                              e.currentTarget.src = fallback;
+                            }
+                          }}
                         />
                         <span className="media-card__game-tag">{ev.game}</span>
                         <span
@@ -437,7 +445,11 @@ function GanttBottomLayout({
                               </>
                             ) : (
                               <>
-                                <Radio size={11} /> v{ev.version} 특별 방송
+                                <Radio size={11} />{' '}
+                                {(() => {
+                                  const verTag = formatEventVersion(ev.version, { stripPhase: true });
+                                  return verTag ? `${verTag} 특별 방송` : '특별 방송';
+                                })()}
                               </>
                             )}
                           </span>
@@ -446,9 +458,9 @@ function GanttBottomLayout({
                           </span>
                         </div>
                         <h4 className="media-card__title">{cleanTitle}</h4>
-                        {ev.detail && (
+                        {(ev.details || ev.detail) && (
                           <p className="media-card__desc">
-                            {getCleanSummaryText(ev.detail, 68)}
+                            {getCleanSummaryText(ev.details || ev.detail, 68)}
                           </p>
                         )}
                       </div>

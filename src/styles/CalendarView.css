@@ -917,6 +917,59 @@
   color: #075985;
 }
 
+[data-theme="light"] .calendar-chip--offline.calendar-chip--end {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(148, 163, 184, 0.45);
+}
+
+[data-theme="light"] .calendar-chip--offline.calendar-chip--end .calendar-chip__offline-tag {
+  background: rgba(15, 23, 42, 0.12);
+  color: #334155;
+}
+
+[data-theme="light"] .calendar-view__export-btn:hover,
+[data-theme="light"] .calendar-view__day-num--today,
+[data-theme="light"] .calendar-agenda__dday.is-today {
+  color: #ffffff;
+}
+
+[data-theme="light"] .calendar-agenda__cat-pill {
+  background: rgba(var(--chip-rgb), 0.16);
+  color: #1e293b;
+}
+
+[data-theme="light"] .calendar-agenda__cat-pill.is-broadcast {
+  background: rgba(225, 29, 72, 0.12);
+  color: #be123c;
+}
+
+[data-theme="light"] .calendar-agenda__cat-pill.is-offline {
+  background: rgba(14, 165, 233, 0.14);
+  color: #0369a1;
+}
+
+[data-theme="light"] .calendar-agenda__status.is-predicted {
+  background: var(--badge-predicted-bg);
+  border-color: var(--badge-predicted-border);
+  color: var(--badge-predicted-text);
+}
+
+[data-theme="light"] .calendar-agenda__dday.is-imminent {
+  background: rgba(225, 29, 72, 0.12);
+  border-color: rgba(225, 29, 72, 0.34);
+  color: #be123c;
+}
+
+[data-theme="light"] .calendar-agenda__dday.is-ongoing {
+  background: rgba(5, 150, 105, 0.12);
+  color: #047857;
+}
+
+[data-theme="light"] .calendar-agenda__dday.is-past {
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+
 /* ── Responsive (Tablet & Mobile) ─────────────────────────── */
 @media (max-width: 1024px) {
   .calendar-view__legend {

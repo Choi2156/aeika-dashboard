@@ -200,7 +200,7 @@ export default function GameFilterBar({
         )}
 
         <nav
-          className="view-switcher"
+          className={`view-switcher ${glider.ready ? 'has-glider' : ''}`}
           role="tablist"
           aria-label="일정 표시 방식 전환"
           ref={switcherRef}
