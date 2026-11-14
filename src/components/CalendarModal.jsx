@@ -143,7 +143,7 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
   ctx.font = `800 15px ${fontMono}`;
   ctx.fillStyle = '#c4b5fd';
   ctx.textBaseline = 'middle';
-  ctx.fillText('AEIKA ARCHIVE · v1.3.0', marginX + 44, 71);
+  ctx.fillText('AEIKA ARCHIVE · v1.3.1', marginX + 44, 71);
 
   // 메인 타이틀
   ctx.font = `900 42px ${fontSans}`;
@@ -559,7 +559,7 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
 
   ctx.font = `800 17px ${fontMono}`;
   ctx.fillStyle = '#c4b5fd';
-  const brandFoot = 'AEIKA ARCHIVE · SUBCULTURE SCHEDULE HUB v1.3.0';
+  const brandFoot = 'AEIKA ARCHIVE · SUBCULTURE SCHEDULE HUB v1.3.1';
   const bfW = ctx.measureText(brandFoot).width;
   ctx.fillText(brandFoot, W - marginX - bfW - 6, H - 34);
 

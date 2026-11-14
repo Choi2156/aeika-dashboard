@@ -22,7 +22,7 @@ import {
   trackShareClick,
 } from '../utils/analytics';
 
-const APP_VERSION = 'v1.3.0';
+const APP_VERSION = 'v1.3.1';
 
 /**
  * Header 컴포넌트 (v1.3.0 Obsidian Command Header)
