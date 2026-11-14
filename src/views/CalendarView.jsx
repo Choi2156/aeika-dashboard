@@ -31,6 +31,20 @@ const CATEGORY_DISPLAY = {
   offline: '오프라인 행사',
 };
 
+const CALENDAR_LEGEND_ITEMS = [
+  { key: 'update', label: '신규 버전 업데이트', swatchClass: 'is-update' },
+  { key: 'half', label: '후반 픽업 전환', swatchClass: 'is-half' },
+  { key: 'broadcast', label: '특별방송', swatchClass: 'is-broadcast', swatchText: 'LIVE' },
+  { key: 'offline', label: '오프라인 행사', swatchClass: 'is-offline', isOfflinePin: true },
+  { key: 'predicted', label: '주기 예상 (점선)', swatchClass: 'is-predicted' },
+];
+
+function matchesLegendFilter(item, filterKey) {
+  if (!filterKey) return true;
+  if (filterKey === 'predicted') return !item.isFixed;
+  return item.category === filterKey;
+}
+
 function hexToRgbStr(hex) {
   if (!hex || typeof hex !== 'string') return '110, 231, 183';
   const clean = hex.replace('#', '');
@@ -93,6 +107,9 @@ export default function CalendarView({
   const [month, setMonth] = useState(todayMonth);
   const [transitionDir, setTransitionDir] = useState('none');
   const [selectedDateStr, setSelectedDateStr] = useState(null);
+  const [pinnedLegend, setPinnedLegend] = useState(null);
+  const [hoveredLegend, setHoveredLegend] = useState(null);
+  const activeLegendFilter = hoveredLegend || pinnedLegend;
 
   const milestones = useMemo(() => {
     return extractCalendarMilestones(events, activeGames);
@@ -245,28 +262,38 @@ export default function CalendarView({
         </div>
 
         <div className="calendar-view__right-controls">
-          {/* 4대 일정 유형 & 예상 범례 */}
-          <div className="calendar-view__legend">
-            <span className="calendar-view__legend-item">
-              <span className="calendar-view__legend-swatch is-update" />
-              신규 버전 업데이트
-            </span>
-            <span className="calendar-view__legend-item">
-              <span className="calendar-view__legend-swatch is-half" />
-              후반 픽업 전환
-            </span>
-            <span className="calendar-view__legend-item">
-              <span className="calendar-view__legend-swatch is-broadcast">LIVE</span>
-              특별방송
-            </span>
-            <span className="calendar-view__legend-item">
-              <span className="calendar-view__legend-swatch is-offline">🎪</span>
-              오프라인 행사
-            </span>
-            <span className="calendar-view__legend-item">
-              <span className="calendar-view__legend-swatch is-predicted" />
-              주기 예상 (점선)
-            </span>
+          {/* 4대 일정 유형 & 예상 범례 (호버 강조 / 클릭 고정 필터) */}
+          <div className="calendar-view__legend" role="group" aria-label="일정 유형 필터">
+            {CALENDAR_LEGEND_ITEMS.map(({ key, label, swatchClass, swatchText, isOfflinePin }) => {
+              const isPinned = pinnedLegend === key;
+              const isActive = activeLegendFilter === key;
+              const isDimmed = Boolean(activeLegendFilter && activeLegendFilter !== key);
+
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={[
+                    'calendar-view__legend-item',
+                    isActive ? 'is-active' : '',
+                    isPinned ? 'is-pinned' : '',
+                    isDimmed ? 'is-dimmed' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  aria-pressed={isPinned}
+                  onMouseEnter={() => setHoveredLegend(key)}
+                  onMouseLeave={() => setHoveredLegend(null)}
+                  onClick={() => setPinnedLegend((prev) => (prev === key ? null : key))}
+                  title={isPinned ? '클릭하여 고정 해제' : '마우스 오버로 강조 · 클릭하여 고정'}
+                >
+                  <span className={`calendar-view__legend-swatch ${swatchClass}`}>
+                    {isOfflinePin ? <MapPin size={10} strokeWidth={2.5} /> : swatchText || null}
+                  </span>
+                  <span>{label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {onOpenCalendarModal && (
@@ -274,11 +301,11 @@ export default function CalendarView({
               type="button"
               className="calendar-view__export-btn"
               onClick={() => onOpenCalendarModal(year, month, 'calendar_view')}
-              title={`${year}년 ${month}월 고해상도 달력 이미지 보기 및 저장`}
-              aria-label={`${month}월 달력 이미지 보기 및 저장`}
+              title={`${year}년 ${month}월 달력 다운로드`}
+              aria-label={`${month}월 달력 다운로드`}
             >
               <ImageIcon size={13} />
-              <span className="calendar-view__export-label">{month}월 달력 이미지</span>
+              <span className="calendar-view__export-label">{month}월 달력 다운로드</span>
             </button>
           )}
         </div>
@@ -382,6 +409,10 @@ export default function CalendarView({
                         const rgb = hexToRgbStr(color);
                         const iconSrc = gameConf.icon || null;
                         const timeShort = item.time ? item.time.slice(0, 5) : '';
+                        const isLegendDimmed = Boolean(
+                          activeLegendFilter && !matchesLegendFilter(item, activeLegendFilter)
+                        );
+                        const isLegendHighlighted = Boolean(activeLegendFilter && !isLegendDimmed);
 
                         return (
                           <button
@@ -394,6 +425,8 @@ export default function CalendarView({
                               item.isFixed
                                 ? 'calendar-chip--confirmed'
                                 : 'calendar-chip--predicted',
+                              isLegendDimmed ? 'calendar-chip--dimmed' : '',
+                              isLegendHighlighted ? 'calendar-chip--highlighted' : '',
                             ]
                               .filter(Boolean)
                               .join(' ')}
@@ -416,8 +449,8 @@ export default function CalendarView({
                             {item.category === 'broadcast' ? (
                               <span className="calendar-chip__live-tag">LIVE</span>
                             ) : item.category === 'offline' ? (
-                              <span className="calendar-chip__offline-tag">
-                                {item.isEnd ? '종료' : '🎪'}
+                              <span className="calendar-chip__offline-tag" aria-hidden="true">
+                                <MapPin size={10} strokeWidth={2.5} />
                               </span>
                             ) : iconSrc ? (
                               <img
@@ -557,11 +590,6 @@ export default function CalendarView({
                     </div>
 
                     <div className="calendar-agenda__badges">
-                      {item.isEnd && (
-                        <span className="calendar-agenda__role-pill is-end">
-                          종료일
-                        </span>
-                      )}
                       {isStartRole && (
                         <span className="calendar-agenda__role-pill is-start">
                           시작일
@@ -583,7 +611,14 @@ export default function CalendarView({
                   </div>
 
                   <div className="calendar-agenda__card-main">
-                    <div className="calendar-agenda__card-title">{cleanAgendaTitle}</div>
+                    <div className="calendar-agenda__card-title">
+                      {item.isEnd && (
+                        <span className="calendar-agenda__end-prefix">종료</span>
+                      )}
+                      <span className="calendar-agenda__title-text">
+                        {cleanAgendaTitle}
+                      </span>
+                    </div>
                     <ArrowUpRight size={14} className="calendar-agenda__card-arrow" />
                   </div>
 

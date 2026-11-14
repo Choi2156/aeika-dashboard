@@ -3,7 +3,7 @@ import {
   CheckSquare,
   Square,
   Crosshair,
-  BarChart2,
+  ChartNoAxesGantt,
   Calendar as CalendarIcon,
   ListFilter,
 } from 'lucide-react';
@@ -35,7 +35,7 @@ export default function GameFilterBar({
   gamesConfig,
   onToggleGame,
   onSelectAll,
-  currentView = 'gantt',
+  currentView = 'calendar',
   onViewChange,
   onJumpToToday,
   isShrunk,
@@ -217,7 +217,7 @@ export default function GameFilterBar({
             aria-selected={currentView === 'gantt'}
             title="간트 차트 (기간 비교)"
           >
-            <BarChart2 size={14} />
+            <ChartNoAxesGantt size={15} />
             <span className="view-switcher__label">간트 차트</span>
           </button>
 

@@ -114,16 +114,49 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  gap: 6px;
 }
 
 .calendar-view__legend-item {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.calendar-view__legend-item:hover,
+.calendar-view__legend-item:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(148, 163, 184, 0.45);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.calendar-view__legend-item.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(203, 213, 225, 0.52);
+  color: var(--text-primary);
+}
+
+.calendar-view__legend-item.is-pinned {
+  background: var(--accent-indigo-subtle);
+  border-color: rgba(110, 231, 183, 0.65);
+  color: var(--accent-indigo-light);
+  box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.24), 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.calendar-view__legend-item.is-dimmed {
+  opacity: 0.44;
 }
 
 .calendar-view__legend-swatch {
@@ -157,8 +190,10 @@
 }
 
 .calendar-view__legend-swatch.is-offline {
-  font-size: 0.72rem;
-  line-height: 1;
+  width: 16px;
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.58);
+  color: #38bdf8;
 }
 
 .calendar-view__legend-swatch.is-predicted {
@@ -455,7 +490,18 @@
   cursor: pointer;
   min-width: 0;
   overflow: hidden;
-  transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+  transition: opacity 0.18s ease, transform 0.14s ease, filter 0.18s ease, box-shadow 0.14s ease;
+}
+
+.calendar-chip--dimmed {
+  opacity: 0.16 !important;
+  filter: saturate(0.2) brightness(0.82);
+}
+
+.calendar-chip--highlighted {
+  opacity: 1;
+  z-index: 2;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
 .calendar-chip:hover {
@@ -568,7 +614,7 @@
   flex-shrink: 0;
 }
 
-/* ④ 오프라인 행사 / 콜라보 (offline): 🎪 스페셜 뱃지 + 스카이/게임 컬러 포인트 */
+/* ④ 오프라인 행사 / 콜라보 (offline): 맵핀 배지 + 스카이/게임 컬러 포인트 */
 .calendar-chip--offline {
   background: rgba(56, 189, 248, 0.14);
   border: 1px solid rgba(56, 189, 248, 0.42);
@@ -585,8 +631,14 @@
 }
 
 .calendar-chip__offline-tag {
-  font-size: 0.66rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.22);
+  color: #38bdf8;
   flex-shrink: 0;
 }
 
@@ -597,12 +649,8 @@
 }
 
 .calendar-chip--offline.calendar-chip--end .calendar-chip__offline-tag {
-  font-size: 0.56rem;
-  font-weight: 700;
-  color: #cbd5e1;
-  background: rgba(7, 9, 15, 0.72);
-  padding: 1px 3px;
-  border-radius: 3px;
+  background: rgba(100, 116, 139, 0.24);
+  color: #94a3b8;
 }
 
 /* ⑤ 주기 기반 예상 일정 (predicted): 투명도 차등 + 점선(dashed) 외곽선 + 우측 '예상' 태그 */
@@ -917,13 +965,36 @@
 }
 
 .calendar-agenda__card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.35;
+}
+
+.calendar-agenda__end-prefix {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.66rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fcd34d;
+  line-height: 1.3;
+}
+
+.calendar-agenda__title-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .calendar-agenda__card-arrow {
@@ -994,6 +1065,31 @@
   color: #131c2e;
 }
 
+[data-theme="light"] .calendar-view__legend-item {
+  border-color: rgba(15, 23, 42, 0.12);
+  background: rgba(15, 23, 42, 0.03);
+}
+
+[data-theme="light"] .calendar-view__legend-item:hover,
+[data-theme="light"] .calendar-view__legend-item:focus-visible,
+[data-theme="light"] .calendar-view__legend-item.is-active {
+  background: rgba(15, 23, 42, 0.07);
+  border-color: rgba(15, 23, 42, 0.26);
+}
+
+[data-theme="light"] .calendar-view__legend-item.is-pinned {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(5, 150, 105, 0.52);
+  color: #047857;
+  box-shadow: 0 0 0 1px rgba(5, 150, 105, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .calendar-view__legend-swatch.is-offline {
+  background: rgba(14, 165, 233, 0.16);
+  border-color: rgba(2, 132, 199, 0.45);
+  color: #0284c7;
+}
+
 [data-theme="light"] .calendar-chip--offline {
   background: rgba(14, 165, 233, 0.14);
   color: #075985;
@@ -1004,14 +1100,25 @@
   color: #075985;
 }
 
+[data-theme="light"] .calendar-chip--offline .calendar-chip__offline-tag {
+  background: rgba(14, 165, 233, 0.2);
+  color: #0284c7;
+}
+
 [data-theme="light"] .calendar-chip--offline.calendar-chip--end {
   background: rgba(148, 163, 184, 0.16);
   border-color: rgba(148, 163, 184, 0.45);
 }
 
 [data-theme="light"] .calendar-chip--offline.calendar-chip--end .calendar-chip__offline-tag {
-  background: rgba(15, 23, 42, 0.12);
-  color: #334155;
+  background: rgba(100, 116, 139, 0.18);
+  color: #475569;
+}
+
+[data-theme="light"] .calendar-agenda__end-prefix {
+  background: rgba(217, 119, 6, 0.14);
+  border-color: rgba(217, 119, 6, 0.42);
+  color: #b45309;
 }
 
 [data-theme="light"] .calendar-view__export-btn:hover,

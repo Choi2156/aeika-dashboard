@@ -37,7 +37,7 @@ export const MAINTENANCE_CONFIG = {
 
 const DEFAULT_SETTINGS = {
   theme: 'dark',
-  currentView: 'gantt',
+  currentView: 'calendar',
   activeGames: {},
 };
 
@@ -54,13 +54,8 @@ export default function App() {
     error,
   } = useScheduleData();
 
-  // 모바일 기기 최초 접속 시 상세 일정('list') 디폴트화
-  const [currentView, setCurrentView] = useState(() => {
-    const isMobile =
-      typeof window !== 'undefined' &&
-      (window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
-    return isMobile ? 'list' : 'gantt';
-  });
+  // 새로고침 및 최초 접속 시 항상 캘린더('calendar') 뷰를 기본값으로 표시
+  const [currentView, setCurrentView] = useState('calendar');
   const [viewDirection, setViewDirection] = useState('center');
 
   const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -150,13 +145,6 @@ export default function App() {
           const merged = { ...DEFAULT_SETTINGS, ...parsed };
           if (merged.theme === 'dark' || merged.theme === 'light') {
             setTheme(merged.theme);
-          }
-          if (
-            merged.currentView === 'gantt' ||
-            merged.currentView === 'calendar' ||
-            merged.currentView === 'list'
-          ) {
-            setCurrentView(merged.currentView);
           }
         } catch (e) {
           console.error('Failed to restore master dashboard settings:', e);

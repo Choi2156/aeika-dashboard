@@ -512,7 +512,7 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
           ctx.fillStyle = gColor.main;
           ctx.fill();
 
-          const tagText = item.isEnd ? '종료' : '행사';
+          const tagText = '행사';
           const tagW = 31;
           drawRoundedRect(ctx, cx + 7, cy + (chipH - 18) / 2, tagW, 18, 4);
           ctx.fillStyle = item.isEnd ? '#334155' : '#7c3aed';
