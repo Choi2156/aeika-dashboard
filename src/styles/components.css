@@ -26,6 +26,12 @@
     box-shadow var(--transition-normal), border-radius var(--transition-normal);
 }
 
+@media (max-height: 540px) and (max-width: 1024px) and (orientation: landscape) {
+  .game-filter-bar {
+    position: static;
+  }
+}
+
 @media (min-width: 1024px) {
   .game-filter-bar {
     flex-direction: row;

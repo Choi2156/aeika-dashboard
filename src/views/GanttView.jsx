@@ -6,6 +6,8 @@ import {
   Globe,
   Youtube,
   MapPin,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import {
   getTodayDateKST,
@@ -28,9 +30,11 @@ import '../styles/GanttView.css';
    Constants
    ──────────────────────────────────────────── */
 const DESKTOP_CELL_WIDTH = 60;
-const MOBILE_CELL_WIDTH = 38;
+const MOBILE_DETAIL_CELL_WIDTH = 38;
+const MOBILE_OVERVIEW_CELL_WIDTH = 18;
 const DESKTOP_GAME_COL_WIDTH = 164;
-const MOBILE_GAME_COL_WIDTH = 72;
+const MOBILE_GAME_COL_WIDTH = 60;
+const MOBILE_LANDSCAPE_GAME_COL_WIDTH = 66;
 const ROW_HEIGHT_COLLAPSED = 36;
 const DATE_RANGE_BEFORE = 30; // days before today
 const DATE_RANGE_AFTER = 90; // days after today
@@ -100,21 +104,65 @@ export default function GanttView({
 }) {
   const scrollRef = useRef(null);
   const scrollRafRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const prevLayoutRef = useRef({ cellWidth: null, gameColWidth: null });
+  const [viewportInfo, setViewportInfo] = useState({
+    isMobile: false,
+    isLandscapeMobile: false,
+  });
+  const [mobileZoom, setMobileZoom] = useState('overview');
+  const [isFocusMode, setIsFocusMode] = useState(false);
   const [hoverPreview, setHoverPreview] = useState(null);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const checkViewport = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const coarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches ?? false;
+      const mobile = w <= 768 || (h <= 540 && (coarsePointer || w <= 1024));
+      const landscapeMobile = mobile && w > h && h <= 540;
+      setViewportInfo((prev) =>
+        prev.isMobile === mobile && prev.isLandscapeMobile === landscapeMobile
+          ? prev
+          : { isMobile: mobile, isLandscapeMobile: landscapeMobile }
+      );
     };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
+    window.addEventListener('orientationchange', checkViewport);
+    return () => {
+      window.removeEventListener('resize', checkViewport);
+      window.removeEventListener('orientationchange', checkViewport);
+    };
   }, []);
 
-  const cellWidth = isMobile ? MOBILE_CELL_WIDTH : DESKTOP_CELL_WIDTH;
-  const gameColWidth = isMobile ? MOBILE_GAME_COL_WIDTH : DESKTOP_GAME_COL_WIDTH;
-  const lanePitch = isMobile ? 30 : 34;
+  const { isMobile, isLandscapeMobile } = viewportInfo;
+  const effectiveFocusMode = isMobile && isFocusMode;
+  const isCompactScale = isMobile && mobileZoom === 'overview';
+
+  useEffect(() => {
+    if (!isMobile && isFocusMode) {
+      setIsFocusMode(false);
+    }
+  }, [isMobile, isFocusMode]);
+
+  useEffect(() => {
+    document.body.classList.toggle('gantt-focus-active', effectiveFocusMode);
+    return () => {
+      document.body.classList.remove('gantt-focus-active');
+    };
+  }, [effectiveFocusMode]);
+
+  const cellWidth = !isMobile
+    ? DESKTOP_CELL_WIDTH
+    : isCompactScale
+    ? MOBILE_OVERVIEW_CELL_WIDTH
+    : MOBILE_DETAIL_CELL_WIDTH;
+  const gameColWidth = !isMobile
+    ? DESKTOP_GAME_COL_WIDTH
+    : isLandscapeMobile
+    ? MOBILE_LANDSCAPE_GAME_COL_WIDTH
+    : MOBILE_GAME_COL_WIDTH;
+  const lanePitch = !isMobile ? 34 : isCompactScale ? 26 : 29;
 
   const today = useMemo(() => getToday(), []);
   const todayStr = useMemo(() => formatDateStr(today), [today]);
@@ -135,6 +183,7 @@ export default function GanttView({
         year: y,
         month: m,
         dayOfMonth,
+        dayOfWeek: d.getDay(),
         isMonthStart: dayOfMonth === 1,
         label: `${m}/${dayOfMonth}`,
         dayName: getKoreanDay(d.getDay()),
@@ -302,10 +351,91 @@ export default function GanttView({
     [cellWidth, syncScrollCssVar]
   );
 
-  /* ── Auto-scroll to today on mount / resize ── */
+  /* ── 모바일 전용 비충돌 레인 압축 (빈 레인 제거 및 겹치지 않는 전·후반 한 줄 배치) ── */
+  const mobilePackingMap = useMemo(() => {
+    if (!isMobile || !axisStartStr) return null;
+    const maxDayIdx = dateAxis.length - 1;
+    const result = {};
+
+    const packIntoLanes = (items, baseLaneOffset) => {
+      const laneEndOffsets = [];
+      const assignments = new Map();
+      const sorted = [...items].sort((a, b) => a.startOffset - b.startOffset);
+
+      sorted.forEach(({ ev, startOffset, visualEnd }) => {
+        let chosenLane = laneEndOffsets.findIndex((lastEnd) => startOffset > lastEnd);
+        if (chosenLane === -1) {
+          chosenLane = laneEndOffsets.length;
+          laneEndOffsets.push(visualEnd);
+        } else {
+          laneEndOffsets[chosenLane] = Math.max(laneEndOffsets[chosenLane], visualEnd);
+        }
+        assignments.set(ev, baseLaneOffset + chosenLane);
+      });
+
+      return { laneCount: laneEndOffsets.length, assignments };
+    };
+
+    gameNames.forEach((gameName) => {
+      const gameEvents = eventsByGame[gameName] || [];
+      const patchItems = [];
+      const specialItems = [];
+
+      gameEvents.forEach((ev) => {
+        if (!ev.start_date) return;
+        const startOffset = getDaysDiff(axisStartStr, ev.start_date);
+        const endOffset = ev.end_date ? getDaysDiff(axisStartStr, ev.end_date) : startOffset;
+        const isStream = ev.type === '공식방송';
+        const isOffline = ev.type === '오프라인이벤트' || ev.type === '행사';
+        const visualEnd = isStream
+          ? startOffset + (isCompactScale ? 3 : 4)
+          : isOffline && endOffset === startOffset && isCompactScale
+          ? endOffset + 1
+          : endOffset;
+
+        if (visualEnd < 0 || startOffset > maxDayIdx) return;
+
+        if (ev.type === '전반업데이트' || ev.type === '후반업데이트') {
+          patchItems.push({ ev, startOffset, visualEnd });
+        } else {
+          specialItems.push({ ev, startOffset, visualEnd });
+        }
+      });
+
+      const patchPacked = packIntoLanes(patchItems, 0);
+      const baseSpecialLane = Math.max(patchPacked.laneCount, 1);
+      const specialPacked = packIntoLanes(specialItems, baseSpecialLane);
+      const mergedMap = new Map([...patchPacked.assignments, ...specialPacked.assignments]);
+
+      result[gameName] = {
+        laneMap: mergedMap,
+        laneCount: Math.max(patchPacked.laneCount, 1) + specialPacked.laneCount,
+      };
+    });
+
+    return result;
+  }, [isMobile, isCompactScale, axisStartStr, dateAxis.length, gameNames, eventsByGame]);
+
+  /* ── Auto-scroll to today on initial mount, or preserve center day when zooming/rotating ── */
   useEffect(() => {
-    scrollToToday(false);
-  }, [scrollToToday]);
+    const container = scrollRef.current;
+    const prev = prevLayoutRef.current;
+
+    if (prev.cellWidth === null) {
+      scrollToToday(false);
+    } else if (
+      container &&
+      (prev.cellWidth !== cellWidth || prev.gameColWidth !== gameColWidth)
+    ) {
+      const oldViewport = Math.max(100, container.clientWidth - (prev.gameColWidth || 0));
+      const centerDayFloat = (container.scrollLeft + oldViewport / 2) / prev.cellWidth;
+      const nextViewport = Math.max(100, container.clientWidth - gameColWidth);
+      container.scrollLeft = Math.max(0, centerDayFloat * cellWidth - nextViewport / 2);
+      requestAnimationFrame(syncScrollCssVar);
+    }
+
+    prevLayoutRef.current = { cellWidth, gameColWidth };
+  }, [cellWidth, gameColWidth, scrollToToday, syncScrollCssVar]);
 
   /* ── 외부 [오늘 MM.DD] 버튼 클릭 시 오늘 위치로 스크롤 ── */
   useEffect(() => {
@@ -474,9 +604,17 @@ export default function GanttView({
 
       const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
       const targetType = ev.lane_override || ev.type;
-      const laneIndex = lanes.indexOf(targetType) !== -1 ? lanes.indexOf(targetType) : 0;
-      const topPos = `${laneIndex * lanePitch + 5}px`;
-      const barHeight = isMobile ? '24px' : '27px';
+      const packedLane = mobilePackingMap?.[gameName]?.laneMap?.get(ev);
+      const laneIndex =
+        isMobile && packedLane !== undefined
+          ? packedLane
+          : lanes.indexOf(targetType) !== -1
+          ? lanes.indexOf(targetType)
+          : 0;
+      const topPos = `${laneIndex * lanePitch + 4}px`;
+      const barHeight = !isMobile ? '27px' : isCompactScale ? '21px' : '24px';
+      const displayBarWidth =
+        bar.spanDays > 1 && bar.width >= 20 ? Math.max(bar.width - 2, 16) : bar.width;
 
       const hoverHandlers = isMobile
         ? {}
@@ -489,20 +627,25 @@ export default function GanttView({
       const isOfflineEvent = ev.type === '오프라인이벤트' || ev.type === '행사';
       if (isOfflineEvent) {
         const cleanOfflineTitle = cleanEventDisplayTitle(ev.title, gameName);
+        const isCompactSinglePin = isCompactScale && bar.spanDays === 1;
+        const offlineBarWidth = isCompactSinglePin ? Math.max(bar.width, 22) : displayBarWidth;
+        const offlineLeft = isCompactSinglePin ? bar.left - Math.max((22 - bar.width) / 2, 0) : bar.left;
         return (
           <div
             key={ev.id || `${gameName}-offline-${ev.start_date}`}
-            className="gantt-bar gantt-bar-offline"
+            className={`gantt-bar gantt-bar-offline${
+              isCompactSinglePin ? ' gantt-bar--compact-pin' : ''
+            }`}
             style={{
-              left: `${bar.left}px`,
-              width: `${bar.width}px`,
+              left: `${offlineLeft}px`,
+              width: `${offlineBarWidth}px`,
               top: topPos,
               height: barHeight,
               '--bar-color': color,
               '--bar-color-dark': colorDark,
               '--bar-rgb': rgb,
-              '--bar-left': `${bar.left}px`,
-              '--bar-width': `${bar.width}px`,
+              '--bar-left': `${offlineLeft}px`,
+              '--bar-width': `${offlineBarWidth}px`,
               backgroundColor: `rgba(${rgb}, 0.14)`,
               border: `1px solid rgba(${rgb}, 0.55)`,
               borderLeft: `3px solid ${color}`,
@@ -514,8 +657,10 @@ export default function GanttView({
             {...hoverHandlers}
           >
             <span className="gantt-bar-label">
-              <MapPin size={11} style={{ flexShrink: 0, color }} />
-              <span className="gantt-bar-label__text">{cleanOfflineTitle}</span>
+              <MapPin size={isCompactScale ? 10 : 11} style={{ flexShrink: 0, color }} />
+              {!isCompactSinglePin && (
+                <span className="gantt-bar-label__text">{cleanOfflineTitle}</span>
+              )}
             </span>
           </div>
         );
@@ -524,6 +669,12 @@ export default function GanttView({
       if (isStream) {
         const flagBgColor = isFixed ? color : 'rgba(24, 31, 46, 0.88)';
         const badgeLabel = isFixed ? 'LIVE' : '예상';
+        const verTag = formatEventVersion(ev.version, { stripPhase: true });
+        const streamText = isCompactScale
+          ? verTag || '방송'
+          : verTag
+          ? `${verTag} 특별 방송`
+          : '특별 방송';
 
         return (
           <div
@@ -533,7 +684,7 @@ export default function GanttView({
             }`}
             style={{
               left: `${bar.left}px`,
-              top: `${laneIndex * lanePitch + 3}px`,
+              top: `${laneIndex * lanePitch + (isCompactScale ? 2 : 3)}px`,
               '--stream-color': color,
               '--stream-color-dark': colorDark,
             }}
@@ -551,15 +702,12 @@ export default function GanttView({
                 border: isFixed ? 'none' : `1px dashed rgba(${rgb}, 0.65)`,
               }}
             >
-              <Radio size={10} className="gantt-live-icon" />
+              <Radio size={isCompactScale ? 9 : 10} className="gantt-live-icon" />
               <span className="gantt-live-badge">{badgeLabel}</span>
             </div>
             <span className="gantt-stream-label">
-              {(() => {
-                const verTag = formatEventVersion(ev.version, { stripPhase: true });
-                return verTag ? `${verTag} 특별 방송` : '특별 방송';
-              })()}
-              {ev.time && <span className="gantt-stream-time">{ev.time}</span>}
+              {streamText}
+              {!isCompactScale && ev.time && <span className="gantt-stream-time">{ev.time}</span>}
             </span>
           </div>
         );
@@ -589,27 +737,27 @@ export default function GanttView({
       const barInlineStyle = !isFixed
         ? {
             left: `${bar.left}px`,
-            width: `${bar.width}px`,
+            width: `${displayBarWidth}px`,
             top: topPos,
             height: barHeight,
             '--bar-color': color,
             '--bar-color-dark': colorDark,
             '--bar-rgb': rgb,
             '--bar-left': `${bar.left}px`,
-            '--bar-width': `${bar.width}px`,
+            '--bar-width': `${displayBarWidth}px`,
             backgroundColor: `rgba(${rgb}, 0.1)`,
             borderColor: `rgba(${rgb}, 0.52)`,
           }
         : {
             left: `${bar.left}px`,
-            width: `${bar.width}px`,
+            width: `${displayBarWidth}px`,
             top: topPos,
             height: barHeight,
             '--bar-color': color,
             '--bar-color-dark': colorDark,
             '--bar-rgb': rgb,
             '--bar-left': `${bar.left}px`,
-            '--bar-width': `${bar.width}px`,
+            '--bar-width': `${displayBarWidth}px`,
             backgroundColor: color,
             borderColor: color,
           };
@@ -639,8 +787,10 @@ export default function GanttView({
       getGameColorDark,
       onEventClick,
       gameLanesMap,
+      mobilePackingMap,
       lanePitch,
       isMobile,
+      isCompactScale,
       handleBarMouseEnter,
       handleBarMouseMove,
       handleBarMouseLeave,
@@ -714,7 +864,79 @@ export default function GanttView({
   }, [hoverPreview, todayStr]);
 
   return (
-    <div className="gantt-view-wrapper">
+    <div
+      className={[
+        'gantt-view-wrapper',
+        isMobile ? 'gantt-view-wrapper--mobile' : '',
+        isCompactScale ? 'gantt-view-wrapper--overview' : '',
+        effectiveFocusMode ? 'gantt-view-wrapper--focused' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {isMobile && (
+        <div className="gantt-mobile-toolbar" role="toolbar" aria-label="모바일 간트 차트 제어">
+          <div className="gantt-mobile-nav">
+            <button
+              type="button"
+              className="gantt-mobile-btn"
+              onClick={() => scrollByDays(isCompactScale ? -14 : -7)}
+              title={isCompactScale ? '2주 이전으로 이동' : '1주 이전으로 이동'}
+            >
+              {isCompactScale ? '◀ 2주' : '◀ 1주'}
+            </button>
+            <button
+              type="button"
+              className="gantt-mobile-btn is-today"
+              onClick={() => scrollToToday(true)}
+              title="오늘 날짜로 이동"
+            >
+              오늘
+            </button>
+            <button
+              type="button"
+              className="gantt-mobile-btn"
+              onClick={() => scrollByDays(isCompactScale ? 14 : 7)}
+              title={isCompactScale ? '2주 이후로 이동' : '1주 이후로 이동'}
+            >
+              {isCompactScale ? '2주 ▶' : '1주 ▶'}
+            </button>
+          </div>
+
+          <div className="gantt-mobile-actions">
+            <div className="gantt-zoom-toggle" role="group" aria-label="간트 배율 전환">
+              <button
+                type="button"
+                className={`gantt-zoom-btn ${mobileZoom === 'overview' ? 'is-active' : ''}`}
+                onClick={() => setMobileZoom('overview')}
+                aria-pressed={mobileZoom === 'overview'}
+              >
+                넓게
+              </button>
+              <button
+                type="button"
+                className={`gantt-zoom-btn ${mobileZoom === 'detail' ? 'is-active' : ''}`}
+                onClick={() => setMobileZoom('detail')}
+                aria-pressed={mobileZoom === 'detail'}
+              >
+                자세히
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className={`gantt-focus-btn ${effectiveFocusMode ? 'is-active' : ''}`}
+              onClick={() => setIsFocusMode((prev) => !prev)}
+              aria-pressed={effectiveFocusMode}
+              title={effectiveFocusMode ? '전체화면 닫기' : '간트 차트 크게 보기'}
+            >
+              {effectiveFocusMode ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+              <span>{effectiveFocusMode ? '닫기' : '전체'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div
         className="gantt-container"
         ref={scrollRef}
@@ -722,7 +944,11 @@ export default function GanttView({
       >
         <div
           className="gantt-grid"
-          style={{ width: `${gameColWidth + totalGridWidth}px` }}
+          style={{
+            width: `${gameColWidth + totalGridWidth}px`,
+            '--gantt-game-col-w': `${gameColWidth}px`,
+            '--bar-label-reserve': isCompactScale ? '54px' : '96px',
+          }}
         >
           {/* ═══ Header Row (2-Tier: Month Span + Date Row) ═══ */}
           <div className="gantt-header">
@@ -793,18 +1019,39 @@ export default function GanttView({
 
               {/* Tier 2: 일자(Date) & 요일 헤더 */}
               <div className="gantt-header-dates">
-                {dateAxis.map((day) => (
-                  <div
-                    key={day.dateStr}
-                    className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${
-                      day.isWeekend ? ' gantt-header-weekend' : ''
-                    }${day.isMonthStart ? ' gantt-header-month-start' : ''}`}
-                    style={{ width: `${cellWidth}px`, minWidth: `${cellWidth}px` }}
-                  >
-                    <span className="gantt-header-date">{day.label}</span>
-                    <span className="gantt-header-day">{day.dayName}</span>
-                  </div>
-                ))}
+                {dateAxis.map((day, idx) => {
+                  const showOverviewTick =
+                    !isCompactScale ||
+                    day.isToday ||
+                    (day.dayOfWeek === 1 && Math.abs(idx - todayIndex) > 2);
+
+                  return (
+                    <div
+                      key={day.dateStr}
+                      className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${
+                        day.isWeekend ? ' gantt-header-weekend' : ''
+                      }${day.isMonthStart ? ' gantt-header-month-start' : ''}${
+                        isCompactScale ? ' gantt-header-cell--overview' : ''
+                      }`}
+                      style={{ width: `${cellWidth}px`, minWidth: `${cellWidth}px` }}
+                    >
+                      {showOverviewTick && (
+                        <>
+                          <span
+                            className={`gantt-header-date${
+                              isCompactScale ? ' gantt-header-tick' : ''
+                            }`}
+                          >
+                            {day.label}
+                          </span>
+                          <span className="gantt-header-day">
+                            {isCompactScale && day.isToday ? '오늘' : day.dayName}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -818,9 +1065,12 @@ export default function GanttView({
               const gameIcon = gamesConfig?.[gameName]?.icon;
 
               const lanes = gameLanesMap[gameName] || ['전반업데이트', '후반업데이트', '공식방송'];
+              const effectiveLaneCount = isMobile
+                ? mobilePackingMap?.[gameName]?.laneCount || 1
+                : lanes.length;
               const rowH = isCollapsed
                 ? ROW_HEIGHT_COLLAPSED
-                : lanes.length * lanePitch + 10;
+                : effectiveLaneCount * lanePitch + (isMobile ? 8 : 10);
 
               return (
                 <div

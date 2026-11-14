@@ -15,12 +15,15 @@
 .gantt-container {
   position: relative;
   overflow: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
   background: var(--bg-surface);
   backdrop-filter: blur(22px) saturate(150%);
   -webkit-backdrop-filter: blur(22px) saturate(150%);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-xl);
   max-height: 76vh;
+  max-height: 76dvh;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), var(--shadow-lg);
   cursor: grab;
   scrollbar-width: thin;
@@ -69,13 +72,16 @@
   position: sticky;
   left: 0;
   z-index: 50;
-  background: rgba(18, 20, 27, 0.98);
+  background: #12141b;
   border-right: 1px solid var(--border-primary);
 }
 
-[data-theme="light"] .gantt-header,
-[data-theme="light"] .gantt-sticky-intersect {
+[data-theme="light"] .gantt-header {
   background: rgba(235, 241, 249, 0.96);
+}
+
+[data-theme="light"] .gantt-sticky-intersect {
+  background: #ebf1f9;
 }
 
 .gantt-header-game {
@@ -173,7 +179,7 @@
   color: var(--text-secondary);
   white-space: nowrap;
   position: sticky;
-  left: 164px;
+  left: calc(var(--gantt-game-col-w, 164px) + 6px);
 }
 
 .gantt-header-dates {
@@ -317,7 +323,7 @@
   gap: 9px;
   padding: 0 12px;
   flex-shrink: 0;
-  background: rgba(18, 20, 27, 0.96);
+  background: #12141b;
   border-right: 1px solid var(--border-primary);
   user-select: none;
   cursor: pointer;
@@ -325,7 +331,7 @@
 }
 
 .gantt-row-game:hover {
-  background: rgba(26, 29, 38, 0.98);
+  background: #1a1d26;
 }
 
 .gantt-row--collapsed {
@@ -365,11 +371,11 @@
 }
 
 .gantt-row-game:hover {
-  background: rgba(16, 21, 33, 0.98);
+  background: #181c26;
 }
 
 [data-theme="light"] .gantt-row-game {
-  background: rgba(240, 245, 251, 0.96);
+  background: #f0f5fb;
 }
 
 [data-theme="light"] .gantt-row-game:hover {
@@ -641,7 +647,7 @@
     clamp(
       0px,
       calc(var(--gantt-scroll-left, 0px) - var(--bar-left, 0px) + 4px),
-      max(0px, calc(var(--bar-width, 0px) - 96px))
+      max(0px, calc(var(--bar-width, 0px) - var(--bar-label-reserve, 96px)))
     )
   );
   will-change: transform;
@@ -889,40 +895,289 @@
   overflow: hidden;
 }
 
-@media (max-width: 768px) {
-  .gantt-header-game {
-    height: 54px;
-    padding: 0 4px;
+/* ───────────────────────────────────────────────────────────────────────────
+   1-C. MOBILE & LANDSCAPE GANTT CONTROLS, OVERVIEW SCALE & FOCUS MODE
+   ─────────────────────────────────────────────────────────────────────────── */
+.gantt-mobile-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-sm);
+}
+
+.gantt-mobile-nav,
+.gantt-mobile-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gantt-mobile-btn {
+  appearance: none;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.67rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.gantt-mobile-btn:active,
+.gantt-focus-btn:active,
+.gantt-zoom-btn:active {
+  transform: scale(0.96);
+}
+
+.gantt-mobile-btn.is-today {
+  background: var(--accent-indigo-subtle);
+  border-color: rgba(110, 231, 183, 0.38);
+  color: var(--accent-indigo-light);
+}
+
+.gantt-zoom-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  gap: 2px;
+}
+
+.gantt-zoom-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.67rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.gantt-zoom-btn.is-active {
+  background: var(--accent-indigo);
+  color: #07090f;
+  font-weight: 800;
+}
+
+.gantt-focus-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.67rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.gantt-focus-btn.is-active {
+  background: rgba(244, 63, 94, 0.16);
+  border-color: rgba(244, 63, 94, 0.45);
+  color: #fda4af;
+}
+
+[data-theme="light"] .gantt-zoom-btn.is-active {
+  color: #ffffff;
+}
+
+[data-theme="light"] .gantt-focus-btn.is-active {
+  background: rgba(225, 29, 72, 0.12);
+  border-color: rgba(225, 29, 72, 0.4);
+  color: #be123c;
+}
+
+/* Mobile Layout (applies in both Portrait & Landscape Phone) */
+.gantt-view-wrapper--mobile {
+  gap: 8px;
+}
+
+.gantt-view-wrapper--mobile .gantt-header-game {
+  height: 50px;
+  padding: 0 3px;
+}
+
+.gantt-view-wrapper--mobile .gantt-header-game-label {
+  font-size: 0.6rem;
+  letter-spacing: -0.02em;
+}
+
+.gantt-view-wrapper--mobile .gantt-quick-nav {
+  display: none;
+}
+
+.gantt-view-wrapper--mobile .gantt-header-months {
+  height: 19px;
+}
+
+.gantt-view-wrapper--mobile .gantt-header-month-label {
+  font-size: 0.61rem;
+}
+
+.gantt-view-wrapper--mobile .gantt-header-dates,
+.gantt-view-wrapper--mobile .gantt-header-cell {
+  height: 31px;
+}
+
+.gantt-view-wrapper--mobile .gantt-row-game {
+  padding: 0 4px 0 3px;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.gantt-view-wrapper--mobile .gantt-game-indicator {
+  width: 3px;
+  height: 22px;
+}
+
+.gantt-view-wrapper--mobile .gantt-game-track-card {
+  gap: 0;
+}
+
+.gantt-view-wrapper--mobile .gantt-game-links,
+.gantt-view-wrapper--mobile .gantt-chevron {
+  display: none;
+}
+
+.gantt-view-wrapper--mobile .gantt-game-name {
+  font-size: 0.62rem;
+  letter-spacing: -0.03em;
+}
+
+.gantt-view-wrapper--mobile .gantt-bar-label {
+  font-size: 0.63rem;
+  gap: 3px;
+}
+
+/* Overview Zoom Scale (18px/day: 2.5~6 weeks at a glance) */
+.gantt-view-wrapper--overview .gantt-header-cell--overview {
+  overflow: visible;
+}
+
+.gantt-view-wrapper--overview .gantt-header-tick {
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+  font-size: 0.61rem;
+}
+
+.gantt-view-wrapper--overview .gantt-header-day {
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+  font-size: 0.54rem;
+}
+
+.gantt-view-wrapper--overview .gantt-header-today .gantt-header-tick {
+  font-weight: 800;
+}
+
+.gantt-view-wrapper--overview .gantt-bar {
+  padding: 0 5px;
+  border-radius: 5px;
+}
+
+.gantt-view-wrapper--overview .gantt-bar--compact-pin {
+  padding: 0;
+  justify-content: center;
+}
+
+.gantt-view-wrapper--overview .gantt-bar-label {
+  font-size: 0.59rem;
+  gap: 2.5px;
+}
+
+.gantt-view-wrapper--overview .gantt-bar-ver-pill {
+  font-size: 0.55rem;
+  padding: 1px 3.5px;
+  border-radius: 3px;
+}
+
+.gantt-view-wrapper--overview .gantt-predicted-pill {
+  font-size: 0.52rem;
+  padding: 0.5px 3px;
+}
+
+.gantt-view-wrapper--overview .gantt-bar-stream {
+  gap: 3px;
+  padding: 0 2px 0 0;
+}
+
+.gantt-view-wrapper--overview .gantt-stream-flag {
+  font-size: 0.54rem;
+  padding: 1.5px 4px;
+  gap: 2px;
+}
+
+.gantt-view-wrapper--overview .gantt-stream-label {
+  font-size: 0.58rem;
+}
+
+/* Full-Viewport Focus Mode (Portrait & Landscape) */
+body.gantt-focus-active {
+  overflow: hidden;
+}
+
+body.gantt-focus-active .view-stage {
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+.gantt-view-wrapper--focused {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: var(--bg-primary);
+  padding: calc(8px + env(safe-area-inset-top, 0px))
+    calc(8px + env(safe-area-inset-right, 0px))
+    calc(8px + env(safe-area-inset-bottom, 0px))
+    calc(8px + env(safe-area-inset-left, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gantt-view-wrapper--focused .gantt-container {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+}
+
+@media (max-height: 540px) and (max-width: 1024px) and (orientation: landscape) {
+  .gantt-view-wrapper--mobile .gantt-container {
+    max-height: 82vh;
+    max-height: 82dvh;
   }
-  .gantt-quick-nav {
-    display: none;
-  }
-  .gantt-header-months {
-    height: 20px;
-  }
-  .gantt-header-month-label {
-    left: 74px;
-    font-size: 0.62rem;
-  }
-  .gantt-header-dates,
-  .gantt-header-cell {
-    height: 34px;
-  }
-  .gantt-row-game {
-    padding: 0 4px;
-    justify-content: center;
-    gap: 4px;
-  }
-  .gantt-game-links,
-  .gantt-chevron {
-    display: none;
-  }
-  .gantt-game-name {
-    font-size: 0.66rem;
-    text-align: center;
-  }
-  .gantt-bar-label {
-    font-size: 0.64rem;
+
+  .gantt-mobile-toolbar {
+    padding: 4px 8px;
   }
 }
 
