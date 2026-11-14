@@ -4,6 +4,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
+  color-scheme: dark;
   /* 1. Surfaces & Canvas (Candidate A: Neutral Carbon-Obsidian · Zero Blue-Slate Cast) */
   --bg-primary: #0b0c10;
   --bg-secondary: #121319;
@@ -110,6 +111,7 @@
 
 /* ─── Light Theme (Soft Cool Mist Slate · Eye-Friendly Porcelain Layers) ─── */
 [data-theme="light"] {
+  color-scheme: light;
   --bg-primary: #e4eaf2;
   --bg-secondary: #f2f5fa;
   --bg-tertiary: #e9eff7;

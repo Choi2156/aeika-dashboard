@@ -17,14 +17,25 @@ export default function ModalShell({
   const overlayRef = useRef(null);
   const closingRef = useRef(false);
   const pushedHistoryRef = useRef(false);
+  const previousFocusRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
       setIsVisible(false);
+      if (previousFocusRef.current && document.contains(previousFocusRef.current)) {
+        try {
+          previousFocusRef.current.focus({ preventScroll: true });
+        } catch {
+          // ignore focus error
+        }
+        previousFocusRef.current = null;
+      }
       return;
     }
 
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     closingRef.current = false;
     pushedHistoryRef.current = false;
 

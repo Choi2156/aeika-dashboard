@@ -1021,6 +1021,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
+  overscroll-behavior: contain;
   opacity: 0;
   transition: opacity 220ms var(--ease-out-expo);
 }
@@ -1044,6 +1045,7 @@
   transform: translateY(14px) scale(0.96);
   transition: transform 280ms var(--ease-spring);
   overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 .modal-overlay.modal-visible .modal-body {

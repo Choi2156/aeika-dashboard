@@ -2,6 +2,7 @@
   "name": "서브컬처 게임 일정 대시보드",
   "short_name": "서브컬처 일정",
   "description": "원신, 붕괴: 스타레일, 젠레스 존 제로, 명조, 명일방주: 엔드필드 통합 일정 대시보드 (AEIKA ARCHIVE)",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

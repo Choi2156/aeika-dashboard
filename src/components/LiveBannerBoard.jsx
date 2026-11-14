@@ -304,7 +304,12 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
         }}
       >
         {liveEvents.map((ev, idx) => {
+          const totalSlides = liveEvents.length;
           const isSlideActive = idx === currentIndex;
+          const isAdjacentSlide =
+            totalSlides > 1 &&
+            (idx === (currentIndex + 1) % totalSlides ||
+              idx === (currentIndex - 1 + totalSlides) % totalSlides);
           const { badgeText, titleText, actionIcon, typeLabel, periodText, isFixed } =
             getBannerMeta(ev);
           const displayType = formatEventTypeLabel(ev.type);
@@ -329,6 +334,9 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
                   src={imgSrc}
                   alt={ev.title}
                   className="live-banner-slide__img"
+                  fetchPriority={isSlideActive ? 'high' : 'low'}
+                  loading={isSlideActive || isAdjacentSlide ? undefined : 'lazy'}
+                  decoding="async"
                   onError={(e) => {
                     const fallback = gamesConfig?.[ev.game]?.defaultImg;
                     if (fallback && e.currentTarget.src !== fallback) {

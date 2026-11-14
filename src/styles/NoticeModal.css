@@ -13,6 +13,7 @@
   justify-content: center;
   z-index: 1500;
   padding: 16px;
+  overscroll-behavior: contain;
   opacity: 0;
   transition: opacity 180ms ease;
 }
@@ -32,6 +33,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  overscroll-behavior: contain;
   transform: translateY(6px) scale(0.98);
   transition: transform 200ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
 }

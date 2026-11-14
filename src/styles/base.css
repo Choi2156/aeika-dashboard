@@ -85,6 +85,11 @@ body[data-theme="light"] {
   scrollbar-color: rgba(255, 255, 255, 0.16) var(--bg-primary);
 }
 
+[data-theme="light"],
+[data-theme="light"] * {
+  scrollbar-color: #94a3b8 var(--bg-primary);
+}
+
 /* ─── App Container & Dynamic Ambient Aurora Glow (Candidate A) ─── */
 .app {
   max-width: 1460px;

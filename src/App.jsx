@@ -126,6 +126,11 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     document.body.setAttribute('data-theme', theme);
+    document.documentElement.style.colorScheme = theme === 'light' ? 'light' : 'dark';
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', theme === 'light' ? '#e4eaf2' : '#0b0c10');
+    }
   }, [theme]);
 
   useEffect(() => {
