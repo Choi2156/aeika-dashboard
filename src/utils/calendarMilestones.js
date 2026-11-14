@@ -4,6 +4,9 @@
  * 클릭 시 DetailModal 연동을 위해 원본 이벤트(rawEvent) 참조를 함께 보존합니다.
  */
 
+export const SERVICE_START_DATE = '2026-04-17';
+export const PRE_SERVICE_NOTICE_DATE = '2026-04-16';
+
 const SHORT_GAME_NAMES = {
   '원신': '원신',
   '붕괴: 스타레일': '스타레일',
@@ -242,6 +245,8 @@ export function buildMonthGrid(year, month, milestones = [], todayStr = '') {
       isToday: dateStr === todayStr,
       isSunday: dayOfWeek === 0,
       isSaturday: dayOfWeek === 6,
+      isPreService: dateStr < SERVICE_START_DATE,
+      isPreServiceNotice: dateStr === PRE_SERVICE_NOTICE_DATE,
       milestones: byDate.get(dateStr) || [],
     });
   }

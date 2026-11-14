@@ -318,6 +318,40 @@
   opacity: 0.42;
 }
 
+.calendar-view__cell--pre-service {
+  background-color: rgba(7, 9, 15, 0.78);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(148, 163, 184, 0.085) 0px,
+    rgba(148, 163, 184, 0.085) 4px,
+    transparent 4px,
+    transparent 11px
+  );
+  cursor: default;
+}
+
+.calendar-view__cell--pre-service .calendar-view__day-num {
+  opacity: 0.42;
+}
+
+.calendar-pre-service-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 5px 6px;
+  border-radius: 6px;
+  border: 1px dashed rgba(148, 163, 184, 0.36);
+  background: rgba(15, 23, 42, 0.72);
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  word-break: keep-all;
+  user-select: none;
+}
+
 .calendar-view__cell--today {
   background: rgba(16, 185, 129, 0.08);
   box-shadow: inset 0 0 0 1.5px var(--accent-indigo);
@@ -924,6 +958,23 @@
   background: #e6ecf5;
 }
 
+[data-theme="light"] .calendar-view__cell--pre-service {
+  background-color: #edf1f7;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(100, 116, 139, 0.12) 0px,
+    rgba(100, 116, 139, 0.12) 4px,
+    transparent 4px,
+    transparent 11px
+  );
+}
+
+[data-theme="light"] .calendar-pre-service-badge {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(100, 116, 139, 0.42);
+  color: #475569;
+}
+
 [data-theme="light"] .calendar-view__cell--has-items:hover {
   background: #ebf0f8;
 }
@@ -1202,5 +1253,12 @@
     letter-spacing: -0.03em;
     text-align: center;
     flex: 1;
+  }
+
+  .calendar-pre-service-badge {
+    padding: 3px 2px;
+    font-size: 0.53rem;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
   }
 }

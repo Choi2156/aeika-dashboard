@@ -242,7 +242,26 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
     const h = rowH - cellGap;
 
     drawRoundedRect(ctx, x, y, w, h, 12);
-    if (!cell.isCurrentMonth) {
+    if (cell.isPreService) {
+      ctx.fillStyle = '#0d0f15';
+      ctx.fill();
+      ctx.save();
+      drawRoundedRect(ctx, x, y, w, h, 12);
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.11)';
+      ctx.lineWidth = 4;
+      const step = 22;
+      for (let offset = -h; offset < w + h; offset += step) {
+        ctx.beginPath();
+        ctx.moveTo(x + offset, y + h);
+        ctx.lineTo(x + offset + h, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.stroke();
+    } else if (!cell.isCurrentMonth) {
       ctx.fillStyle = '#0e1015';
       ctx.fill();
       ctx.lineWidth = 1;
@@ -258,7 +277,7 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
 
     // 날짜 숫자 (달력 이미지 저장용이므로 오늘 날짜 강조는 생략)
     ctx.save();
-    if (!cell.isCurrentMonth) ctx.globalAlpha = 0.42;
+    if (!cell.isCurrentMonth || cell.isPreService) ctx.globalAlpha = 0.42;
 
     const dayStr = String(cell.day);
     ctx.font = `800 22px ${fontMono}`;
@@ -269,6 +288,29 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
         ? '#60a5fa'
         : '#f1f5f9';
     ctx.fillText(dayStr, x + 14, y + 24);
+
+    if (cell.isPreServiceNotice) {
+      ctx.save();
+      ctx.globalAlpha = 1;
+      const badgeW = w - 20;
+      const badgeH = 34;
+      const bx = x + 10;
+      const by = y + 50;
+      drawRoundedRect(ctx, bx, by, badgeW, badgeH, 7);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.84)';
+      ctx.fill();
+      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.42)';
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = `700 15px ${fontSans}`;
+      ctx.fillStyle = '#94a3b8';
+      const labelText = '서비스 개시 전';
+      const lw = ctx.measureText(labelText).width;
+      ctx.fillText(labelText, bx + (badgeW - lw) / 2, by + badgeH / 2);
+      ctx.restore();
+    }
 
     // 셀 내부 마일스톤 배지 렌더링
     const items = cell.milestones || [];

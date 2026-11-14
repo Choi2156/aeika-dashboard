@@ -159,7 +159,7 @@ export default function CalendarView({
   };
 
   const handleCellClick = (cell) => {
-    if (!cell || !cell.milestones || cell.milestones.length === 0) return;
+    if (!cell || cell.isPreService || !cell.milestones || cell.milestones.length === 0) return;
     setSelectedDateStr((prev) => (prev === cell.dateStr ? null : cell.dateStr));
   };
 
@@ -303,6 +303,7 @@ export default function CalendarView({
                       'calendar-view__cell',
                       !cell.isCurrentMonth ? 'calendar-view__cell--other-month' : '',
                       cell.isToday ? 'calendar-view__cell--today' : '',
+                      cell.isPreService ? 'calendar-view__cell--pre-service' : '',
                       hasItems ? 'calendar-view__cell--has-items' : '',
                       isSelected ? 'calendar-view__cell--selected' : '',
                     ]
@@ -341,6 +342,14 @@ export default function CalendarView({
                     </div>
 
                     <div className="calendar-view__cell-events">
+                      {cell.isPreServiceNotice && (
+                        <div
+                          className="calendar-pre-service-badge"
+                          title="2026년 4월 17일 서비스 개시 이전"
+                        >
+                          서비스 개시 전
+                        </div>
+                      )}
                       {cellItems.map((item) => {
                         const gameConf = gamesConfig?.[item.game] || {};
                         const gameTheme = gameConf.theme || {};

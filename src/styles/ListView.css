@@ -573,6 +573,82 @@
   background: linear-gradient(to right, rgba(16, 185, 129, 0.42), transparent);
 }
 
+/* ── Pre-Service Boundary Row (Topmost 1-line marker) ─────── */
+.list-view__service-start {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  z-index: 2;
+  margin: 0 0 8px;
+}
+
+.list-view__service-start-left {
+  flex-shrink: 0;
+  width: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-view__service-start-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px dashed rgba(148, 163, 184, 0.65);
+  position: relative;
+  z-index: 2;
+}
+
+.list-view__service-start-right {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0 0 12px;
+}
+
+.list-view__service-start-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 1px dashed rgba(148, 163, 184, 0.32);
+  background-color: rgba(15, 23, 42, 0.56);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(148, 163, 184, 0.06) 0px,
+    rgba(148, 163, 184, 0.06) 4px,
+    transparent 4px,
+    transparent 10px
+  );
+  min-width: 0;
+}
+
+.list-view__service-start-date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.list-view__service-start-label {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.list-view__service-start-line {
+  flex: 1;
+  min-width: 12px;
+  height: 1px;
+  background: linear-gradient(to right, rgba(148, 163, 184, 0.3), transparent);
+}
+
 /* ── Empty State ──────────────────────────────────────────── */
 .list-view__empty {
   text-align: center;
@@ -689,10 +765,27 @@
   border-color: var(--accent-indigo);
 }
 
+[data-theme="light"] .list-view__service-start-bar {
+  background-color: #eef2f7;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(100, 116, 139, 0.09) 0px,
+    rgba(100, 116, 139, 0.09) 4px,
+    transparent 4px,
+    transparent 10px
+  );
+  border-color: rgba(100, 116, 139, 0.38);
+}
+
+[data-theme="light"] .list-view__service-start-label {
+  color: #475569;
+}
+
 /* ── Mobile Responsive ────────────────────────────────────── */
 @media (max-width: 640px) {
   .list-view__left,
-  .list-view__today-marker-left {
+  .list-view__today-marker-left,
+  .list-view__service-start-left {
     width: 60px;
   }
 
@@ -706,8 +799,19 @@
   }
 
   .list-view__right,
-  .list-view__today-marker-right {
+  .list-view__today-marker-right,
+  .list-view__service-start-right {
     padding-left: 8px;
+  }
+
+  .list-view__service-start-bar {
+    padding: 6px 10px;
+    gap: 7px;
+  }
+
+  .list-view__service-start-date,
+  .list-view__service-start-label {
+    font-size: 0.68rem;
   }
 
   .list-view__card {

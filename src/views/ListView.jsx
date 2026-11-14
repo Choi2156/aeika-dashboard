@@ -159,11 +159,14 @@ export default function ListView({
     return visibleEvents.some((ev) => ev.date === todayStr);
   }, [visibleEvents, todayStr]);
 
-  // TODAY 마커가 삽입된 타임라인 행 배열 생성
+  // TODAY 마커가 삽입된 타임라인 행 배열 생성 (최상단까지 모두 펼친 경우 1줄 서비스 개시 전 경계 표기)
   const rows = useMemo(() => {
     if (visibleEvents.length === 0) return [];
 
     const result = [];
+    if (hiddenPastCount === 0 && !searchQuery.trim()) {
+      result.push({ type: 'service-start-marker', key: 'service-start-marker' });
+    }
     let todayMarkerInserted = false;
     let prevDate = null;
 
@@ -192,7 +195,7 @@ export default function ListView({
     }
 
     return result;
-  }, [visibleEvents, todayStr, todayHasEvents]);
+  }, [visibleEvents, todayStr, todayHasEvents, hiddenPastCount, searchQuery]);
 
   // 진입 시 및 [오늘] 버튼 클릭 시 TODAY 지점으로 스크롤 포커싱
   useEffect(() => {
@@ -307,6 +310,26 @@ export default function ListView({
       ) : (
         <div className="list-view__timeline">
           {rows.map((row, idx) => {
+            if (row.type === 'service-start-marker') {
+              return (
+                <div
+                  key={row.key || 'service-start-marker'}
+                  className="list-view__service-start"
+                >
+                  <div className="list-view__service-start-left">
+                    <div className="list-view__service-start-dot" />
+                  </div>
+                  <div className="list-view__service-start-right">
+                    <div className="list-view__service-start-bar">
+                      <span className="list-view__service-start-date">~ 2026.04.16</span>
+                      <span className="list-view__service-start-label">서비스 개시 전</span>
+                      <div className="list-view__service-start-line" />
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
             if (row.type === 'today-marker') {
               return (
                 <div
