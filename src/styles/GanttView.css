@@ -1017,8 +1017,43 @@
   gap: 8px;
 }
 
+/* Remove mobile compositor flicker sources (backdrop-filter & multi-frame animations/transitions) */
+.gantt-view-wrapper--mobile .gantt-container,
+.gantt-view-wrapper--mobile .gantt-header {
+  background: #12141b;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[data-theme="light"] .gantt-view-wrapper--mobile .gantt-container {
+  background: #f8fafc;
+}
+
+[data-theme="light"] .gantt-view-wrapper--mobile .gantt-header {
+  background: #ebf1f9;
+}
+
+.gantt-view-wrapper--mobile .gantt-bar-offline {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.gantt-view-wrapper--mobile .gantt-row {
+  animation: none;
+  transition: none;
+}
+
+.gantt-view-wrapper--mobile .gantt-bar,
+.gantt-view-wrapper--mobile .gantt-bar-stream {
+  transition: none;
+}
+
+.gantt-view-wrapper--mobile .gantt-bar-label {
+  will-change: auto;
+}
+
 .gantt-view-wrapper--mobile .gantt-header-game {
-  height: 50px;
+  height: 46px;
   padding: 0 3px;
 }
 
@@ -1032,7 +1067,7 @@
 }
 
 .gantt-view-wrapper--mobile .gantt-header-months {
-  height: 19px;
+  height: 18px;
 }
 
 .gantt-view-wrapper--mobile .gantt-header-month-label {
@@ -1041,7 +1076,7 @@
 
 .gantt-view-wrapper--mobile .gantt-header-dates,
 .gantt-view-wrapper--mobile .gantt-header-cell {
-  height: 31px;
+  height: 28px;
 }
 
 .gantt-view-wrapper--mobile .gantt-row-game {
@@ -1052,7 +1087,7 @@
 
 .gantt-view-wrapper--mobile .gantt-game-indicator {
   width: 3px;
-  height: 22px;
+  height: 20px;
 }
 
 .gantt-view-wrapper--mobile .gantt-game-track-card {
@@ -1074,7 +1109,24 @@
   gap: 3px;
 }
 
-/* Overview Zoom Scale (18px/day: 2.5~6 weeks at a glance) */
+/* Overview Zoom Scale (축소: 18px/day + compact vertical lanes) */
+.gantt-view-wrapper--overview .gantt-header-game {
+  height: 40px;
+}
+
+.gantt-view-wrapper--overview .gantt-header-months {
+  height: 16px;
+}
+
+.gantt-view-wrapper--overview .gantt-header-month-label {
+  font-size: 0.58rem;
+}
+
+.gantt-view-wrapper--overview .gantt-header-dates,
+.gantt-view-wrapper--overview .gantt-header-cell {
+  height: 24px;
+}
+
 .gantt-view-wrapper--overview .gantt-header-cell--overview {
   overflow: visible;
 }
@@ -1083,23 +1135,33 @@
   position: relative;
   z-index: 2;
   white-space: nowrap;
-  font-size: 0.61rem;
+  font-size: 0.58rem;
+  line-height: 1.05;
 }
 
 .gantt-view-wrapper--overview .gantt-header-day {
   position: relative;
   z-index: 2;
   white-space: nowrap;
-  font-size: 0.54rem;
+  font-size: 0.5rem;
+  line-height: 1.05;
 }
 
 .gantt-view-wrapper--overview .gantt-header-today .gantt-header-tick {
   font-weight: 800;
 }
 
+.gantt-view-wrapper--overview .gantt-game-indicator {
+  height: 18px;
+}
+
+.gantt-view-wrapper--overview .gantt-game-name {
+  font-size: 0.6rem;
+}
+
 .gantt-view-wrapper--overview .gantt-bar {
-  padding: 0 5px;
-  border-radius: 5px;
+  padding: 0 4px;
+  border-radius: 4px;
 }
 
 .gantt-view-wrapper--overview .gantt-bar--compact-pin {
@@ -1108,34 +1170,34 @@
 }
 
 .gantt-view-wrapper--overview .gantt-bar-label {
-  font-size: 0.59rem;
-  gap: 2.5px;
+  font-size: 0.56rem;
+  gap: 2px;
 }
 
 .gantt-view-wrapper--overview .gantt-bar-ver-pill {
-  font-size: 0.55rem;
-  padding: 1px 3.5px;
+  font-size: 0.52rem;
+  padding: 0.5px 3px;
   border-radius: 3px;
 }
 
 .gantt-view-wrapper--overview .gantt-predicted-pill {
-  font-size: 0.52rem;
-  padding: 0.5px 3px;
+  font-size: 0.49rem;
+  padding: 0.5px 2.5px;
 }
 
 .gantt-view-wrapper--overview .gantt-bar-stream {
-  gap: 3px;
+  gap: 2.5px;
   padding: 0 2px 0 0;
 }
 
 .gantt-view-wrapper--overview .gantt-stream-flag {
-  font-size: 0.54rem;
-  padding: 1.5px 4px;
+  font-size: 0.51rem;
+  padding: 1px 3.5px;
   gap: 2px;
 }
 
 .gantt-view-wrapper--overview .gantt-stream-label {
-  font-size: 0.58rem;
+  font-size: 0.55rem;
 }
 
 /* Full-Viewport Focus Mode (Portrait & Landscape) */

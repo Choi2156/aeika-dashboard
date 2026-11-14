@@ -157,6 +157,11 @@ body[data-theme="light"] {
   animation: viewStageEnterLeft 340ms var(--ease-out-expo) both;
 }
 
+.view-stage.view-stage--settled {
+  animation: none;
+  will-change: auto;
+}
+
 @keyframes viewStageEnterCenter {
   from {
     opacity: 0;

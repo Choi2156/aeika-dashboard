@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import {
   ChevronDown,
   ChevronRight,
@@ -38,6 +38,18 @@ const MOBILE_LANDSCAPE_GAME_COL_WIDTH = 66;
 const ROW_HEIGHT_COLLAPSED = 36;
 const DATE_RANGE_BEFORE = 30; // days before today
 const DATE_RANGE_AFTER = 90; // days after today
+
+function getViewportSnapshot() {
+  if (typeof window === 'undefined') {
+    return { isMobile: false, isLandscapeMobile: false };
+  }
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const coarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches ?? false;
+  const isMobile = w <= 768 || (h <= 540 && (coarsePointer || w <= 1024));
+  const isLandscapeMobile = isMobile && w > h && h <= 540;
+  return { isMobile, isLandscapeMobile };
+}
 
 /* ────────────────────────────────────────────
    Helper Functions (KST Standard)
@@ -102,28 +114,22 @@ export default function GanttView({
   onEventClick,
   jumpTodayTrigger,
 }) {
+  const wrapperRef = useRef(null);
   const scrollRef = useRef(null);
   const scrollRafRef = useRef(null);
   const prevLayoutRef = useRef({ cellWidth: null, gameColWidth: null });
-  const [viewportInfo, setViewportInfo] = useState({
-    isMobile: false,
-    isLandscapeMobile: false,
-  });
+  const [viewportInfo, setViewportInfo] = useState(getViewportSnapshot);
   const [mobileZoom, setMobileZoom] = useState('overview');
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [hoverPreview, setHoverPreview] = useState(null);
 
   useEffect(() => {
     const checkViewport = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const coarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches ?? false;
-      const mobile = w <= 768 || (h <= 540 && (coarsePointer || w <= 1024));
-      const landscapeMobile = mobile && w > h && h <= 540;
+      const next = getViewportSnapshot();
       setViewportInfo((prev) =>
-        prev.isMobile === mobile && prev.isLandscapeMobile === landscapeMobile
+        prev.isMobile === next.isMobile && prev.isLandscapeMobile === next.isLandscapeMobile
           ? prev
-          : { isMobile: mobile, isLandscapeMobile: landscapeMobile }
+          : next
       );
     };
     checkViewport();
@@ -145,7 +151,10 @@ export default function GanttView({
     }
   }, [isMobile, isFocusMode]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (effectiveFocusMode) {
+      wrapperRef.current?.closest('.view-stage')?.classList.add('view-stage--settled');
+    }
     document.body.classList.toggle('gantt-focus-active', effectiveFocusMode);
     return () => {
       document.body.classList.remove('gantt-focus-active');
@@ -162,7 +171,7 @@ export default function GanttView({
     : isLandscapeMobile
     ? MOBILE_LANDSCAPE_GAME_COL_WIDTH
     : MOBILE_GAME_COL_WIDTH;
-  const lanePitch = !isMobile ? 34 : isCompactScale ? 26 : 29;
+  const lanePitch = !isMobile ? 34 : isCompactScale ? 20 : 28;
 
   const today = useMemo(() => getToday(), []);
   const todayStr = useMemo(() => formatDateStr(today), [today]);
@@ -308,13 +317,23 @@ export default function GanttView({
   }, []);
 
   const handleContainerScroll = useCallback(() => {
-    setHoverPreview((prev) => (prev ? null : prev));
+    if (!isMobile) {
+      setHoverPreview((prev) => (prev ? null : prev));
+    }
     if (scrollRafRef.current) return;
     scrollRafRef.current = requestAnimationFrame(() => {
       scrollRafRef.current = null;
       syncScrollCssVar();
     });
-  }, [syncScrollCssVar]);
+  }, [isMobile, syncScrollCssVar]);
+
+  useEffect(() => {
+    return () => {
+      if (scrollRafRef.current) {
+        cancelAnimationFrame(scrollRafRef.current);
+      }
+    };
+  }, []);
 
   /* ── Scroll to today & quick week jump helpers ── */
   const scrollToToday = useCallback(
@@ -416,13 +435,22 @@ export default function GanttView({
     return result;
   }, [isMobile, isCompactScale, axisStartStr, dateAxis.length, gameNames, eventsByGame]);
 
-  /* ── Auto-scroll to today on initial mount, or preserve center day when zooming/rotating ── */
-  useEffect(() => {
+  /* ── Auto-scroll to today on initial mount, or preserve center day before paint ── */
+  useLayoutEffect(() => {
     const container = scrollRef.current;
     const prev = prevLayoutRef.current;
 
     if (prev.cellWidth === null) {
-      scrollToToday(false);
+      if (container) {
+        const todayIndex = dateAxis.findIndex((d) => d.isToday);
+        if (todayIndex !== -1) {
+          container.scrollLeft = Math.max(
+            0,
+            todayIndex * cellWidth - (container.clientWidth - gameColWidth) / 2
+          );
+          syncScrollCssVar();
+        }
+      }
     } else if (
       container &&
       (prev.cellWidth !== cellWidth || prev.gameColWidth !== gameColWidth)
@@ -431,11 +459,11 @@ export default function GanttView({
       const centerDayFloat = (container.scrollLeft + oldViewport / 2) / prev.cellWidth;
       const nextViewport = Math.max(100, container.clientWidth - gameColWidth);
       container.scrollLeft = Math.max(0, centerDayFloat * cellWidth - nextViewport / 2);
-      requestAnimationFrame(syncScrollCssVar);
+      syncScrollCssVar();
     }
 
     prevLayoutRef.current = { cellWidth, gameColWidth };
-  }, [cellWidth, gameColWidth, scrollToToday, syncScrollCssVar]);
+  }, [cellWidth, gameColWidth, dateAxis, syncScrollCssVar]);
 
   /* ── 외부 [오늘 MM.DD] 버튼 클릭 시 오늘 위치로 스크롤 ── */
   useEffect(() => {
@@ -611,8 +639,8 @@ export default function GanttView({
           : lanes.indexOf(targetType) !== -1
           ? lanes.indexOf(targetType)
           : 0;
-      const topPos = `${laneIndex * lanePitch + 4}px`;
-      const barHeight = !isMobile ? '27px' : isCompactScale ? '21px' : '24px';
+      const topPos = `${laneIndex * lanePitch + (isCompactScale ? 2 : 4)}px`;
+      const barHeight = !isMobile ? '27px' : isCompactScale ? '17px' : '23px';
       const displayBarWidth =
         bar.spanDays > 1 && bar.width >= 20 ? Math.max(bar.width - 2, 16) : bar.width;
 
@@ -684,7 +712,7 @@ export default function GanttView({
             }`}
             style={{
               left: `${bar.left}px`,
-              top: `${laneIndex * lanePitch + (isCompactScale ? 2 : 3)}px`,
+              top: `${laneIndex * lanePitch + (isCompactScale ? 1 : isMobile ? 2 : 3)}px`,
               '--stream-color': color,
               '--stream-color-dark': colorDark,
             }}
@@ -865,6 +893,7 @@ export default function GanttView({
 
   return (
     <div
+      ref={wrapperRef}
       className={[
         'gantt-view-wrapper',
         isMobile ? 'gantt-view-wrapper--mobile' : '',
@@ -904,22 +933,24 @@ export default function GanttView({
           </div>
 
           <div className="gantt-mobile-actions">
-            <div className="gantt-zoom-toggle" role="group" aria-label="간트 배율 전환">
+            <div className="gantt-zoom-toggle" role="group" aria-label="간트 차트 배율 전환">
               <button
                 type="button"
                 className={`gantt-zoom-btn ${mobileZoom === 'overview' ? 'is-active' : ''}`}
                 onClick={() => setMobileZoom('overview')}
                 aria-pressed={mobileZoom === 'overview'}
+                title="한눈에 보기 (축소 배율)"
               >
-                넓게
+                축소
               </button>
               <button
                 type="button"
                 className={`gantt-zoom-btn ${mobileZoom === 'detail' ? 'is-active' : ''}`}
                 onClick={() => setMobileZoom('detail')}
                 aria-pressed={mobileZoom === 'detail'}
+                title="날짜별 상세 보기 (확대 배율)"
               >
-                자세히
+                확대
               </button>
             </div>
 
@@ -947,7 +978,7 @@ export default function GanttView({
           style={{
             width: `${gameColWidth + totalGridWidth}px`,
             '--gantt-game-col-w': `${gameColWidth}px`,
-            '--bar-label-reserve': isCompactScale ? '54px' : '96px',
+            '--bar-label-reserve': isCompactScale ? '48px' : '96px',
           }}
         >
           {/* ═══ Header Row (2-Tier: Month Span + Date Row) ═══ */}
@@ -1069,8 +1100,10 @@ export default function GanttView({
                 ? mobilePackingMap?.[gameName]?.laneCount || 1
                 : lanes.length;
               const rowH = isCollapsed
-                ? ROW_HEIGHT_COLLAPSED
-                : effectiveLaneCount * lanePitch + (isMobile ? 8 : 10);
+                ? isCompactScale
+                  ? 28
+                  : ROW_HEIGHT_COLLAPSED
+                : effectiveLaneCount * lanePitch + (isCompactScale ? 3 : isMobile ? 7 : 10);
 
               return (
                 <div

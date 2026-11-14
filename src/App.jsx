@@ -385,6 +385,11 @@ export default function App() {
                 className="view-stage"
                 data-view={currentView}
                 data-dir={viewDirection}
+                onAnimationEnd={(e) => {
+                  if (e.target === e.currentTarget) {
+                    e.currentTarget.classList.add('view-stage--settled');
+                  }
+                }}
               >
                 {currentView === 'gantt' && (
                   <GanttView
