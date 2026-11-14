@@ -665,7 +665,7 @@ export default function CalendarModal({
   const isNextDisabled =
     compareYearMonth(viewYear, viewMonth, maxBounds.year, maxBounds.month) >= 0;
 
-  const calendarTitle = `${viewYear}년 ${viewMonth}월 서브컬쳐 게임 일정 캘린더`;
+  const calendarTitle = `${viewYear}년 ${viewMonth}월 캘린더`;
   const downloadFileName = `게임일정_${String(viewYear).slice(-2)}년${viewMonth}월.png`;
 
   const handlePrevMonth = () => {

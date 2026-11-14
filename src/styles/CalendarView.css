@@ -1191,12 +1191,14 @@
   .calendar-view {
     min-width: 0;
     max-width: 100%;
+    gap: 8px;
   }
 
   .calendar-view__header {
     padding: 7px 10px;
     gap: 6px;
     flex-wrap: nowrap;
+    border-radius: 14px;
   }
 
   .calendar-view__nav-group {
@@ -1248,6 +1250,7 @@
     width: 100%;
     max-width: 100%;
     overflow: hidden;
+    border-radius: 14px;
   }
 
   .calendar-view__weekdays,
@@ -1319,6 +1322,7 @@
     max-width: 100%;
     padding: 12px;
     overflow: hidden;
+    border-radius: 14px;
   }
 
   .calendar-agenda__grid {

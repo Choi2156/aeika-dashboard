@@ -9,7 +9,7 @@
 .gantt-view-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .gantt-container {
@@ -1025,6 +1025,10 @@
   -webkit-backdrop-filter: none;
 }
 
+.gantt-view-wrapper--mobile .gantt-container {
+  border-radius: 14px;
+}
+
 [data-theme="light"] .gantt-view-wrapper--mobile .gantt-container {
   background: #f8fafc;
 }
@@ -1249,7 +1253,7 @@ body.gantt-focus-active .view-stage {
 .media-hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+  gap: 14px;
   align-items: start;
 }
 
@@ -2055,6 +2059,17 @@ body.gantt-focus-active .view-stage {
 }
 
 @media (max-width: 768px) {
+  .media-hub,
+  .media-hub__left {
+    gap: 10px;
+  }
+
+  .media-station,
+  .notice-unified-box,
+  .shorts-station {
+    border-radius: 14px;
+  }
+
   .media-station__header {
     padding: 8px 10px;
     gap: 6px;
