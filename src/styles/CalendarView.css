@@ -45,14 +45,19 @@
   transition: all var(--transition-fast);
 }
 
-.calendar-view__nav-btn:hover {
+.calendar-view__nav-btn:hover:not(:disabled) {
   border-color: var(--accent-indigo);
   color: var(--text-primary);
   transform: translateY(-1px);
 }
 
-.calendar-view__nav-btn:active {
+.calendar-view__nav-btn:active:not(:disabled) {
   transform: scale(0.95);
+}
+
+.calendar-view__nav-btn:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
 }
 
 .calendar-view__month-title {

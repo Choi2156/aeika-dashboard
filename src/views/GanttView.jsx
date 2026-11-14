@@ -93,12 +93,9 @@ function hexToRgb(hex) {
 export default function GanttView({
   events,
   gamesConfig,
-  recommendedVideos,
   activeGames,
   onToggleGame,
   onEventClick,
-  notices = [],
-  onOpenNotice,
   jumpTodayTrigger,
 }) {
   const scrollRef = useRef(null);

@@ -332,8 +332,6 @@ export default function App() {
         isStorageConsentEnabled={isStorageConsentEnabled}
         onToggleStorageConsent={handleToggleStorageConsent}
         meta={meta}
-        currentView={currentView}
-        onViewChange={handleViewChange}
         notices={notices}
         onOpenNotice={handleOpenNotice}
         isInstallVisible={!isAppInstalled}
@@ -401,7 +399,6 @@ export default function App() {
                     gamesConfig={gamesConfig}
                     activeGames={activeGames}
                     onToggleGame={handleToggleGame}
-                    onSelectAll={handleSelectAll}
                     onEventClick={handleEventClick}
                     jumpTodayTrigger={jumpTodayTrigger}
                   />

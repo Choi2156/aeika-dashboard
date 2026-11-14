@@ -57,9 +57,14 @@
   transition: all var(--transition-fast);
 }
 
-.calendar-modal__nav-btn:hover {
+.calendar-modal__nav-btn:hover:not(:disabled) {
   border-color: var(--accent-indigo);
   color: var(--text-primary);
+}
+
+.calendar-modal__nav-btn:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
 }
 
 .calendar-modal__title {

@@ -13,7 +13,14 @@ import {
   trackCalendarMonthChange,
 } from '../utils/analytics';
 import { getNowKSTParts, getTodayStrKST } from '../utils/dateKST';
-import { extractCalendarMilestones, buildMonthGrid } from '../utils/calendarMilestones';
+import {
+  extractCalendarMilestones,
+  buildMonthGrid,
+  CALENDAR_MIN_YEAR,
+  CALENDAR_MIN_MONTH,
+  compareYearMonth,
+  getCalendarMaxYearMonth,
+} from '../utils/calendarMilestones';
 import ModalShell from './common/ModalShell';
 import '../styles/CalendarModal.css';
 
@@ -648,10 +655,21 @@ export default function CalendarModal({
     setRenderedDataUrl(url);
   }, [isOpen, viewYear, viewMonth, cells, numWeeks, lastUpdated, gameIcons]);
 
+  const maxBounds = useMemo(
+    () => getCalendarMaxYearMonth(events, kstYear, kstMonth),
+    [events, kstYear, kstMonth]
+  );
+
+  const isPrevDisabled =
+    compareYearMonth(viewYear, viewMonth, CALENDAR_MIN_YEAR, CALENDAR_MIN_MONTH) <= 0;
+  const isNextDisabled =
+    compareYearMonth(viewYear, viewMonth, maxBounds.year, maxBounds.month) >= 0;
+
   const calendarTitle = `${viewYear}년 ${viewMonth}월 서브컬쳐 게임 일정 캘린더`;
   const downloadFileName = `게임일정_${String(viewYear).slice(-2)}년${viewMonth}월.png`;
 
   const handlePrevMonth = () => {
+    if (isPrevDisabled) return;
     const toYear = viewMonth === 1 ? viewYear - 1 : viewYear;
     const toMonth = viewMonth === 1 ? 12 : viewMonth - 1;
     trackCalendarMonthChange({ fromYear: viewYear, fromMonth: viewMonth, toYear, toMonth });
@@ -660,6 +678,7 @@ export default function CalendarModal({
   };
 
   const handleNextMonth = () => {
+    if (isNextDisabled) return;
     const toYear = viewMonth === 12 ? viewYear + 1 : viewYear;
     const toMonth = viewMonth === 12 ? 1 : viewMonth + 1;
     trackCalendarMonthChange({ fromYear: viewYear, fromMonth: viewMonth, toYear, toMonth });
@@ -718,7 +737,13 @@ export default function CalendarModal({
                   type="button"
                   className="calendar-modal__nav-btn"
                   onClick={handlePrevMonth}
+                  disabled={isPrevDisabled}
                   aria-label="이전 달"
+                  title={
+                    isPrevDisabled
+                      ? `서비스 개시 월(${CALENDAR_MIN_YEAR}년 ${CALENDAR_MIN_MONTH}월)입니다`
+                      : '이전 달'
+                  }
                 >
                   <ChevronLeft size={16} />
                 </button>
@@ -730,7 +755,9 @@ export default function CalendarModal({
                   type="button"
                   className="calendar-modal__nav-btn"
                   onClick={handleNextMonth}
+                  disabled={isNextDisabled}
                   aria-label="다음 달"
+                  title={isNextDisabled ? '마지막 등록 일정 월입니다' : '다음 달'}
                 >
                   <ChevronRight size={16} />
                 </button>

@@ -9,7 +9,14 @@ import {
   MapPin,
   ArrowUpRight,
 } from 'lucide-react';
-import { extractCalendarMilestones, buildMonthGrid } from '../utils/calendarMilestones';
+import {
+  extractCalendarMilestones,
+  buildMonthGrid,
+  CALENDAR_MIN_YEAR,
+  CALENDAR_MIN_MONTH,
+  compareYearMonth,
+  getCalendarMaxYearMonth,
+} from '../utils/calendarMilestones';
 import { cleanEventDisplayTitle } from '../utils/eventTextParser';
 import { getTodayStrKST, diffDays, formatDisplayDate } from '../utils/dateKST';
 import { trackCalendarMonthChange } from '../utils/analytics';
@@ -118,12 +125,23 @@ export default function CalendarView({
     return found;
   }, [cells, selectedDateStr]);
 
+  const maxBounds = useMemo(
+    () => getCalendarMaxYearMonth(events, todayYear, todayMonth),
+    [events, todayYear, todayMonth]
+  );
+
+  const isPrevDisabled =
+    compareYearMonth(year, month, CALENDAR_MIN_YEAR, CALENDAR_MIN_MONTH) <= 0;
+  const isNextDisabled =
+    compareYearMonth(year, month, maxBounds.year, maxBounds.month) >= 0;
+
   const monthPrefix = `${year}-${String(month).padStart(2, '0')}`;
   const monthMilestonesCount = useMemo(() => {
     return milestones.filter((m) => m.date.startsWith(monthPrefix)).length;
   }, [milestones, monthPrefix]);
 
   const handlePrevMonth = () => {
+    if (isPrevDisabled) return;
     const toYear = month === 1 ? year - 1 : year;
     const toMonth = month === 1 ? 12 : month - 1;
     trackCalendarMonthChange({ fromYear: year, fromMonth: month, toYear, toMonth });
@@ -134,6 +152,7 @@ export default function CalendarView({
   };
 
   const handleNextMonth = () => {
+    if (isNextDisabled) return;
     const toYear = month === 12 ? year + 1 : year;
     const toMonth = month === 12 ? 1 : month + 1;
     trackCalendarMonthChange({ fromYear: year, fromMonth: month, toYear, toMonth });
@@ -184,8 +203,13 @@ export default function CalendarView({
             type="button"
             className="calendar-view__nav-btn"
             onClick={handlePrevMonth}
+            disabled={isPrevDisabled}
             aria-label="이전 달"
-            title="이전 달"
+            title={
+              isPrevDisabled
+                ? `서비스 개시 월(${CALENDAR_MIN_YEAR}년 ${CALENDAR_MIN_MONTH}월)입니다`
+                : '이전 달'
+            }
           >
             <ChevronLeft size={17} />
           </button>
@@ -202,8 +226,9 @@ export default function CalendarView({
             type="button"
             className="calendar-view__nav-btn"
             onClick={handleNextMonth}
+            disabled={isNextDisabled}
             aria-label="다음 달"
-            title="다음 달"
+            title={isNextDisabled ? '마지막 등록 일정 월입니다' : '다음 달'}
           >
             <ChevronRight size={17} />
           </button>

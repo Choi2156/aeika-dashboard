@@ -6,6 +6,45 @@
 
 export const SERVICE_START_DATE = '2026-04-17';
 export const PRE_SERVICE_NOTICE_DATE = '2026-04-16';
+export const CALENDAR_MIN_YEAR = 2026;
+export const CALENDAR_MIN_MONTH = 4;
+
+/**
+ * 연·월 쌍을 비교해 차이를 월 단위로 반환합니다.
+ */
+export function compareYearMonth(y1, m1, y2, m2) {
+  return y1 * 12 + m1 - (y2 * 12 + m2);
+}
+
+/**
+ * 달력 탐색 가능 최대 연·월(일정 데이터의 마지막 종료/시작 월 또는 차기월)을 계산합니다.
+ */
+export function getCalendarMaxYearMonth(events = [], todayYear = 2026, todayMonth = 11) {
+  let maxY = todayYear;
+  let maxM = todayMonth + 1;
+  if (maxM > 12) {
+    maxY += 1;
+    maxM = 1;
+  }
+
+  const allMilestones = extractCalendarMilestones(events, null);
+  for (const m of allMilestones) {
+    const targetStr = m?.date;
+    if (!targetStr || typeof targetStr !== 'string') continue;
+    const parts = targetStr.split('-').map(Number);
+    if (parts.length >= 2 && Number.isFinite(parts[0]) && Number.isFinite(parts[1])) {
+      if (compareYearMonth(parts[0], parts[1], maxY, maxM) > 0) {
+        maxY = parts[0];
+        maxM = parts[1];
+      }
+    }
+  }
+
+  if (compareYearMonth(maxY, maxM, CALENDAR_MIN_YEAR, CALENDAR_MIN_MONTH) < 0) {
+    return { year: CALENDAR_MIN_YEAR, month: CALENDAR_MIN_MONTH };
+  }
+  return { year: maxY, month: maxM };
+}
 
 const SHORT_GAME_NAMES = {
   '원신': '원신',
