@@ -1282,6 +1282,28 @@ body.gantt-focus-active .view-stage {
   flex-direction: column;
 }
 
+@media (max-width: 1079px) {
+  .media-hub__left,
+  .media-hub__right {
+    display: contents;
+  }
+
+  .media-station {
+    order: 1;
+    min-width: 0;
+  }
+
+  .shorts-station {
+    order: 2;
+    min-width: 0;
+  }
+
+  .notice-unified-box {
+    order: 3;
+    min-width: 0;
+  }
+}
+
 /* Left Media Station Box */
 .media-station {
   background: var(--bg-surface);
