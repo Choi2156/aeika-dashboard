@@ -169,7 +169,7 @@
   }
 }
 
-/* ── Left column: date + connector ────────────────────────── */
+/* ── Left column: date capsule chip + timeline node ────────── */
 .list-view__left {
   flex-shrink: 0;
   width: 110px;
@@ -177,47 +177,164 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  padding: 12px 0;
+  padding: 10px 4px 8px;
 }
 
-.list-view__date {
+.list-view__date-chip {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 76px;
+  max-width: 98px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: #14161f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast),
+    color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.list-view__date-chip:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: #1a1d28;
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.list-view__date-chip:active {
+  transform: scale(0.95);
+}
+
+.list-view__date-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.list-view__date-chip--today {
+  border-color: rgba(16, 185, 129, 0.42);
+  background: #111c1a;
+}
+
+.list-view__date-chip--today .list-view__date-num {
+  color: #6ee7b7;
+}
+
+.list-view__date-num {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 0.81rem;
-  color: var(--text-primary);
+  font-size: 0.79rem;
+  color: #e2e8f0;
   letter-spacing: 0.01em;
+  line-height: 1.15;
   white-space: nowrap;
 }
 
-.list-view__date--duplicate {
-  visibility: hidden;
+.list-view__date-sub {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
-.list-view__time {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+.list-view__date-sep {
+  opacity: 0.55;
+}
+
+.list-view__date-time {
+  color: #e5c07b;
   font-weight: 600;
-  color: #fde047;
-  margin-top: 2px;
+}
+
+/* Duplicate-date clickable sub-node & optional time chip */
+.list-view__subnode-btn {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 13px 8px 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.list-view__subnode-btn:focus-visible {
+  outline: none;
+}
+
+.list-view__subnode-btn:focus-visible .list-view__dot {
+  box-shadow: var(--focus-ring);
+}
+
+.list-view__subnode-btn:hover .list-view__dot--sub {
+  transform: scale(1.25);
+}
+
+.list-view__time-chip {
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  font-weight: 600;
+  color: #e5c07b;
+  background: #14161f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  padding: 2px 6px;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* Dot on timeline */
 .list-view__dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: var(--bg-secondary);
-  border: 2.5px solid var(--border-secondary);
-  margin-top: 8px;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-secondary);
+  margin-top: 6px;
   position: relative;
   z-index: 2;
-  transition: all 0.25s ease;
+  transition: transform var(--transition-fast), border-color var(--transition-fast),
+    box-shadow var(--transition-fast), background-color var(--transition-fast);
+}
+
+.list-view__dot--sub {
+  margin-top: 0;
+  width: 8px;
+  height: 8px;
 }
 
 .list-view__row--today .list-view__dot {
   background: #10b981;
   border-color: #6ee7b7;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.55);
+}
+
+.list-view__row--date-focused .list-view__date-chip {
+  border-color: rgba(110, 231, 183, 0.56);
+  background: #152220;
+  box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.2), 0 4px 14px rgba(16, 185, 129, 0.16);
+}
+
+.list-view__row--date-focused .list-view__dot {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(110, 231, 183, 0.45);
 }
 
 /* ── Right column: event card ─────────────────────────────── */
@@ -251,6 +368,12 @@
 .list-view__card--today {
   border-color: rgba(16, 185, 129, 0.55);
   box-shadow: 0 0 18px rgba(16, 185, 129, 0.15);
+}
+
+.list-view__row--date-focused .list-view__card {
+  border-color: rgba(110, 231, 183, 0.62) !important;
+  box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.28),
+    0 10px 26px rgba(16, 185, 129, 0.16) !important;
 }
 
 /* ── Card header row ──────────────────────────────────────── */
@@ -682,8 +805,54 @@
   );
 }
 
-[data-theme="light"] .list-view__time {
+[data-theme="light"] .list-view__date-chip {
+  background: #edf2f8;
+  border-color: rgba(15, 23, 42, 0.14);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .list-view__date-chip:hover {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.26);
+}
+
+[data-theme="light"] .list-view__date-num {
+  color: #1e293b;
+}
+
+[data-theme="light"] .list-view__date-weekday {
+  color: #64748b;
+}
+
+[data-theme="light"] .list-view__date-time,
+[data-theme="light"] .list-view__time-chip {
   color: #b45309;
+}
+
+[data-theme="light"] .list-view__time-chip {
+  background: #edf2f8;
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+[data-theme="light"] .list-view__date-chip--today {
+  background: #e6f6ef;
+  border-color: rgba(5, 150, 105, 0.45);
+}
+
+[data-theme="light"] .list-view__date-chip--today .list-view__date-num {
+  color: #047857;
+}
+
+[data-theme="light"] .list-view__row--date-focused .list-view__date-chip {
+  background: #dcf2e8;
+  border-color: rgba(5, 150, 105, 0.58);
+  box-shadow: 0 0 0 1px rgba(5, 150, 105, 0.18), 0 4px 12px rgba(5, 150, 105, 0.14);
+}
+
+[data-theme="light"] .list-view__row--date-focused .list-view__card {
+  border-color: rgba(5, 150, 105, 0.6) !important;
+  box-shadow: 0 0 0 1px rgba(5, 150, 105, 0.24),
+    0 8px 22px rgba(5, 150, 105, 0.14) !important;
 }
 
 [data-theme="light"] .list-view__type-badge--update {
@@ -786,16 +955,54 @@
   .list-view__left,
   .list-view__today-marker-left,
   .list-view__service-start-left {
-    width: 60px;
+    width: 66px;
+  }
+
+  .list-view__left {
+    padding: 8px 2px 6px;
   }
 
   .list-view__timeline::before {
-    left: 29px;
+    left: 32px;
   }
 
-  .list-view__date {
-    font-size: 0.67rem;
-    letter-spacing: -0.02em;
+  .list-view__date-chip {
+    min-width: 54px;
+    max-width: 64px;
+    padding: 4px 5px;
+    border-radius: 9px;
+    gap: 1.5px;
+  }
+
+  .list-view__date-num {
+    font-size: 0.72rem;
+    letter-spacing: -0.01em;
+  }
+
+  .list-view__date-sub {
+    font-size: 0.58rem;
+    gap: 2px;
+  }
+
+  .list-view__dot {
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
+  }
+
+  .list-view__dot--sub {
+    margin-top: 0;
+    width: 7px;
+    height: 7px;
+  }
+
+  .list-view__subnode-btn {
+    padding: 12px 6px 6px;
+  }
+
+  .list-view__time-chip {
+    font-size: 0.57rem;
+    padding: 1.5px 5px;
   }
 
   .list-view__right,

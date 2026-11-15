@@ -77,9 +77,11 @@ export default function ListView({
   jumpTodayTrigger,
 }) {
   const containerRef = useRef(null);
+  const focusTimerRef = useRef(null);
   // 탭 전환 후 복귀 시 초기 상태(14일)로 자연 복원되도록 비영구 로컬 상태로만 관리
   const [pastWindowDays, setPastWindowDays] = useState(DEFAULT_PAST_DAYS);
   const [searchQuery, setSearchQuery] = useState('');
+  const [focusedDate, setFocusedDate] = useState(null);
 
   const todayStr = useMemo(() => getTodayStrKST(), []);
 
@@ -209,13 +211,41 @@ export default function ListView({
     return () => clearTimeout(timer);
   }, [jumpTodayTrigger]);
 
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
+  useEffect(() => {
+    return () => {
+      if (focusTimerRef.current) {
+        clearTimeout(focusTimerRef.current);
+      }
+    };
+  }, []);
+
+  function handleDateAnchorClick(dateStr) {
+    if (!dateStr || !containerRef.current) return;
+    const target = containerRef.current.querySelector(
+      `.list-view__row[data-date="${dateStr}"]`
+    );
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    setFocusedDate(dateStr);
+    if (focusTimerRef.current) {
+      clearTimeout(focusTimerRef.current);
+    }
+    focusTimerRef.current = setTimeout(() => {
+      setFocusedDate(null);
+    }, 1450);
+  }
+
+  function getDateParts(dateStr) {
+    if (!dateStr) return { shortDate: '', weekday: '' };
     const d = parseDateStr(dateStr);
     const m = d.getMonth() + 1;
     const day = d.getDate();
     const weekday = getKoreanDayName(d.getDay());
-    return `${m}/${day} (${weekday})`;
+    return {
+      shortDate: `${m}/${day}`,
+      weekday,
+    };
   }
 
   function formatTime(timeStr) {
@@ -360,35 +390,79 @@ export default function ListView({
             const cleanDetail = getCleanSummaryText(event.details || event.detail, 130);
             const statusPill = getCardStatusPill(event, todayStr);
             const versionLabel = formatEventVersion(event.version);
+            const { shortDate, weekday } = getDateParts(event.date);
+            const formattedTime = formatTime(event.time);
+            const isDateFocused = focusedDate === event.date;
 
             return (
               <div
                 key={row.key || `${event.game}-${event.type}-${event.date}-${idx}`}
-                className={`list-view__row ${
-                  isToday ? 'list-view__row--today scroll-target-today' : ''
-                }`}
+                data-date={event.date || ''}
+                className={[
+                  'list-view__row',
+                  isToday ? 'list-view__row--today scroll-target-today' : '',
+                  isDateFocused ? 'list-view__row--date-focused' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
                 style={{ '--row-idx': Math.min(idx, 12) }}
               >
-                {/* 좌측 타임라인 축: 날짜(11/12 (목)) + 방송시간(20:00) + 원형 도트 */}
+                {/* 좌측 타임라인 축: 캡슐형 날짜 칩(11/12 + 목·20:00) 또는 동일 날짜 서브 노드 */}
                 <div className="list-view__left">
-                  <span
-                    className={`list-view__date ${
-                      isDuplicateDate ? 'list-view__date--duplicate' : ''
-                    }`}
-                  >
-                    {formatDate(event.date)}
-                  </span>
-                  {event.time && (
-                    <span className="list-view__time">{formatTime(event.time)}</span>
+                  {!isDuplicateDate ? (
+                    <>
+                      <button
+                        type="button"
+                        className={`list-view__date-chip ${
+                          isToday ? 'list-view__date-chip--today' : ''
+                        }`}
+                        onClick={() => handleDateAnchorClick(event.date)}
+                        aria-label={`${shortDate} (${weekday}) 일정 화면 중앙으로 이동`}
+                        title="클릭 시 해당 날짜 일정을 화면 중앙으로 이동"
+                      >
+                        <span className="list-view__date-num">{shortDate}</span>
+                        <span className="list-view__date-sub">
+                          <span className="list-view__date-weekday">{weekday}</span>
+                          {formattedTime && (
+                            <>
+                              <span className="list-view__date-sep" aria-hidden="true">·</span>
+                              <span className="list-view__date-time">{formattedTime}</span>
+                            </>
+                          )}
+                        </span>
+                      </button>
+                      <div
+                        className="list-view__dot"
+                        style={
+                          !isToday
+                            ? { borderColor: gameTheme.color || '#6ee7b7' }
+                            : undefined
+                        }
+                      />
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="list-view__subnode-btn"
+                      onClick={() => handleDateAnchorClick(event.date)}
+                      aria-label={`${shortDate} (${weekday}) 첫 일정 화면 중앙으로 이동`}
+                      title="클릭 시 해당 날짜 첫 일정을 화면 중앙으로 이동"
+                    >
+                      {formattedTime && (
+                        <span className="list-view__time-chip">{formattedTime}</span>
+                      )}
+                      <span
+                        className={`list-view__dot list-view__dot--sub ${
+                          isToday ? 'list-view__dot--today' : ''
+                        }`}
+                        style={
+                          !isToday
+                            ? { borderColor: gameTheme.color || '#6ee7b7' }
+                            : undefined
+                        }
+                      />
+                    </button>
                   )}
-                  <div
-                    className="list-view__dot"
-                    style={
-                      !isToday
-                        ? { borderColor: gameTheme.color || '#6ee7b7' }
-                        : undefined
-                    }
-                  />
                 </div>
 
                 {/* 우측 그라데이션 마스크 일러스트 카드 */}
