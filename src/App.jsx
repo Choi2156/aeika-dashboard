@@ -10,6 +10,7 @@ import CalendarView from './views/CalendarView';
 import ListView from './views/ListView';
 import GanttBottomLayout from './components/GanttBottomLayout';
 import Footer from './components/Footer';
+import ScrollNavDock from './components/ScrollNavDock';
 import NoticeTickerBanner from './components/NoticeTickerBanner';
 import SectionErrorBoundary from './components/common/SectionErrorBoundary';
 import { getNowKSTParts } from './utils/dateKST';
@@ -296,6 +297,16 @@ export default function App() {
     setIsInstallOpen(true);
   }, [canNativePrompt, triggerInstall]);
 
+  const hasOpenModal = Boolean(
+    selectedEvent ||
+      isGuideOpen ||
+      isInstallOpen ||
+      isLicenseOpen ||
+      isSupportOpen ||
+      isNoticeModalOpen ||
+      isCalendarOpen
+  );
+
   return (
     <div ref={appRef} className="app" data-theme={theme}>
       <div className="app-ambient-aurora" aria-hidden="true" />
@@ -518,6 +529,8 @@ export default function App() {
           setIsLicenseOpen(true);
         }}
       />
+
+      <ScrollNavDock isHidden={hasOpenModal} currentView={currentView} />
     </div>
   );
 }

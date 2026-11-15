@@ -1876,3 +1876,124 @@
   font-size: 0.66rem;
   color: var(--text-dim);
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   SCROLL NAV DOCK (Floating Bottom-Right Top/Bottom Navigation Pill)
+   ─────────────────────────────────────────────────────────────────────────── */
+.scroll-nav-dock {
+  position: fixed;
+  right: 18px;
+  bottom: 20px;
+  z-index: 120;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: rgba(16, 18, 25, 0.74);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px) saturate(145%);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+  opacity: 0.8;
+  transition: opacity var(--transition-fast), transform var(--transition-normal),
+    border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.scroll-nav-dock:hover,
+.scroll-nav-dock:focus-within {
+  opacity: 1;
+  border-color: var(--border-secondary);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.56), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.scroll-nav-dock--hidden,
+body.gantt-focus-active .scroll-nav-dock {
+  opacity: 0 !important;
+  pointer-events: none;
+  transform: translateY(8px) scale(0.95);
+}
+
+[data-theme="light"] .scroll-nav-dock {
+  background: rgba(243, 246, 251, 0.86);
+  border-color: rgba(15, 23, 42, 0.14);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .scroll-nav-dock:hover,
+[data-theme="light"] .scroll-nav-dock:focus-within {
+  border-color: rgba(15, 23, 42, 0.24);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.scroll-nav-dock__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast), opacity var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.scroll-nav-dock__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+}
+
+.scroll-nav-dock__btn:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+.scroll-nav-dock__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.scroll-nav-dock__btn:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+[data-theme="light"] .scroll-nav-dock__btn {
+  color: #475569;
+}
+
+[data-theme="light"] .scroll-nav-dock__btn:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+.scroll-nav-dock__divider {
+  width: 16px;
+  height: 1px;
+  background: var(--border-primary);
+}
+
+@media (max-width: 768px) {
+  .scroll-nav-dock {
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 3px;
+    opacity: 0.88;
+  }
+
+  .scroll-nav-dock__btn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-nav-dock,
+  .scroll-nav-dock__btn {
+    transition: none;
+  }
+}
