@@ -501,6 +501,7 @@
   border-radius: 20px;
   border: 1px solid var(--border-specular);
   overflow: hidden;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -511,6 +512,16 @@
   user-select: none;
   background: var(--bg-card, #0f131e);
   cursor: pointer;
+}
+
+.live-banner-board::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 6;
+  box-shadow: inset 2px 0 0 var(--bg-card), inset -2px 0 0 var(--bg-card);
 }
 
 .live-banner-board:hover {
@@ -551,7 +562,7 @@
   border-radius: inherit;
 }
 
-/* 우측 62% 일러스트 영역 + 좌측 방향 시네마틱 그라데이션 마스크 */
+/* 우측 62% 일러스트 영역 + 좌·우측 시네마틱 그라데이션 마스크 (양옆 서브픽셀 비침 차단) */
 .live-banner-slide__img-container {
   position: absolute;
   top: 0;
@@ -564,13 +575,17 @@
     to right,
     transparent 0%,
     rgba(0, 0, 0, 0.45) 28%,
-    #000 74%
+    #000 72%,
+    #000 96%,
+    transparent 100%
   );
   mask-image: linear-gradient(
     to right,
     transparent 0%,
     rgba(0, 0, 0, 0.45) 28%,
-    #000 74%
+    #000 72%,
+    #000 96%,
+    transparent 100%
   );
 }
 
@@ -594,13 +609,14 @@
 
 .live-banner-slide__img-mask {
   position: absolute;
-  inset: 0;
+  inset: -1px;
   background: linear-gradient(
     to right,
     var(--bg-card) 0%,
     rgba(var(--bg-card-rgb), 0.85) 26%,
     rgba(var(--bg-card-rgb), 0.18) 65%,
-    transparent 100%
+    transparent 93%,
+    rgba(var(--bg-card-rgb), 0.85) 100%
   );
   pointer-events: none;
   z-index: 2;
@@ -928,6 +944,10 @@
   background: linear-gradient(135deg, #eff4fa 0%, #f5f8fc 100%);
 }
 
+[data-theme="light"] .live-banner-board::after {
+  box-shadow: inset 2px 0 0 #eff4fa, inset -2px 0 0 #f5f8fc;
+}
+
 [data-theme="light"] .live-banner-game-badge {
   background: #f1f5f9;
   color: #0f172a !important;
@@ -1248,8 +1268,10 @@
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
+  isolation: isolate;
+  transform: translateZ(0);
   border: 1px solid var(--border-primary);
-  background: var(--bg-primary);
+  background: #0a0d15;
 }
 
 .modal-image {
@@ -1257,15 +1279,25 @@
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
+  border-radius: inherit;
 }
 
 .modal-image-gradient,
 .detail-hero-gradient {
   position: absolute;
-  inset: auto 0 0 0;
-  height: 45%;
-  background: linear-gradient(to top, rgba(10, 13, 21, 0.88) 0%, transparent 100%);
+  inset: -1px;
+  height: auto;
+  border-radius: inherit;
+  background: linear-gradient(
+    to top,
+    rgba(10, 13, 21, 0.98) 0%,
+    rgba(10, 13, 21, 0.9) 8%,
+    rgba(10, 13, 21, 0.42) 28%,
+    transparent 54%
+  );
+  box-shadow: inset 0 0 0 1.5px rgba(10, 13, 21, 0.72);
   pointer-events: none;
+  z-index: 1;
 }
 
 .image-copyright-label {
