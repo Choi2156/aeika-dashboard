@@ -110,7 +110,18 @@
 
 .calendar-modal__close-btn:hover {
   color: var(--text-primary);
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.45);
+  background: var(--bg-elevated, var(--bg-tertiary));
+  transform: translateY(-1px);
+}
+
+.calendar-modal__close-btn:active {
+  transform: scale(0.94);
+}
+
+.calendar-modal__close-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .calendar-modal__body {
@@ -210,8 +221,18 @@
 }
 
 .calendar-modal__btn-view:hover {
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.45);
   background: var(--bg-elevated, #181f2e);
+  transform: translateY(-1px);
+}
+
+.calendar-modal__btn-view:active {
+  transform: scale(0.97);
+}
+
+.calendar-modal__btn-view:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 @media (max-width: 768px) {

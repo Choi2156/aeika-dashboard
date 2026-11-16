@@ -84,7 +84,18 @@
 
 .notice-modal-close-btn:hover {
   color: var(--text-primary);
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.45);
+  background: var(--bg-elevated, var(--bg-tertiary));
+  transform: translateY(-1px);
+}
+
+.notice-modal-close-btn:active {
+  transform: scale(0.94);
+}
+
+.notice-modal-close-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .notice-modal-body {

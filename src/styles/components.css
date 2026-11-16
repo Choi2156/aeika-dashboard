@@ -98,10 +98,16 @@
 }
 
 .game-filter-bar__control-btn:hover {
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.46);
   color: var(--text-primary);
   background: var(--bg-elevated);
-  transform: translateY(-1px);
+  transform: translateY(-1.5px);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(110, 231, 183, 0.12);
+}
+
+[data-theme="light"] .game-filter-bar__control-btn:hover {
+  border-color: rgba(5, 150, 105, 0.44);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(5, 150, 105, 0.1);
 }
 
 .game-filter-bar__control-btn:active {
@@ -357,10 +363,16 @@
 }
 
 .control-bar__today-btn:hover {
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.48);
   color: var(--text-primary);
   background: var(--bg-elevated);
-  transform: translateY(-1px);
+  transform: translateY(-1.5px);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(110, 231, 183, 0.12);
+}
+
+[data-theme="light"] .control-bar__today-btn:hover {
+  border-color: rgba(5, 150, 105, 0.44);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(5, 150, 105, 0.1);
 }
 
 .control-bar__today-btn:active {
@@ -1124,8 +1136,18 @@
 
 .modal-close-btn:hover {
   color: var(--text-primary);
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.45);
   background: var(--bg-elevated);
+  transform: translateY(-1px);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.94);
+}
+
+.modal-close-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .badge-game {
@@ -1846,9 +1868,28 @@
 
 .footer-license-trigger-btn:hover,
 .footer-social-btn:hover {
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.46);
   color: var(--text-primary);
   background: var(--bg-tertiary);
+  transform: translateY(-1.5px);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(110, 231, 183, 0.1);
+}
+
+.footer-license-trigger-btn:active,
+.footer-social-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.footer-license-trigger-btn:focus-visible,
+.footer-social-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+[data-theme="light"] .footer-license-trigger-btn:hover,
+[data-theme="light"] .footer-social-btn:hover {
+  border-color: rgba(5, 150, 105, 0.44);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(5, 150, 105, 0.09);
 }
 
 .copy-tooltip-toast {

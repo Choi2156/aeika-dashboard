@@ -507,10 +507,16 @@ body[data-theme="light"] {
 
 .header__ghost-btn:hover {
   background: var(--bg-elevated);
-  border-color: var(--border-secondary);
+  border-color: rgba(110, 231, 183, 0.48);
   color: var(--text-primary);
   transform: translateY(-1.5px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(110, 231, 183, 0.12);
+}
+
+[data-theme="light"] .header__ghost-btn:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(5, 150, 105, 0.45);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(5, 150, 105, 0.1);
 }
 
 .header__ghost-btn:active {
@@ -522,22 +528,49 @@ body[data-theme="light"] {
   box-shadow: var(--focus-ring);
 }
 
-.header__ghost-btn--active {
-  border-color: rgba(110, 231, 183, 0.45);
+.header__ghost-btn.header__ghost-btn--active {
+  border-color: rgba(110, 231, 183, 0.48);
   color: var(--accent-indigo-light);
-  background: var(--accent-indigo-subtle);
+  background: rgba(16, 185, 129, 0.14);
 }
 
-.header__ghost-btn--copied {
+.header__ghost-btn.header__ghost-btn--active:hover {
+  border-color: rgba(110, 231, 183, 0.78);
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.24);
+  box-shadow: var(--shadow-sm), 0 0 12px rgba(16, 185, 129, 0.22);
+}
+
+[data-theme="light"] .header__ghost-btn.header__ghost-btn--active {
+  border-color: rgba(5, 150, 105, 0.42);
+  color: var(--accent-indigo-dark);
+  background: rgba(16, 185, 129, 0.13);
+}
+
+[data-theme="light"] .header__ghost-btn.header__ghost-btn--active:hover {
+  border-color: rgba(5, 150, 105, 0.72);
+  color: #064e3b;
+  background: rgba(16, 185, 129, 0.22);
+  box-shadow: var(--shadow-sm), 0 0 10px rgba(5, 150, 105, 0.16);
+}
+
+.header__ghost-btn.header__ghost-btn--copied {
   border-color: rgba(16, 185, 129, 0.55);
   color: var(--accent-indigo-light);
   background: rgba(16, 185, 129, 0.16);
 }
 
-[data-theme="light"] .header__ghost-btn--copied {
-  border-color: rgba(5, 150, 105, 0.45);
+.header__ghost-btn.header__ghost-btn--copied:hover {
+  border-color: rgba(110, 231, 183, 0.8);
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.25);
+}
+
+[data-theme="light"] .header__ghost-btn.header__ghost-btn--copied,
+[data-theme="light"] .header__ghost-btn.header__ghost-btn--copied:hover {
+  border-color: rgba(5, 150, 105, 0.55);
   color: var(--accent-indigo-dark);
-  background: rgba(16, 185, 129, 0.14);
+  background: rgba(16, 185, 129, 0.18);
 }
 
 .header__ghost-btn--share {
@@ -558,9 +591,10 @@ body[data-theme="light"] {
 }
 
 .header__ghost-btn.header__theme-btn:hover {
-  background: rgba(245, 158, 11, 0.18);
+  background: rgba(245, 158, 11, 0.19);
   color: #fde68a;
-  border-color: rgba(245, 158, 11, 0.52);
+  border-color: rgba(245, 158, 11, 0.62);
+  box-shadow: var(--shadow-sm), 0 0 12px rgba(245, 158, 11, 0.18);
 }
 
 [data-theme="light"] .header__ghost-btn.header__theme-btn {
@@ -573,7 +607,8 @@ body[data-theme="light"] {
 [data-theme="light"] .header__ghost-btn.header__theme-btn:hover {
   background: rgba(15, 23, 42, 0.12);
   color: #0f172a;
-  border-color: rgba(15, 23, 42, 0.3);
+  border-color: rgba(15, 23, 42, 0.38);
+  box-shadow: var(--shadow-sm);
 }
 
 .youtube-promo__icon {
@@ -605,19 +640,30 @@ body[data-theme="light"] {
   flex-shrink: 0;
 }
 
-.header__ghost-btn--install-ready {
+.header__ghost-btn.header__ghost-btn--install-ready {
   border-color: rgba(56, 189, 248, 0.42);
   background: rgba(56, 189, 248, 0.08);
   color: var(--text-primary);
+}
+
+.header__ghost-btn.header__ghost-btn--install-ready:hover {
+  border-color: rgba(56, 189, 248, 0.72);
+  background: rgba(56, 189, 248, 0.18);
+  box-shadow: var(--shadow-sm), 0 0 12px rgba(56, 189, 248, 0.18);
 }
 
 .header__ghost-btn--install-ready .header__install-icon {
   color: var(--accent-sky);
 }
 
-[data-theme="light"] .header__ghost-btn--install-ready {
+[data-theme="light"] .header__ghost-btn.header__ghost-btn--install-ready {
   border-color: rgba(2, 132, 199, 0.35);
   background: rgba(56, 189, 248, 0.12);
+}
+
+[data-theme="light"] .header__ghost-btn.header__ghost-btn--install-ready:hover {
+  border-color: rgba(2, 132, 199, 0.65);
+  background: rgba(56, 189, 248, 0.22);
 }
 
 .header__guide-icon {
