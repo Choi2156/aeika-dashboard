@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { MapPin, Ticket, ExternalLink, Clock, Calendar as CalendarIcon, X } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
+import { MapPin, Ticket, ExternalLink, Clock, Calendar as CalendarIcon, X, Maximize2 } from 'lucide-react';
 import { trackOutboundLink } from '../utils/analytics';
 import {
   parseStructuredDetail,
@@ -89,6 +89,24 @@ const computeLiveDDayBadge = (event, todayStr) => {
  */
 export default function DetailModal({ event, events, displayTypeName, gamesConfig, onClose }) {
   const todayStr = useMemo(() => getTodayStrKST(), []);
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
+
+  useEffect(() => {
+    setIsImageZoomed(false);
+  }, [event]);
+
+  useEffect(() => {
+    if (!isImageZoomed) return;
+    const onCaptureKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        e.stopImmediatePropagation?.();
+        setIsImageZoomed(false);
+      }
+    };
+    window.addEventListener('keydown', onCaptureKeyDown, true);
+    return () => window.removeEventListener('keydown', onCaptureKeyDown, true);
+  }, [isImageZoomed]);
 
   if (!event) return null;
 
@@ -164,10 +182,23 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
             </button>
           </div>
 
-          {/* ── Hero Banner Image with Smooth Bottom Gradient ── */}
+          {/* ── Hero Banner Image with Smooth Bottom Gradient & Lightbox Zoom ── */}
           {imageSrc && (
             <div className="modal-image-wrapper">
-              <div className="modal-image-container">
+              <div
+                className="modal-image-container modal-image-container--zoomable"
+                role="button"
+                tabIndex={0}
+                onClick={() => setIsImageZoomed(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setIsImageZoomed(true);
+                  }
+                }}
+                title="클릭하여 원본 이미지 크게 보기"
+                aria-label="일정 배너 이미지 확대 보기"
+              >
                 <img
                   className="modal-image"
                   src={imageSrc}
@@ -178,12 +209,41 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
                   }}
                 />
                 <div className="modal-image-gradient" aria-hidden="true" />
+                <span className="modal-image-zoom-hint" aria-hidden="true">
+                  <Maximize2 size={10} />
+                  <span>크게 보기</span>
+                </span>
                 {gameConfig?.copyright && (
                   <span className="image-copyright-label" style={{ right: '8px', bottom: '8px' }}>
                     {gameConfig.copyright}
                   </span>
                 )}
               </div>
+            </div>
+          )}
+
+          {isImageZoomed && imageSrc && (
+            <div
+              className="detail-lightbox-overlay"
+              onClick={() => setIsImageZoomed(false)}
+              role="dialog"
+              aria-modal="true"
+              aria-label="배너 이미지 원본 보기"
+            >
+              <button
+                type="button"
+                className="detail-lightbox-close"
+                onClick={() => setIsImageZoomed(false)}
+                aria-label="원본 이미지 닫기"
+              >
+                <X size={18} />
+              </button>
+              <img
+                src={imageSrc}
+                alt={event.title || '이벤트 원본 이미지'}
+                className="detail-lightbox-img"
+                onClick={(e) => e.stopPropagation()}
+              />
             </div>
           )}
 

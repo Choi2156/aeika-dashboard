@@ -424,19 +424,6 @@
   border-color: #6ee7b7;
 }
 
-.modal-image-gradient {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 52%;
-  background: linear-gradient(
-    to top,
-    rgba(7, 9, 15, 0.84) 0%,
-    rgba(7, 9, 15, 0.25) 55%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
-
 .modal-detail-block.detail-structured-grid {
   display: flex;
   flex-direction: column;

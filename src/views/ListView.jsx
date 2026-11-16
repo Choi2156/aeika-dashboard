@@ -77,11 +77,30 @@ export default function ListView({
   jumpTodayTrigger,
 }) {
   const containerRef = useRef(null);
+  const searchInputRef = useRef(null);
   const focusTimerRef = useRef(null);
+  const todayPingTimerRef = useRef(null);
   // 탭 전환 후 복귀 시 초기 상태(14일)로 자연 복원되도록 비영구 로컬 상태로만 관리
   const [pastWindowDays, setPastWindowDays] = useState(DEFAULT_PAST_DAYS);
   const [searchQuery, setSearchQuery] = useState('');
   const [focusedDate, setFocusedDate] = useState(null);
+  const [isTodayPing, setIsTodayPing] = useState(false);
+
+  const renderHighlightedTitle = (text, query) => {
+    const q = query.trim();
+    if (!q || !text) return text;
+    const idx = text.toLowerCase().indexOf(q.toLowerCase());
+    if (idx === -1) return text;
+    return (
+      <>
+        {text.slice(0, idx)}
+        <mark className="list-view__search-highlight">
+          {text.slice(idx, idx + q.length)}
+        </mark>
+        {text.slice(idx + q.length)}
+      </>
+    );
+  };
 
   const todayStr = useMemo(() => getTodayStrKST(), []);
 
@@ -206,15 +225,42 @@ export default function ListView({
       const target = containerRef.current.querySelector('.scroll-target-today');
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (jumpTodayTrigger > 0) {
+          setIsTodayPing(false);
+          requestAnimationFrame(() => setIsTodayPing(true));
+          if (todayPingTimerRef.current) clearTimeout(todayPingTimerRef.current);
+          todayPingTimerRef.current = setTimeout(() => setIsTodayPing(false), 780);
+        }
       }
     }, 120);
     return () => clearTimeout(timer);
   }, [jumpTodayTrigger]);
 
+  // '/' 단축키로 검색창 즉시 포커스 (모달이 열려 있거나 입력 중일 때는 무시)
+  useEffect(() => {
+    const handleSlashShortcut = (e) => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (document.querySelector('.modal-overlay')) return;
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable) {
+        return;
+      }
+      if (searchInputRef.current) {
+        e.preventDefault();
+        searchInputRef.current.focus();
+      }
+    };
+    window.addEventListener('keydown', handleSlashShortcut);
+    return () => window.removeEventListener('keydown', handleSlashShortcut);
+  }, []);
+
   useEffect(() => {
     return () => {
       if (focusTimerRef.current) {
         clearTimeout(focusTimerRef.current);
+      }
+      if (todayPingTimerRef.current) {
+        clearTimeout(todayPingTimerRef.current);
       }
     };
   }, []);
@@ -311,11 +357,18 @@ export default function ListView({
         <div className="list-view__search-box">
           <Search size={13} className="list-view__search-icon" />
           <input
+            ref={searchInputRef}
             type="text"
             className="list-view__search-input"
-            placeholder="캐릭터, 버전, 일정명 검색..."
+            placeholder="캐릭터, 버전, 일정명 검색... ( / )"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && searchQuery) {
+                e.stopPropagation();
+                setSearchQuery('');
+              }
+            }}
             aria-label="일정 검색"
           />
           {searchQuery && (
@@ -370,7 +423,11 @@ export default function ListView({
                     <div className="list-view__today-marker-dot" />
                   </div>
                   <div className="list-view__today-marker-right">
-                    <div className="list-view__today-marker-card">
+                    <div
+                      className={`list-view__today-marker-card${
+                        isTodayPing ? ' list-view__today-marker-card--ping' : ''
+                      }`}
+                    >
                       <span className="list-view__today-marker-label">TODAY</span>
                       <span className="list-view__today-marker-date">
                         {formatDisplayDate(todayStr, true)}
@@ -401,6 +458,7 @@ export default function ListView({
                 className={[
                   'list-view__row',
                   isToday ? 'list-view__row--today scroll-target-today' : '',
+                  isToday && isTodayPing ? 'list-view__row--today-ping' : '',
                   isDateFocused ? 'list-view__row--date-focused' : '',
                 ]
                   .filter(Boolean)
@@ -548,7 +606,10 @@ export default function ListView({
 
                       <div className="list-view__card-body-text">
                         <div className="list-view__title">
-                          {cleanEventDisplayTitle(event.title, event.game) || displayTypeName}
+                          {renderHighlightedTitle(
+                            cleanEventDisplayTitle(event.title, event.game) || displayTypeName,
+                            searchQuery
+                          )}
                         </div>
                         {(event.type === '오프라인이벤트' || event.type === '행사') &&
                           event.location && (

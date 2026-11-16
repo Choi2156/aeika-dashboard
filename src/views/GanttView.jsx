@@ -122,6 +122,28 @@ export default function GanttView({
   const [mobileZoom, setMobileZoom] = useState('overview');
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [hoverPreview, setHoverPreview] = useState(null);
+  const [isTodayPing, setIsTodayPing] = useState(false);
+  const todayPingTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (todayPingTimerRef.current) clearTimeout(todayPingTimerRef.current);
+    };
+  }, []);
+
+  const hoveredDateRange = useMemo(() => {
+    if (!hoverPreview?.ev) return null;
+    const ev = hoverPreview.ev;
+    const startStr = ev.start_date || ev.date;
+    if (!startStr) return null;
+    const endStr = ev.end_date || startStr;
+    return {
+      startStr,
+      endStr,
+      color: hoverPreview.color || '#6ee7b7',
+      rgb: hexToRgb(hoverPreview.color || '#6ee7b7'),
+    };
+  }, [hoverPreview]);
 
   useEffect(() => {
     const checkViewport = () => {
@@ -347,6 +369,10 @@ export default function GanttView({
       );
       if (smooth) {
         scrollRef.current.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+        setIsTodayPing(false);
+        requestAnimationFrame(() => setIsTodayPing(true));
+        if (todayPingTimerRef.current) clearTimeout(todayPingTimerRef.current);
+        todayPingTimerRef.current = setTimeout(() => setIsTodayPing(false), 780);
       } else {
         scrollRef.current.scrollLeft = scrollTarget;
       }
@@ -1055,16 +1081,35 @@ export default function GanttView({
                     !isCompactScale ||
                     day.isToday ||
                     (day.dayOfWeek === 1 && Math.abs(idx - todayIndex) > 2);
+                  const isBarHovered =
+                    hoveredDateRange &&
+                    day.dateStr >= hoveredDateRange.startStr &&
+                    day.dateStr <= hoveredDateRange.endStr;
+                  const isBarEdge =
+                    hoveredDateRange &&
+                    (day.dateStr === hoveredDateRange.startStr ||
+                      day.dateStr === hoveredDateRange.endStr);
 
                   return (
                     <div
                       key={day.dateStr}
                       className={`gantt-header-cell${day.isToday ? ' gantt-header-today' : ''}${
-                        day.isWeekend ? ' gantt-header-weekend' : ''
-                      }${day.isMonthStart ? ' gantt-header-month-start' : ''}${
-                        isCompactScale ? ' gantt-header-cell--overview' : ''
-                      }`}
-                      style={{ width: `${cellWidth}px`, minWidth: `${cellWidth}px` }}
+                        day.isToday && isTodayPing ? ' gantt-header-today--ping' : ''
+                      }${day.isWeekend ? ' gantt-header-weekend' : ''}${
+                        day.isMonthStart ? ' gantt-header-month-start' : ''
+                      }${isCompactScale ? ' gantt-header-cell--overview' : ''}${
+                        isBarHovered ? ' gantt-header-cell--bar-hovered' : ''
+                      }${isBarEdge ? ' gantt-header-cell--bar-edge' : ''}`}
+                      style={{
+                        width: `${cellWidth}px`,
+                        minWidth: `${cellWidth}px`,
+                        ...(isBarHovered
+                          ? {
+                              '--hover-bar-color': hoveredDateRange.color,
+                              '--hover-bar-rgb': hoveredDateRange.rgb,
+                            }
+                          : {}),
+                      }}
                     >
                       {showOverviewTick && (
                         <>

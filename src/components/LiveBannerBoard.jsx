@@ -286,10 +286,21 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
   return (
     <div
       className="live-banner-board"
+      tabIndex={liveEvents.length > 1 ? 0 : undefined}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onKeyDown={(e) => {
+        if (liveEvents.length <= 1) return;
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          handlePrev(e);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          handleNext(e);
+        }
+      }}
       style={{
         '--active-banner-color': activeColor,
       }}

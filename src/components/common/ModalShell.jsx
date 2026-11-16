@@ -15,6 +15,7 @@ export default function ModalShell({
   children,
 }) {
   const overlayRef = useRef(null);
+  const dialogRef = useRef(null);
   const closingRef = useRef(false);
   const pushedHistoryRef = useRef(false);
   const previousFocusRef = useRef(null);
@@ -41,6 +42,16 @@ export default function ModalShell({
 
     const frame = requestAnimationFrame(() => {
       setIsVisible(true);
+      if (dialogRef.current) {
+        const firstFocusable = dialogRef.current.querySelector(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (firstFocusable instanceof HTMLElement) {
+          firstFocusable.focus({ preventScroll: true });
+        } else {
+          dialogRef.current.focus({ preventScroll: true });
+        }
+      }
     });
 
     try {
@@ -58,6 +69,28 @@ export default function ModalShell({
     const onKeyDown = (e) => {
       if (e.key === 'Escape') {
         triggerClose(false);
+        return;
+      }
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusables = Array.from(
+          dialogRef.current.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => el instanceof HTMLElement && el.offsetParent !== null);
+
+        if (focusables.length === 0) {
+          e.preventDefault();
+          return;
+        }
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -111,7 +144,12 @@ export default function ModalShell({
       aria-modal="true"
       aria-labelledby={ariaLabelledBy}
     >
-      <div className={dialogClassName} onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        className={dialogClassName}
+        onClick={(e) => e.stopPropagation()}
+      >
         {typeof children === 'function' ? children({ requestClose: () => triggerClose(false) }) : children}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -109,7 +109,20 @@ export default function CalendarView({
   const [selectedDateStr, setSelectedDateStr] = useState(null);
   const [pinnedLegend, setPinnedLegend] = useState(null);
   const [hoveredLegend, setHoveredLegend] = useState(null);
+  const [isTodayPing, setIsTodayPing] = useState(false);
+  const [dragOffsetX, setDragOffsetX] = useState(0);
+  const [isDraggingGrid, setIsDraggingGrid] = useState(false);
   const activeLegendFilter = hoveredLegend || pinnedLegend;
+  const dragStateRef = useRef({
+    active: false,
+    startX: 0,
+    startY: 0,
+    horizontalLocked: false,
+    didDrag: false,
+    pointerId: null,
+  });
+  const suppressClickRef = useRef(false);
+  const todayPingTimerRef = useRef(null);
 
   const milestones = useMemo(() => {
     return extractCalendarMilestones(events, activeGames);
@@ -125,6 +138,23 @@ export default function CalendarView({
   }, [year, month, milestones, todayStr]);
 
   useEffect(() => {
+    return () => {
+      if (todayPingTimerRef.current) clearTimeout(todayPingTimerRef.current);
+    };
+  }, []);
+
+  const triggerTodayPing = () => {
+    setIsTodayPing(false);
+    requestAnimationFrame(() => {
+      setIsTodayPing(true);
+    });
+    if (todayPingTimerRef.current) clearTimeout(todayPingTimerRef.current);
+    todayPingTimerRef.current = setTimeout(() => {
+      setIsTodayPing(false);
+    }, 760);
+  };
+
+  useEffect(() => {
     if (!jumpTodayTrigger) return;
     setTransitionDir('reset');
     setYear(todayYear);
@@ -133,6 +163,7 @@ export default function CalendarView({
     if (todayHasItems) {
       setSelectedDateStr(todayStr);
     }
+    triggerTodayPing();
   }, [jumpTodayTrigger, todayYear, todayMonth, milestones, todayStr]);
 
   const selectedCell = useMemo(() => {
@@ -192,6 +223,108 @@ export default function CalendarView({
     setSelectedDateStr(null);
     setYear(todayYear);
     setMonth(todayMonth);
+    triggerTodayPing();
+  };
+
+  const handleGridPointerDown = (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    dragStateRef.current = {
+      active: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      horizontalLocked: false,
+      didDrag: false,
+      pointerId: e.pointerId,
+    };
+    suppressClickRef.current = false;
+  };
+
+  const handleGridPointerMove = (e) => {
+    const st = dragStateRef.current;
+    if (!st.active || st.pointerId !== e.pointerId) return;
+    const dx = e.clientX - st.startX;
+    const dy = e.clientY - st.startY;
+
+    if (!st.horizontalLocked) {
+      if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) {
+        st.active = false;
+        setDragOffsetX(0);
+        setIsDraggingGrid(false);
+        return;
+      }
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+        st.horizontalLocked = true;
+        st.didDrag = true;
+        setIsDraggingGrid(true);
+        try {
+          e.currentTarget.setPointerCapture?.(e.pointerId);
+        } catch {
+          // ignore capture error
+        }
+      } else {
+        return;
+      }
+    }
+
+    // 경계 월에서는 고무줄 저항감 적용
+    const atMinBound = dx > 0 && isPrevDisabled;
+    const atMaxBound = dx < 0 && isNextDisabled;
+    const factor = atMinBound || atMaxBound ? 0.12 : 0.28;
+    const clamped = Math.max(-44, Math.min(44, dx * factor));
+    setDragOffsetX(clamped);
+  };
+
+  const finishGridDrag = (e, cancelled = false) => {
+    const st = dragStateRef.current;
+    if (!st.active || st.pointerId !== e.pointerId) return;
+    const dx = e.clientX - st.startX;
+    const shouldSuppress = st.didDrag;
+    st.active = false;
+    setDragOffsetX(0);
+    setIsDraggingGrid(false);
+
+    try {
+      if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {
+      // ignore release error
+    }
+
+    if (shouldSuppress) {
+      suppressClickRef.current = true;
+      setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 60);
+    }
+
+    if (!cancelled && st.horizontalLocked && Math.abs(dx) >= 48) {
+      if (dx < 0 && !isNextDisabled) {
+        handleNextMonth();
+      } else if (dx > 0 && !isPrevDisabled) {
+        handlePrevMonth();
+      }
+    }
+  };
+
+  const handleGridClickCapture = (e) => {
+    if (suppressClickRef.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      suppressClickRef.current = false;
+    }
+  };
+
+  const handleCalendarKeyDown = (e) => {
+    const tag = e.target?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      handlePrevMonth();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      handleNextMonth();
+    }
   };
 
   const handleCellClick = (cell) => {
@@ -212,7 +345,11 @@ export default function CalendarView({
   }, [selectedCell, selectedDayDiff]);
 
   return (
-    <div className="calendar-view">
+    <div
+      className="calendar-view"
+      tabIndex={-1}
+      onKeyDown={handleCalendarKeyDown}
+    >
       {/* 1. 상단 통합 헤더 (연/월 네비게이션 + 시각 범례 + 달력 이미지 버튼) */}
       <div className="calendar-view__header">
         <div className="calendar-view__nav-group">
@@ -311,8 +448,17 @@ export default function CalendarView({
         </div>
       </div>
 
-      {/* 2. Full-Width 7열 월간 캘린더 그리드 */}
-      <div className="calendar-view__grid-wrapper">
+      {/* 2. Full-Width 7열 월간 캘린더 그리드 (드래그·스와이프 월 전환 지원) */}
+      <div
+        className={`calendar-view__grid-wrapper${
+          isDraggingGrid ? ' calendar-view__grid-wrapper--dragging' : ''
+        }`}
+        onPointerDown={handleGridPointerDown}
+        onPointerMove={handleGridPointerMove}
+        onPointerUp={(e) => finishGridDrag(e, false)}
+        onPointerCancel={(e) => finishGridDrag(e, true)}
+        onClickCapture={handleGridClickCapture}
+      >
         <div className="calendar-view__weekdays">
           {WEEKDAYS.map((dayName, idx) => (
             <div
@@ -329,6 +475,11 @@ export default function CalendarView({
         <div
           key={`${year}-${String(month).padStart(2, '0')}`}
           className={`calendar-view__body calendar-view__body--${transitionDir}`}
+          style={
+            dragOffsetX !== 0
+              ? { transform: `translate3d(${dragOffsetX}px, 0, 0)`, transition: 'none' }
+              : undefined
+          }
         >
           {weeks.map((week, wIdx) => (
             <div key={wIdx} className="calendar-view__week-row">
@@ -355,6 +506,7 @@ export default function CalendarView({
                       'calendar-view__cell',
                       !cell.isCurrentMonth ? 'calendar-view__cell--other-month' : '',
                       cell.isToday ? 'calendar-view__cell--today' : '',
+                      cell.isToday && isTodayPing ? 'calendar-view__cell--today-ping' : '',
                       cell.isPreService ? 'calendar-view__cell--pre-service' : '',
                       hasItems ? 'calendar-view__cell--has-items' : '',
                       isSelected ? 'calendar-view__cell--selected' : '',
