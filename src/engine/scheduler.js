@@ -98,6 +98,59 @@ export function getNextVersion(currentVersion, hints = []) {
 // ─── 핵심 예측 엔진 ──────────────────────────────────────
 
 /**
+ * 힌트 객체에 사전 등록된 예상 일정 보충 정보(평문 상세 설명 등)를 적용
+ *
+ * @param {Object} predEvent - 기본 생성된 예상 이벤트 객체
+ * @param {Object|undefined} hint - 해당 버전의 schedule_hints 항목
+ * @param {'update'|'half'|'stream'} kind - 예상 이벤트 유형
+ * @returns {Object} 보충 정보가 병합된 예상 이벤트 객체
+ */
+function applyPredictionHintContent(predEvent, hint, kind) {
+  if (!hint) return predEvent;
+
+  const prefixMap = {
+    update: 'update_',
+    half: 'half_',
+    stream: 'stream_',
+  };
+  const prefix = prefixMap[kind] || '';
+  const patched = { ...predEvent };
+
+  // 전반업데이트는 범용 필드(detail, title 등)를 바로 써서 간편하게 프리필할 수 있음
+  const detailOverride =
+    hint[`${prefix}detail`] ?? (kind === 'update' ? hint.detail : undefined);
+  if (typeof detailOverride === 'string' && detailOverride.trim()) {
+    patched.detail = detailOverride.trim();
+  }
+
+  const titleOverride =
+    hint[`${prefix}title`] ?? (kind === 'update' ? hint.title : undefined);
+  if (typeof titleOverride === 'string' && titleOverride.trim()) {
+    patched.title = titleOverride.trim();
+  }
+
+  const timeOverride =
+    hint[`${prefix}time`] ?? (kind === 'stream' ? hint.time : undefined);
+  if (typeof timeOverride === 'string' && timeOverride.trim()) {
+    patched.time = timeOverride.trim();
+  }
+
+  const linkOverride =
+    hint[`${prefix}link`] ?? (kind === 'update' ? hint.link : undefined);
+  if (typeof linkOverride === 'string' && linkOverride.trim()) {
+    patched.link = linkOverride.trim();
+  }
+
+  const imgOverride =
+    hint[`${prefix}img`] ?? (kind === 'update' ? hint.custom_img : undefined);
+  if (typeof imgOverride === 'string' && imgOverride.trim()) {
+    patched.custom_img = imgOverride.trim();
+  }
+
+  return patched;
+}
+
+/**
  * 확정 이벤트 + 힌트를 기반으로 예상 이벤트를 생성하여 전체 이벤트 목록을 반환
  * 
  * @param {Object} scheduleData - schedule_data.json 파싱 결과
@@ -153,7 +206,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     );
     if (!hasFixedHalf) {
       const midDate = addDays(baseDate, baseHalfCycle);
-      allEvents.push({
+      allEvents.push(applyPredictionHintContent({
         id: `${game}_${baseVersion}_half_pred`,
         game,
         version: `${baseVersion} 후반`,
@@ -165,7 +218,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
         detail: '통상 주기 기준 예상 후반 픽업 전환일',
         custom_img: '',
         link: '',
-      });
+      }, baseHints, 'half'));
     }
 
     // --- [2] 전반업데이트 차기 예상 생성 ---
@@ -219,11 +272,12 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
       }
     }
 
+    const nextHint = gameHints.find(h => h.trigger_version === nextVer);
     const nextPredId = `${game}_${nextVer}_update_pred`;
     const hasNextPred = allEvents.some(e => e.id === nextPredId || (e.game === game && e.type === '전반업데이트' && cleanVersion(e.version) === nextVer));
     
     if (!hasNextPred) {
-      allEvents.push({
+      allEvents.push(applyPredictionHintContent({
         id: nextPredId,
         game,
         version: nextVer,
@@ -235,11 +289,10 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
         detail: '통상 주기 기준 예상 업데이트일',
         custom_img: '',
         link: '',
-      });
+      }, nextHint, 'update'));
     }
 
     // --- [3] 다음 예상 버전의 후반업데이트 예상 생성 ---
-    const nextHint = gameHints.find(h => h.trigger_version === nextVer);
     const nextHalfCycle = nextHint?.half_cycle_override || serverConfig.halfCycle || gameConfig.halfCycle;
     const nextHalfVerStr = `${nextVer} 후반`;
     const hasNextFixedHalf = allEvents.some(
@@ -247,7 +300,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
     );
     if (!hasNextFixedHalf) {
       const nextHalfDate = addDays(nextUpdateDate, nextHalfCycle);
-      allEvents.push({
+      allEvents.push(applyPredictionHintContent({
         id: `${game}_${nextVer}_half_pred`,
         game,
         version: nextHalfVerStr,
@@ -259,7 +312,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
         detail: '통상 주기 기준 예상 후반 픽업 전환일',
         custom_img: '',
         link: '',
-      });
+      }, nextHint, 'half'));
     }
 
     // --- [4] 공식방송 예상 생성 (유형별 정밀 연쇄 타겟팅) ---
@@ -296,7 +349,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
         e => e.game === game && e.type === '공식방송' && cleanVersion(e.version) === streamTargetVer
       );
       if (!hasFixedOrPredStream) {
-        allEvents.push({
+        allEvents.push(applyPredictionHintContent({
           id: `${game}_${streamTargetVer}_stream_pred`,
           game,
           version: streamTargetVer,
@@ -308,7 +361,7 @@ export function processEvents(scheduleData, hintsData, gamesConfig) {
           detail: '차기 버전 프리뷰 특별 방송 예상일',
           custom_img: '',
           link: '',
-        });
+        }, currentStreamHint, 'stream'));
       }
     }
   }
