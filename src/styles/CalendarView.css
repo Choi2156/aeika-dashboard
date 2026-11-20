@@ -503,11 +503,21 @@
   color: var(--accent-indigo-light);
 }
 
+.calendar-view__count-pill.is-crowded {
+  background: rgba(251, 191, 36, 0.16);
+  border-color: rgba(251, 191, 36, 0.48);
+  color: #fde68a;
+}
+
 .calendar-view__cell-events {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+}
+
+.calendar-view__cell--dense .calendar-view__cell-events {
+  gap: 3px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -529,6 +539,13 @@
   min-width: 0;
   overflow: hidden;
   transition: opacity 0.18s ease, transform 0.14s ease, filter 0.18s ease, box-shadow 0.14s ease;
+}
+
+.calendar-chip--dense {
+  min-height: 21px;
+  padding: 2px 5px;
+  font-size: 0.67rem;
+  gap: 4px;
 }
 
 .calendar-chip--dimmed {
@@ -736,6 +753,187 @@
 .calendar-chip--update .calendar-chip__est {
   background: rgba(7, 9, 15, 0.86);
   color: #f8fafc;
+}
+
+/* ── Compact Icon Tray & Overflow Pill (4+ Dense Days) ───── */
+.calendar-view__compact-tray {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  margin-top: 1px;
+}
+
+.calendar-mini-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 22px;
+  padding: 0 5px 0 3px;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  min-width: 0;
+  flex: 1 1 0;
+  max-width: 58px;
+  overflow: hidden;
+  transition: transform 0.14s ease, opacity 0.18s ease, filter 0.18s ease, box-shadow 0.14s ease;
+}
+
+@media (hover: hover) {
+  .calendar-mini-chip:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+    z-index: 2;
+  }
+}
+
+.calendar-mini-chip:active {
+  transform: scale(0.95);
+}
+
+.calendar-mini-chip--dimmed {
+  opacity: 0.16 !important;
+  filter: saturate(0.2) brightness(0.82);
+}
+
+.calendar-mini-chip--highlighted {
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.calendar-mini-chip--update {
+  background: rgba(var(--chip-rgb), 0.9);
+  border: 1px solid rgba(var(--chip-rgb), 1);
+  color: #0f172a;
+}
+
+.calendar-mini-chip--half {
+  background: rgba(var(--chip-rgb), 0.2);
+  border: 1px solid rgba(var(--chip-rgb), 0.56);
+  border-left: 2.5px solid var(--chip-color);
+  color: #f1f5f9;
+}
+
+.calendar-mini-chip--broadcast {
+  background: #121723;
+  border: 1px solid rgba(250, 204, 21, 0.52);
+  border-left: 2.5px solid var(--chip-color);
+  color: #fde047;
+}
+
+.calendar-mini-chip--offline {
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-left: 2.5px solid var(--chip-color);
+  color: #7dd3fc;
+}
+
+.calendar-mini-chip--offline.calendar-mini-chip--end {
+  background: rgba(24, 31, 46, 0.6);
+  border-color: rgba(100, 116, 139, 0.44);
+  color: #94a3b8;
+  opacity: 0.8;
+}
+
+.calendar-mini-chip--predicted {
+  border-style: dashed !important;
+  opacity: 0.8;
+}
+
+.calendar-mini-chip--half.calendar-mini-chip--predicted,
+.calendar-mini-chip--broadcast.calendar-mini-chip--predicted {
+  border-left: 2.5px solid var(--chip-color) !important;
+}
+
+.calendar-mini-chip__icon {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.calendar-mini-chip--update .calendar-mini-chip__icon {
+  border-color: rgba(15, 23, 42, 0.35);
+}
+
+.calendar-mini-chip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--chip-color);
+  flex-shrink: 0;
+}
+
+.calendar-mini-chip__tag {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.02em;
+}
+
+.calendar-view__compact-tray--tight .calendar-mini-chip {
+  padding: 0 2px;
+  gap: 0;
+  max-width: none;
+}
+
+.calendar-view__compact-tray--tight .calendar-mini-chip__icon {
+  width: 15px;
+  height: 15px;
+}
+
+.calendar-view__compact-tray--tight .calendar-mini-chip__tag {
+  display: none;
+}
+
+.calendar-overflow-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 26px;
+  padding: 0 5px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  background: var(--accent-indigo-subtle);
+  border: 1px solid rgba(110, 231, 183, 0.45);
+  color: var(--accent-indigo-light);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.14s ease, opacity 0.18s ease, background 0.14s ease;
+}
+
+@media (hover: hover) {
+  .calendar-overflow-pill:hover {
+    transform: translateY(-1px);
+    background: rgba(110, 231, 183, 0.22);
+  }
+}
+
+.calendar-overflow-pill:active {
+  transform: scale(0.95);
+}
+
+.calendar-overflow-pill--dimmed {
+  opacity: 0.2;
+}
+
+.calendar-overflow-pill--highlighted {
+  opacity: 1;
+  box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1154,6 +1352,44 @@
   border-color: rgba(148, 163, 184, 0.45);
 }
 
+[data-theme="light"] .calendar-view__count-pill.is-crowded {
+  background: rgba(217, 119, 6, 0.14);
+  border-color: rgba(217, 119, 6, 0.42);
+  color: #b45309;
+}
+
+[data-theme="light"] .calendar-mini-chip--half {
+  background: rgba(var(--chip-rgb), 0.24);
+  color: #131c2e;
+}
+
+[data-theme="light"] .calendar-mini-chip--broadcast {
+  background: #1e293b;
+  color: #fef08a;
+}
+
+[data-theme="light"] .calendar-mini-chip--offline {
+  background: rgba(14, 165, 233, 0.16);
+  border-color: rgba(2, 132, 199, 0.42);
+  color: #075985;
+}
+
+[data-theme="light"] .calendar-mini-chip--offline.calendar-mini-chip--end {
+  background: rgba(148, 163, 184, 0.18);
+  border-color: rgba(148, 163, 184, 0.48);
+  color: #475569;
+}
+
+[data-theme="light"] .calendar-mini-chip__icon {
+  border-color: rgba(15, 23, 42, 0.25);
+}
+
+[data-theme="light"] .calendar-overflow-pill {
+  background: rgba(5, 150, 105, 0.14);
+  border-color: rgba(5, 150, 105, 0.42);
+  color: #047857;
+}
+
 [data-theme="light"] .calendar-chip--offline.calendar-chip--end .calendar-chip__offline-tag {
   background: rgba(100, 116, 139, 0.18);
   color: #475569;
@@ -1358,6 +1594,34 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .calendar-view__compact-tray {
+    gap: 2px;
+  }
+
+  .calendar-mini-chip {
+    height: 19px;
+    padding: 0 2px;
+    gap: 2px;
+    max-width: none;
+  }
+
+  .calendar-mini-chip__icon {
+    display: block;
+    width: 13px;
+    height: 13px;
+  }
+
+  .calendar-mini-chip__tag {
+    display: none;
+  }
+
+  .calendar-overflow-pill {
+    height: 19px;
+    min-width: 20px;
+    padding: 0 3px;
+    font-size: 0.54rem;
   }
 
   .calendar-agenda {

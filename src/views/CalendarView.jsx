@@ -12,6 +12,7 @@ import {
 import {
   extractCalendarMilestones,
   buildMonthGrid,
+  partitionCellMilestones,
   CALENDAR_MIN_YEAR,
   CALENDAR_MIN_MONTH,
   compareYearMonth,
@@ -130,6 +131,9 @@ export default function CalendarView({
   const [isTrackAnimating, setIsTrackAnimating] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(null);
   const [isDraggingGrid, setIsDraggingGrid] = useState(false);
+  const [isMobileGrid, setIsMobileGrid] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false
+  );
   const activeLegendFilter = hoveredLegend || pinnedLegend;
   const viewportRef = useRef(null);
   const prevPaneRef = useRef(null);
@@ -189,6 +193,17 @@ export default function CalendarView({
   useEffect(() => {
     activeYMRef.current = { year, month };
   }, [year, month]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+    const mq = window.matchMedia('(max-width: 768px)');
+    const handleMqChange = (ev) => setIsMobileGrid(ev.matches);
+    setIsMobileGrid(mq.matches);
+    mq.addEventListener('change', handleMqChange);
+    return () => {
+      mq.removeEventListener('change', handleMqChange);
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -561,6 +576,16 @@ export default function CalendarView({
           const cellItems = cell.milestones || [];
           const hasItems = cellItems.length > 0;
           const isSelected = isInteractive && selectedDateStr === cell.dateStr;
+          const { isDense, fullItems, trayItems, overflowItems, overflowCount } =
+            partitionCellMilestones(
+              cellItems,
+              isMobileGrid
+                ? { normalThreshold: 2, denseBaseFull: 2, maxUpdateFull: 2, maxTrayItems: 3 }
+                : { normalThreshold: 3, denseBaseFull: 2, maxUpdateFull: 3, maxTrayItems: 4 }
+            );
+          const overflowHasMatch =
+            Boolean(activeLegendFilter) &&
+            overflowItems.some((it) => matchesLegendFilter(it, activeLegendFilter));
 
           return (
             <div
@@ -572,6 +597,7 @@ export default function CalendarView({
                 isInteractive && cell.isToday && isTodayPing ? 'calendar-view__cell--today-ping' : '',
                 cell.isPreService ? 'calendar-view__cell--pre-service' : '',
                 hasItems ? 'calendar-view__cell--has-items' : '',
+                isDense ? 'calendar-view__cell--dense' : '',
                 isSelected ? 'calendar-view__cell--selected' : '',
               ]
                 .filter(Boolean)
@@ -596,11 +622,11 @@ export default function CalendarView({
                   {cell.isToday && (
                     <span className="calendar-view__today-tag">TODAY</span>
                   )}
-                  {hasItems && (cellItems.length >= 2 || isSelected) && (
+                  {hasItems && (cellItems.length >= 2 || isSelected || isDense) && (
                     <span
                       className={`calendar-view__count-pill ${
                         cellItems.length >= 3 ? 'is-dense' : ''
-                      }`}
+                      } ${cellItems.length >= 4 ? 'is-crowded' : ''}`}
                     >
                       {cellItems.length}건
                     </span>
@@ -617,7 +643,7 @@ export default function CalendarView({
                     서비스 개시 전
                   </div>
                 )}
-                {cellItems.map((item) => {
+                {fullItems.map((item) => {
                   const gameConf = gamesConfig?.[item.game] || {};
                   const gameTheme = gameConf.theme || {};
                   const color = gameTheme.color || '#818cf8';
@@ -637,6 +663,7 @@ export default function CalendarView({
                       className={[
                         'calendar-chip',
                         `calendar-chip--${item.category}`,
+                        isDense ? 'calendar-chip--dense' : '',
                         item.isEnd ? 'calendar-chip--end' : '',
                         item.isFixed
                           ? 'calendar-chip--confirmed'
@@ -697,6 +724,120 @@ export default function CalendarView({
                     </button>
                   );
                 })}
+                {(trayItems.length > 0 || overflowCount > 0) && (
+                  <div
+                    className={`calendar-view__compact-tray${
+                      trayItems.length + (overflowCount > 0 ? 1 : 0) >= 4
+                        ? ' calendar-view__compact-tray--tight'
+                        : ''
+                    }`}
+                  >
+                    {trayItems.map((item) => {
+                      const gameConf = gamesConfig?.[item.game] || {};
+                      const gameTheme = gameConf.theme || {};
+                      const color = gameTheme.color || '#818cf8';
+                      const rgb = hexToRgbStr(color);
+                      const iconSrc = gameConf.icon || null;
+                      const timeShort = item.time ? item.time.slice(0, 5) : '';
+                      const isLegendDimmed = Boolean(
+                        activeLegendFilter && !matchesLegendFilter(item, activeLegendFilter)
+                      );
+                      const isLegendHighlighted = Boolean(activeLegendFilter && !isLegendDimmed);
+                      const miniTag =
+                        item.category === 'update'
+                          ? '업뎃'
+                          : item.category === 'half'
+                          ? '후반'
+                          : item.category === 'broadcast'
+                          ? 'LIVE'
+                          : item.isEnd
+                          ? '종료'
+                          : null;
+
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          tabIndex={isInteractive ? undefined : -1}
+                          className={[
+                            'calendar-mini-chip',
+                            `calendar-mini-chip--${item.category}`,
+                            item.isEnd ? 'calendar-mini-chip--end' : '',
+                            item.isFixed
+                              ? 'calendar-mini-chip--confirmed'
+                              : 'calendar-mini-chip--predicted',
+                            isLegendDimmed ? 'calendar-mini-chip--dimmed' : '',
+                            isLegendHighlighted ? 'calendar-mini-chip--highlighted' : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                          style={{
+                            '--chip-color': color,
+                            '--chip-rgb': rgb,
+                          }}
+                          onClick={
+                            isInteractive
+                              ? (e) => {
+                                  e.stopPropagation();
+                                  setSelectedDateStr(cell.dateStr);
+                                  if (onEventClick && item.rawEvent) {
+                                    onEventClick(item.rawEvent, item.displayType, 'calendar');
+                                  }
+                                }
+                              : undefined
+                          }
+                          title={`[${item.game}] ${item.title}${
+                            timeShort ? ` (${timeShort})` : ''
+                          } — ${item.isFixed ? '확정' : '주기 예상'}`}
+                        >
+                          {iconSrc ? (
+                            <img
+                              src={iconSrc}
+                              alt=""
+                              className="calendar-mini-chip__icon"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span className="calendar-mini-chip__dot" />
+                          )}
+                          <span className="calendar-mini-chip__tag">
+                            {miniTag ?? <MapPin size={9} strokeWidth={2.5} aria-hidden="true" />}
+                          </span>
+                        </button>
+                      );
+                    })}
+                    {overflowCount > 0 && (
+                      <button
+                        type="button"
+                        tabIndex={isInteractive ? undefined : -1}
+                        className={[
+                          'calendar-overflow-pill',
+                          activeLegendFilter && overflowHasMatch
+                            ? 'calendar-overflow-pill--highlighted'
+                            : '',
+                          activeLegendFilter && !overflowHasMatch
+                            ? 'calendar-overflow-pill--dimmed'
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        title={`${overflowItems
+                          .map((it) => `[${it.gameShort}] ${it.title}`)
+                          .join(', ')} — 클릭하여 전체 일정 보기`}
+                        onClick={
+                          isInteractive
+                            ? (e) => {
+                                e.stopPropagation();
+                                setSelectedDateStr(cell.dateStr);
+                              }
+                            : undefined
+                        }
+                      >
+                        +{overflowCount}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           );

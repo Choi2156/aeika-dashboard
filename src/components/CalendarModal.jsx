@@ -16,6 +16,7 @@ import { getNowKSTParts, getTodayStrKST } from '../utils/dateKST';
 import {
   extractCalendarMilestones,
   buildMonthGrid,
+  partitionCellMilestones,
   CALENDAR_MIN_YEAR,
   CALENDAR_MIN_MONTH,
   compareYearMonth,
@@ -84,6 +85,352 @@ function fitText(ctx, text, maxWidth) {
     s = s.slice(0, -1);
   }
   return s + '…';
+}
+
+function getMiniCategoryLabel(item) {
+  if (item.category === 'update') return '업뎃';
+  if (item.category === 'half') return '후반';
+  if (item.category === 'broadcast') return 'LIVE';
+  return item.isEnd ? '종료' : '행사';
+}
+
+function drawCanvasMilestoneChip(
+  ctx,
+  item,
+  { cx, cy, cw, chipH, isCurrentMonth, gameIcon, fontSans, fontMono }
+) {
+  const gColor = GAME_COLORS[item.game] || { main: '#818cf8', rgb: [129, 140, 248] };
+  const [cr, cg, cb] = gColor.rgb;
+  const iconSize = chipH <= 32 ? 22 : 25;
+
+  ctx.save();
+  if (!item.isFixed) {
+    ctx.globalAlpha = isCurrentMonth ? 0.78 : 0.35;
+  }
+
+  // ① 신규 버전 업데이트 (솔리드 배경 + 다크 볼드 텍스트 + 원형 아이콘)
+  if (item.category === 'update') {
+    drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
+    ctx.fillStyle = item.isFixed
+      ? `rgba(${cr}, ${cg}, ${cb}, 0.94)`
+      : `rgba(${cr}, ${cg}, ${cb}, 0.76)`;
+    ctx.fill();
+
+    if (!item.isFixed) {
+      ctx.setLineDash([6, 4]);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#0b0c10';
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    let tx = cx + 7;
+    const fontSize = chipH <= 32 ? 15 : 16.5;
+    const hasIcon = drawCircularIcon(
+      ctx,
+      gameIcon,
+      tx,
+      cy + (chipH - iconSize) / 2,
+      iconSize,
+      'rgba(11, 12, 16, 0.42)'
+    );
+    if (hasIcon) {
+      tx += iconSize + 7;
+    } else {
+      tx += 2;
+      ctx.font = `900 ${fontSize}px ${fontSans}`;
+      ctx.fillStyle = '#0b0c10';
+      const fallbackLabel = `${item.gameShort} `;
+      ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
+      tx += ctx.measureText(fallbackLabel).width;
+    }
+
+    const rightReserve = !item.isFixed ? 44 : 8;
+    ctx.font = `800 ${fontSize}px ${fontSans}`;
+    ctx.fillStyle = '#0b0c10';
+    const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
+    ctx.fillText(fitted, tx, cy + chipH / 2);
+
+    if (!item.isFixed) {
+      drawRoundedRect(ctx, cx + cw - 40, cy + (chipH - 18) / 2, 34, 18, 4);
+      ctx.fillStyle = 'rgba(11, 12, 16, 0.88)';
+      ctx.fill();
+      ctx.font = `800 11px ${fontSans}`;
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillText('예상', cx + cw - 33, cy + chipH / 2);
+    }
+  }
+  // ② 후반 픽업 전환 (중간 틴트 + 외곽 보더 + 좌측 4px 바 + 원형 아이콘 + 밝은 텍스트)
+  else if (item.category === 'half') {
+    drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
+    ctx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, 0.16)`;
+    ctx.fill();
+
+    if (!item.isFixed) ctx.setLineDash([5, 4]);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = `rgba(${cr}, ${cg}, ${cb}, 0.56)`;
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    drawRoundedRect(ctx, cx, cy, 4, chipH, 2);
+    ctx.fillStyle = gColor.main;
+    ctx.fill();
+
+    let tx = cx + 8;
+    const fontSize = chipH <= 32 ? 15 : 16;
+    const hasIcon = drawCircularIcon(ctx, gameIcon, tx, cy + (chipH - iconSize) / 2, iconSize);
+    if (hasIcon) {
+      tx += iconSize + 7;
+    } else {
+      tx += 2;
+      ctx.font = `800 ${fontSize}px ${fontSans}`;
+      ctx.fillStyle = gColor.main;
+      const fallbackLabel = `${item.gameShort} `;
+      ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
+      tx += ctx.measureText(fallbackLabel).width;
+    }
+
+    const rightReserve = !item.isFixed ? 42 : 8;
+    ctx.font = `700 ${fontSize}px ${fontSans}`;
+    ctx.fillStyle = '#f8fafc';
+    const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
+    ctx.fillText(fitted, tx, cy + chipH / 2);
+
+    if (!item.isFixed) {
+      drawRoundedRect(ctx, cx + cw - 38, cy + (chipH - 18) / 2, 32, 18, 4);
+      ctx.fillStyle = 'rgba(11, 12, 16, 0.85)';
+      ctx.fill();
+      ctx.font = `700 11px ${fontSans}`;
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillText('예상', cx + cw - 32, cy + chipH / 2);
+    }
+  }
+  // ③ 공식 특별방송 (Carbon 서피스 #181b24 + LIVE 레드 배지 + 원형 아이콘 + 방송 시각)
+  else if (item.category === 'broadcast') {
+    drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
+    ctx.fillStyle = '#181b24';
+    ctx.fill();
+
+    if (!item.isFixed) ctx.setLineDash([5, 4]);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.52)';
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    drawRoundedRect(ctx, cx, cy, 4, chipH, 2);
+    ctx.fillStyle = gColor.main;
+    ctx.fill();
+
+    const liveW = 35;
+    drawRoundedRect(ctx, cx + 7, cy + (chipH - 18) / 2, liveW, 18, 4);
+    ctx.fillStyle = item.isFixed ? '#ef4444' : '#d97706';
+    ctx.fill();
+    ctx.font = `900 11px ${fontMono}`;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('LIVE', cx + 11.5, cy + chipH / 2);
+
+    let tx = cx + 7 + liveW + 6;
+    const fontSize = chipH <= 32 ? 14.5 : 15.5;
+    const smallIcon = chipH <= 32 ? 20 : 23;
+    const hasIcon = drawCircularIcon(ctx, gameIcon, tx, cy + (chipH - smallIcon) / 2, smallIcon);
+    if (hasIcon) {
+      tx += smallIcon + 6;
+    } else {
+      ctx.font = `800 ${fontSize}px ${fontSans}`;
+      ctx.fillStyle = gColor.main;
+      const fallbackLabel = `${item.gameShort} `;
+      ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
+      tx += ctx.measureText(fallbackLabel).width;
+    }
+
+    const timeShort = item.time ? item.time.slice(0, 5) : '';
+    const rightReserve = !item.isFixed ? 40 : timeShort ? 46 : 8;
+    ctx.font = `700 ${fontSize}px ${fontSans}`;
+    ctx.fillStyle = '#fef9c3';
+    const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
+    ctx.fillText(fitted, tx, cy + chipH / 2);
+
+    if (!item.isFixed) {
+      drawRoundedRect(ctx, cx + cw - 38, cy + (chipH - 18) / 2, 32, 18, 4);
+      ctx.fillStyle = 'rgba(11, 12, 16, 0.85)';
+      ctx.fill();
+      ctx.font = `700 11px ${fontSans}`;
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillText('예상', cx + cw - 32, cy + chipH / 2);
+    } else if (timeShort) {
+      ctx.font = `700 12px ${fontMono}`;
+      ctx.fillStyle = '#fde047';
+      ctx.fillText(timeShort, cx + cw - 41, cy + chipH / 2);
+    }
+  }
+  // ④ 오프라인 행사 / 콜라보
+  else {
+    drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
+    ctx.fillStyle = item.isEnd ? 'rgba(30, 34, 46, 0.72)' : 'rgba(139, 92, 246, 0.16)';
+    ctx.fill();
+
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = item.isEnd ? 'rgba(100, 116, 139, 0.42)' : 'rgba(167, 139, 250, 0.55)';
+    ctx.stroke();
+
+    drawRoundedRect(ctx, cx, cy, 4, chipH, 2);
+    ctx.fillStyle = gColor.main;
+    ctx.fill();
+
+    const tagText = '행사';
+    const tagW = 31;
+    drawRoundedRect(ctx, cx + 7, cy + (chipH - 18) / 2, tagW, 18, 4);
+    ctx.fillStyle = item.isEnd ? '#334155' : '#7c3aed';
+    ctx.fill();
+    ctx.font = `800 11px ${fontSans}`;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(tagText, cx + 11.5, cy + chipH / 2);
+
+    let tx = cx + 7 + tagW + 6;
+    const fontSize = chipH <= 32 ? 14.5 : 15.5;
+    const smallIcon = chipH <= 32 ? 20 : 23;
+    const hasIcon = drawCircularIcon(ctx, gameIcon, tx, cy + (chipH - smallIcon) / 2, smallIcon);
+    if (hasIcon) {
+      tx += smallIcon + 6;
+    } else {
+      ctx.font = `800 ${fontSize}px ${fontSans}`;
+      ctx.fillStyle = gColor.main;
+      const fallbackLabel = `${item.gameShort} `;
+      ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
+      tx += ctx.measureText(fallbackLabel).width;
+    }
+
+    ctx.font = `700 ${fontSize}px ${fontSans}`;
+    ctx.fillStyle = item.isEnd ? '#cbd5e1' : '#ede9fe';
+    const fitted = fitText(ctx, item.title, cx + cw - tx - 8);
+    ctx.fillText(fitted, tx, cy + chipH / 2);
+  }
+
+  ctx.restore();
+}
+
+function drawCanvasCompactTray(
+  ctx,
+  trayItems,
+  overflowCount,
+  { x, y, w, trayH, isCurrentMonth, gameIcons, fontSans, fontMono }
+) {
+  const slotCount = trayItems.length + (overflowCount > 0 ? 1 : 0);
+  if (slotCount <= 0) return;
+
+  const gapX = 5;
+  const pillW = Math.min(62, Math.floor((w - gapX * (slotCount - 1)) / slotCount));
+  const pillH = trayH;
+  const showLabel = pillW >= 48;
+
+  trayItems.forEach((item, idx) => {
+    const px = x + idx * (pillW + gapX);
+    const gColor = GAME_COLORS[item.game] || { main: '#818cf8', rgb: [129, 140, 248] };
+    const [cr, cg, cb] = gColor.rgb;
+    const gameIcon = gameIcons[item.game] || null;
+
+    ctx.save();
+    if (!item.isFixed) {
+      ctx.globalAlpha = isCurrentMonth ? 0.8 : 0.38;
+    }
+
+    drawRoundedRect(ctx, px, y, pillW, pillH, 6);
+    if (item.category === 'update') {
+      ctx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, 0.9)`;
+      ctx.fill();
+      ctx.strokeStyle = item.isFixed ? gColor.main : '#0b0c10';
+    } else if (item.category === 'half') {
+      ctx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, 0.2)`;
+      ctx.fill();
+      ctx.strokeStyle = `rgba(${cr}, ${cg}, ${cb}, 0.58)`;
+    } else if (item.category === 'broadcast') {
+      ctx.fillStyle = '#181b24';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(250, 204, 21, 0.55)';
+    } else if (item.isEnd) {
+      ctx.fillStyle = 'rgba(30, 34, 46, 0.72)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(100, 116, 139, 0.45)';
+    } else {
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.18)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(167, 139, 250, 0.56)';
+    }
+
+    if (!item.isFixed) ctx.setLineDash([4, 3]);
+    ctx.lineWidth = 1.25;
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    if (item.category !== 'update') {
+      drawRoundedRect(ctx, px, y, 3, pillH, 2);
+      ctx.fillStyle = gColor.main;
+      ctx.fill();
+    }
+
+    if (showLabel) {
+      const iconSize = 20;
+      const ix = px + 5;
+      const iy = y + (pillH - iconSize) / 2;
+      const hasIcon = drawCircularIcon(
+        ctx,
+        gameIcon,
+        ix,
+        iy,
+        iconSize,
+        item.category === 'update' ? 'rgba(11, 12, 16, 0.42)' : 'rgba(255, 255, 255, 0.28)'
+      );
+      const label = getMiniCategoryLabel(item);
+      ctx.font = `800 11px ${item.category === 'broadcast' ? fontMono : fontSans}`;
+      ctx.fillStyle =
+        item.category === 'update'
+          ? '#0b0c10'
+          : item.category === 'broadcast'
+          ? '#fde047'
+          : item.isEnd
+          ? '#94a3b8'
+          : '#e2e8f0';
+      ctx.fillText(label, hasIcon ? ix + iconSize + 4 : px + 8, y + pillH / 2);
+    } else {
+      const iconSize = 24;
+      const ix = px + (pillW - iconSize) / 2;
+      const iy = y + (pillH - iconSize) / 2;
+      const hasIcon = drawCircularIcon(
+        ctx,
+        gameIcon,
+        ix,
+        iy,
+        iconSize,
+        item.category === 'update' ? 'rgba(11, 12, 16, 0.42)' : 'rgba(255, 255, 255, 0.28)'
+      );
+      if (!hasIcon) {
+        ctx.font = `800 11px ${fontSans}`;
+        ctx.fillStyle = item.category === 'update' ? '#0b0c10' : gColor.main;
+        const shortTxt = item.gameShort.slice(0, 2);
+        const tw = ctx.measureText(shortTxt).width;
+        ctx.fillText(shortTxt, px + (pillW - tw) / 2, y + pillH / 2);
+      }
+    }
+
+    ctx.restore();
+  });
+
+  if (overflowCount > 0) {
+    const ox = x + trayItems.length * (pillW + gapX);
+    const ow = Math.min(48, Math.max(pillW, x + w - ox));
+    drawRoundedRect(ctx, ox, y, ow, pillH, 6);
+    ctx.fillStyle = 'rgba(110, 231, 183, 0.16)';
+    ctx.fill();
+    ctx.lineWidth = 1.25;
+    ctx.strokeStyle = 'rgba(110, 231, 183, 0.52)';
+    ctx.stroke();
+
+    const plusTxt = `+${overflowCount}`;
+    ctx.font = `800 12px ${fontMono}`;
+    ctx.fillStyle = '#6ee7b7';
+    const pw = ctx.measureText(plusTxt).width;
+    ctx.fillText(plusTxt, ox + (ow - pw) / 2, y + pillH / 2);
+  }
 }
 
 /**
@@ -319,230 +666,77 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
       ctx.restore();
     }
 
-    // 셀 내부 마일스톤 배지 렌더링
+    // 셀 내부 마일스톤 배지 렌더링 (밀집 시 우선순위 칩 + 하단 미니 아이콘 트레이)
     const items = cell.milestones || [];
+    if (items.length >= 4) {
+      ctx.save();
+      ctx.globalAlpha = 1;
+      const badgeW = 38;
+      const badgeH = 20;
+      const bx = x + w - badgeW - 10;
+      const by = y + 14;
+      drawRoundedRect(ctx, bx, by, badgeW, badgeH, 6);
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.18)';
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+      ctx.stroke();
+      ctx.font = `800 11px ${fontMono}`;
+      ctx.fillStyle = '#fde68a';
+      const cntTxt = `${items.length}건`;
+      const cwTxt = ctx.measureText(cntTxt).width;
+      ctx.fillText(cntTxt, bx + (badgeW - cwTxt) / 2, by + badgeH / 2);
+      ctx.restore();
+    }
+
     if (items.length > 0) {
       const listTop = y + 42;
       const availH = h - 50;
-      const gapY = items.length >= 5 ? 4 : 6;
-      const rawChipH = Math.floor((availH - gapY * (items.length - 1)) / items.length);
-      const chipH = Math.max(28, Math.min(44, rawChipH));
+      const layoutPlan = partitionCellMilestones(
+        items,
+        numWeeks === 6
+          ? { normalThreshold: 3, denseBaseFull: 2, maxUpdateFull: 3, maxTrayItems: 5 }
+          : { normalThreshold: 4, denseBaseFull: 3, maxUpdateFull: 4, maxTrayItems: 5 }
+      );
+      const { isDense, fullItems, trayItems, overflowCount } = layoutPlan;
 
-      items.forEach((item, mIdx) => {
+      const trayH = isDense ? 36 : 0;
+      const trayGap = isDense ? 6 : 0;
+      const upperAvailH = availH - trayH - trayGap;
+      const gapY = isDense ? 4 : fullItems.length >= 4 ? 5 : 6;
+      const rawChipH = Math.floor(
+        (upperAvailH - gapY * Math.max(0, fullItems.length - 1)) / Math.max(1, fullItems.length)
+      );
+      const chipH = Math.max(26, Math.min(44, rawChipH));
+
+      fullItems.forEach((item, mIdx) => {
         const cy = listTop + mIdx * (chipH + gapY);
-        if (cy + chipH > y + h - 4) return;
-
-        const cx = x + 8;
-        const cw = w - 16;
-        const gColor = GAME_COLORS[item.game] || { main: '#818cf8', rgb: [129, 140, 248] };
-        const [cr, cg, cb] = gColor.rgb;
-        const gameIcon = gameIcons[item.game] || null;
-        const iconSize = chipH <= 32 ? 22 : 25;
-
-        ctx.save();
-        if (!item.isFixed) {
-          ctx.globalAlpha = cell.isCurrentMonth ? 0.78 : 0.35;
-        }
-
-        // ① 신규 버전 업데이트 (솔리드 배경 + 다크 볼드 텍스트 + 원형 아이콘)
-        if (item.category === 'update') {
-          drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
-          ctx.fillStyle = item.isFixed
-            ? `rgba(${cr}, ${cg}, ${cb}, 0.94)`
-            : `rgba(${cr}, ${cg}, ${cb}, 0.76)`;
-          ctx.fill();
-
-          if (!item.isFixed) {
-            ctx.setLineDash([6, 4]);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#0b0c10';
-            ctx.stroke();
-            ctx.setLineDash([]);
-          }
-
-          let tx = cx + 7;
-          const fontSize = chipH <= 32 ? 15 : 16.5;
-          const hasIcon = drawCircularIcon(ctx, gameIcon, tx, cy + (chipH - iconSize) / 2, iconSize, 'rgba(11, 12, 16, 0.42)');
-          if (hasIcon) {
-            tx += iconSize + 7;
-          } else {
-            tx += 2;
-            ctx.font = `900 ${fontSize}px ${fontSans}`;
-            ctx.fillStyle = '#0b0c10';
-            const fallbackLabel = `${item.gameShort} `;
-            ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
-            tx += ctx.measureText(fallbackLabel).width;
-          }
-
-          const rightReserve = !item.isFixed ? 44 : 8;
-          ctx.font = `800 ${fontSize}px ${fontSans}`;
-          ctx.fillStyle = '#0b0c10';
-          const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
-          ctx.fillText(fitted, tx, cy + chipH / 2);
-
-          if (!item.isFixed) {
-            drawRoundedRect(ctx, cx + cw - 40, cy + (chipH - 18) / 2, 34, 18, 4);
-            ctx.fillStyle = 'rgba(11, 12, 16, 0.88)';
-            ctx.fill();
-            ctx.font = `800 11px ${fontSans}`;
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillText('예상', cx + cw - 33, cy + chipH / 2);
-          }
-        }
-        // ② 후반 픽업 전환 (중간 틴트 + 외곽 보더 + 좌측 4px 바 + 원형 아이콘 + 밝은 텍스트)
-        else if (item.category === 'half') {
-          drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
-          ctx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, 0.16)`;
-          ctx.fill();
-
-          if (!item.isFixed) ctx.setLineDash([5, 4]);
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = `rgba(${cr}, ${cg}, ${cb}, 0.56)`;
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          // 좌측 솔리드 바
-          drawRoundedRect(ctx, cx, cy, 4, chipH, 2);
-          ctx.fillStyle = gColor.main;
-          ctx.fill();
-
-          let tx = cx + 8;
-          const fontSize = chipH <= 32 ? 15 : 16;
-          const hasIcon = drawCircularIcon(ctx, gameIcon, tx, cy + (chipH - iconSize) / 2, iconSize);
-          if (hasIcon) {
-            tx += iconSize + 7;
-          } else {
-            tx += 2;
-            ctx.font = `800 ${fontSize}px ${fontSans}`;
-            ctx.fillStyle = gColor.main;
-            const fallbackLabel = `${item.gameShort} `;
-            ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
-            tx += ctx.measureText(fallbackLabel).width;
-          }
-
-          const rightReserve = !item.isFixed ? 42 : 8;
-          ctx.font = `700 ${fontSize}px ${fontSans}`;
-          ctx.fillStyle = '#f8fafc';
-          const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
-          ctx.fillText(fitted, tx, cy + chipH / 2);
-
-          if (!item.isFixed) {
-            drawRoundedRect(ctx, cx + cw - 38, cy + (chipH - 18) / 2, 32, 18, 4);
-            ctx.fillStyle = 'rgba(11, 12, 16, 0.85)';
-            ctx.fill();
-            ctx.font = `700 11px ${fontSans}`;
-            ctx.fillStyle = '#cbd5e1';
-            ctx.fillText('예상', cx + cw - 32, cy + chipH / 2);
-          }
-        }
-        // ③ 공식 특별방송 (Carbon 서피스 #181b24 + LIVE 레드 배지 + 원형 아이콘 + 방송 시각)
-        else if (item.category === 'broadcast') {
-          drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
-          ctx.fillStyle = '#181b24';
-          ctx.fill();
-
-          if (!item.isFixed) ctx.setLineDash([5, 4]);
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = 'rgba(250, 204, 21, 0.52)';
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          drawRoundedRect(ctx, cx, cy, 4, chipH, 2);
-          ctx.fillStyle = gColor.main;
-          ctx.fill();
-
-          // LIVE 배지
-          const liveW = 35;
-          drawRoundedRect(ctx, cx + 7, cy + (chipH - 18) / 2, liveW, 18, 4);
-          ctx.fillStyle = item.isFixed ? '#ef4444' : '#d97706';
-          ctx.fill();
-          ctx.font = `900 11px ${fontMono}`;
-          ctx.fillStyle = '#ffffff';
-          ctx.fillText('LIVE', cx + 11.5, cy + chipH / 2);
-
-          let tx = cx + 7 + liveW + 6;
-          const fontSize = chipH <= 32 ? 14.5 : 15.5;
-          const smallIcon = chipH <= 32 ? 20 : 23;
-          const hasIcon = drawCircularIcon(ctx, gameIcon, tx, cy + (chipH - smallIcon) / 2, smallIcon);
-          if (hasIcon) {
-            tx += smallIcon + 6;
-          } else {
-            ctx.font = `800 ${fontSize}px ${fontSans}`;
-            ctx.fillStyle = gColor.main;
-            const fallbackLabel = `${item.gameShort} `;
-            ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
-            tx += ctx.measureText(fallbackLabel).width;
-          }
-
-          const timeShort = item.time ? item.time.slice(0, 5) : '';
-          const rightReserve = !item.isFixed ? 40 : timeShort ? 46 : 8;
-          ctx.font = `700 ${fontSize}px ${fontSans}`;
-          ctx.fillStyle = '#fef9c3';
-          const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
-          ctx.fillText(fitted, tx, cy + chipH / 2);
-
-          if (!item.isFixed) {
-            drawRoundedRect(ctx, cx + cw - 38, cy + (chipH - 18) / 2, 32, 18, 4);
-            ctx.fillStyle = 'rgba(11, 12, 16, 0.85)';
-            ctx.fill();
-            ctx.font = `700 11px ${fontSans}`;
-            ctx.fillStyle = '#cbd5e1';
-            ctx.fillText('예상', cx + cw - 32, cy + chipH / 2);
-          } else if (timeShort) {
-            ctx.font = `700 12px ${fontMono}`;
-            ctx.fillStyle = '#fde047';
-            ctx.fillText(timeShort, cx + cw - 41, cy + chipH / 2);
-          }
-        }
-        // ④ 오프라인 행사 / 콜라보
-        else {
-          drawRoundedRect(ctx, cx, cy, cw, chipH, 7);
-          ctx.fillStyle = item.isEnd
-            ? 'rgba(30, 34, 46, 0.72)'
-            : 'rgba(139, 92, 246, 0.16)';
-          ctx.fill();
-
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = item.isEnd
-            ? 'rgba(100, 116, 139, 0.42)'
-            : 'rgba(167, 139, 250, 0.55)';
-          ctx.stroke();
-
-          drawRoundedRect(ctx, cx, cy, 4, chipH, 2);
-          ctx.fillStyle = gColor.main;
-          ctx.fill();
-
-          const tagText = '행사';
-          const tagW = 31;
-          drawRoundedRect(ctx, cx + 7, cy + (chipH - 18) / 2, tagW, 18, 4);
-          ctx.fillStyle = item.isEnd ? '#334155' : '#7c3aed';
-          ctx.fill();
-          ctx.font = `800 11px ${fontSans}`;
-          ctx.fillStyle = '#ffffff';
-          ctx.fillText(tagText, cx + 11.5, cy + chipH / 2);
-
-          let tx = cx + 7 + tagW + 6;
-          const fontSize = chipH <= 32 ? 14.5 : 15.5;
-          const smallIcon = chipH <= 32 ? 20 : 23;
-          const hasIcon = drawCircularIcon(ctx, gameIcon, tx, cy + (chipH - smallIcon) / 2, smallIcon);
-          if (hasIcon) {
-            tx += smallIcon + 6;
-          } else {
-            ctx.font = `800 ${fontSize}px ${fontSans}`;
-            ctx.fillStyle = gColor.main;
-            const fallbackLabel = `${item.gameShort} `;
-            ctx.fillText(fallbackLabel, tx, cy + chipH / 2);
-            tx += ctx.measureText(fallbackLabel).width;
-          }
-
-          ctx.font = `700 ${fontSize}px ${fontSans}`;
-          ctx.fillStyle = item.isEnd ? '#cbd5e1' : '#ede9fe';
-          const fitted = fitText(ctx, item.title, cx + cw - tx - 8);
-          ctx.fillText(fitted, tx, cy + chipH / 2);
-        }
-
-        ctx.restore();
+        if (cy + chipH > listTop + upperAvailH + 2) return;
+        drawCanvasMilestoneChip(ctx, item, {
+          cx: x + 8,
+          cy,
+          cw: w - 16,
+          chipH,
+          isCurrentMonth: cell.isCurrentMonth,
+          gameIcon: gameIcons[item.game] || null,
+          fontSans,
+          fontMono,
+        });
       });
+
+      if (isDense && (trayItems.length > 0 || overflowCount > 0)) {
+        const trayY = y + h - 8 - trayH;
+        drawCanvasCompactTray(ctx, trayItems, overflowCount, {
+          x: x + 8,
+          y: trayY,
+          w: w - 16,
+          trayH,
+          isCurrentMonth: cell.isCurrentMonth,
+          gameIcons,
+          fontSans,
+          fontMono,
+        });
+      }
     }
 
     ctx.restore();

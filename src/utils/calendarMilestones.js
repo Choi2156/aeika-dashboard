@@ -248,8 +248,9 @@ export function buildMonthGrid(year, month, milestones = [], todayStr = '') {
   }
   for (const list of byDate.values()) {
     list.sort((a, b) => {
+      if (a.priority !== b.priority) return a.priority - b.priority;
       if (a.isFixed !== b.isFixed) return a.isFixed ? -1 : 1;
-      return a.priority - b.priority;
+      return 0;
     });
   }
 
@@ -291,4 +292,68 @@ export function buildMonthGrid(year, month, milestones = [], todayStr = '') {
   }
 
   return { cells, numWeeks };
+}
+
+/**
+ * 날짜 셀 내 다수 마일스톤(밀집 날짜)의 표시 계층을 분할합니다.
+ * - 상단에는 우선순위가 높은 업데이트(또는 핵심 일정)를 텍스트 칩으로 유지하고,
+ * - 나머지 일정은 아이콘 위주의 컴팩트 트레이 및 '+N' 오버플로우 배지로 배치합니다.
+ */
+export function partitionCellMilestones(items = [], options = {}) {
+  const {
+    normalThreshold = 3,
+    denseBaseFull = 2,
+    maxUpdateFull = 3,
+    maxTrayItems = 4,
+  } = options;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return {
+      isDense: false,
+      fullItems: [],
+      trayItems: [],
+      overflowItems: [],
+      overflowCount: 0,
+    };
+  }
+
+  if (items.length <= normalThreshold) {
+    return {
+      isDense: false,
+      fullItems: items,
+      trayItems: [],
+      overflowItems: [],
+      overflowCount: 0,
+    };
+  }
+
+  const updateCount = items.filter((it) => it && it.category === 'update').length;
+  const fullCount = Math.min(
+    items.length - 1,
+    Math.max(denseBaseFull, Math.min(updateCount, maxUpdateFull))
+  );
+  const fullItems = items.slice(0, fullCount);
+  const rest = items.slice(fullCount);
+
+  if (rest.length <= maxTrayItems) {
+    return {
+      isDense: true,
+      fullItems,
+      trayItems: rest,
+      overflowItems: [],
+      overflowCount: 0,
+    };
+  }
+
+  const visibleTrayCount = Math.max(1, maxTrayItems - 1);
+  const trayItems = rest.slice(0, visibleTrayCount);
+  const overflowItems = rest.slice(visibleTrayCount);
+
+  return {
+    isDense: true,
+    fullItems,
+    trayItems,
+    overflowItems,
+    overflowCount: overflowItems.length,
+  };
 }
