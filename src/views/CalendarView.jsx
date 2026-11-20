@@ -83,6 +83,22 @@ function getMilestoneDDayBadge(item, todayStr) {
   return { label: '종료', variant: 'past' };
 }
 
+function shiftYearMonth(y, m, delta) {
+  const total = y * 12 + (m - 1) + delta;
+  return {
+    year: Math.floor(total / 12),
+    month: ((total % 12) + 12) % 12 + 1,
+  };
+}
+
+function chunkMonthWeeks(rawCells) {
+  const rows = [];
+  for (let i = 0; i < rawCells.length; i += 7) {
+    rows.push(rawCells.slice(i, i + 7));
+  }
+  return rows;
+}
+
 /**
  * CalendarView v1.3.0 — Deep Violet-Indigo Full-Width 7열 월간 마일스톤 달력
  * - 100% 전체 폭 7열 그리드 + 부드러운 월 전환 애니메이션
@@ -110,13 +126,25 @@ export default function CalendarView({
   const [pinnedLegend, setPinnedLegend] = useState(null);
   const [hoveredLegend, setHoveredLegend] = useState(null);
   const [isTodayPing, setIsTodayPing] = useState(false);
-  const [dragOffsetX, setDragOffsetX] = useState(0);
+  const [trackOffsetPx, setTrackOffsetPx] = useState(0);
+  const [isTrackAnimating, setIsTrackAnimating] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(null);
   const [isDraggingGrid, setIsDraggingGrid] = useState(false);
   const activeLegendFilter = hoveredLegend || pinnedLegend;
+  const viewportRef = useRef(null);
+  const prevPaneRef = useRef(null);
+  const currPaneRef = useRef(null);
+  const nextPaneRef = useRef(null);
+  const activeYMRef = useRef({ year: todayYear, month: todayMonth });
+  const pendingNavRef = useRef(null);
+  const slideTimerRef = useRef(null);
   const dragStateRef = useRef({
     active: false,
     startX: 0,
     startY: 0,
+    startTime: 0,
+    latchDx: 0,
+    lastOffset: 0,
     horizontalLocked: false,
     didDrag: false,
     pointerId: null,
@@ -128,18 +156,44 @@ export default function CalendarView({
     return extractCalendarMilestones(events, activeGames);
   }, [events, activeGames]);
 
+  const maxBounds = useMemo(
+    () => getCalendarMaxYearMonth(events, todayYear, todayMonth),
+    [events, todayYear, todayMonth]
+  );
+
+  const isPrevDisabled =
+    compareYearMonth(year, month, CALENDAR_MIN_YEAR, CALENDAR_MIN_MONTH) <= 0;
+  const isNextDisabled =
+    compareYearMonth(year, month, maxBounds.year, maxBounds.month) >= 0;
+
+  const prevYM = useMemo(() => shiftYearMonth(year, month, -1), [year, month]);
+  const nextYM = useMemo(() => shiftYearMonth(year, month, 1), [year, month]);
+
   const { cells, weeks } = useMemo(() => {
     const { cells: rawCells } = buildMonthGrid(year, month, milestones, todayStr);
-    const rows = [];
-    for (let i = 0; i < rawCells.length; i += 7) {
-      rows.push(rawCells.slice(i, i + 7));
-    }
-    return { cells: rawCells, weeks: rows };
+    return { cells: rawCells, weeks: chunkMonthWeeks(rawCells) };
   }, [year, month, milestones, todayStr]);
+
+  const prevPaneWeeks = useMemo(() => {
+    if (isPrevDisabled) return null;
+    const { cells: rawCells } = buildMonthGrid(prevYM.year, prevYM.month, milestones, todayStr);
+    return chunkMonthWeeks(rawCells);
+  }, [isPrevDisabled, prevYM.year, prevYM.month, milestones, todayStr]);
+
+  const nextPaneWeeks = useMemo(() => {
+    if (isNextDisabled) return null;
+    const { cells: rawCells } = buildMonthGrid(nextYM.year, nextYM.month, milestones, todayStr);
+    return chunkMonthWeeks(rawCells);
+  }, [isNextDisabled, nextYM.year, nextYM.month, milestones, todayStr]);
+
+  useEffect(() => {
+    activeYMRef.current = { year, month };
+  }, [year, month]);
 
   useEffect(() => {
     return () => {
       if (todayPingTimerRef.current) clearTimeout(todayPingTimerRef.current);
+      if (slideTimerRef.current) clearTimeout(slideTimerRef.current);
     };
   }, []);
 
@@ -154,8 +208,37 @@ export default function CalendarView({
     }, 760);
   };
 
+  const clearSlideTimer = () => {
+    if (slideTimerRef.current) {
+      clearTimeout(slideTimerRef.current);
+      slideTimerRef.current = null;
+    }
+  };
+
+  const commitPendingNav = () => {
+    clearSlideTimer();
+    const pending = pendingNavRef.current;
+    pendingNavRef.current = null;
+    setIsTrackAnimating(false);
+    setTrackOffsetPx(0);
+    setViewportHeight(null);
+    if (pending) {
+      activeYMRef.current = { year: pending.toYear, month: pending.toMonth };
+      setTransitionDir('none');
+      setSelectedDateStr(null);
+      setYear(pending.toYear);
+      setMonth(pending.toMonth);
+    }
+  };
+
   useEffect(() => {
     if (!jumpTodayTrigger) return;
+    clearSlideTimer();
+    pendingNavRef.current = null;
+    activeYMRef.current = { year: todayYear, month: todayMonth };
+    setIsTrackAnimating(false);
+    setTrackOffsetPx(0);
+    setViewportHeight(null);
     setTransitionDir('reset');
     setYear(todayYear);
     setMonth(todayMonth);
@@ -173,44 +256,115 @@ export default function CalendarView({
     return found;
   }, [cells, selectedDateStr]);
 
-  const maxBounds = useMemo(
-    () => getCalendarMaxYearMonth(events, todayYear, todayMonth),
-    [events, todayYear, todayMonth]
-  );
-
-  const isPrevDisabled =
-    compareYearMonth(year, month, CALENDAR_MIN_YEAR, CALENDAR_MIN_MONTH) <= 0;
-  const isNextDisabled =
-    compareYearMonth(year, month, maxBounds.year, maxBounds.month) >= 0;
-
   const monthPrefix = `${year}-${String(month).padStart(2, '0')}`;
   const monthMilestonesCount = useMemo(() => {
     return milestones.filter((m) => m.date.startsWith(monthPrefix)).length;
   }, [milestones, monthPrefix]);
 
-  const handlePrevMonth = () => {
-    if (isPrevDisabled) return;
-    const toYear = month === 1 ? year - 1 : year;
-    const toMonth = month === 1 ? 12 : month - 1;
-    trackCalendarMonthChange({ fromYear: year, fromMonth: month, toYear, toMonth });
-    setTransitionDir('prev');
-    setSelectedDateStr(null);
-    setYear(toYear);
-    setMonth(toMonth);
+  const slideToMonth = (dir, fromButton = false) => {
+    // 연타 클릭 시 진행 중이던 전환을 즉시 확정해 월이 누락되지 않게 처리
+    if (pendingNavRef.current) {
+      const pending = pendingNavRef.current;
+      const baseYM = { year: pending.toYear, month: pending.toMonth };
+      const targetYM = shiftYearMonth(baseYM.year, baseYM.month, dir === 'next' ? 1 : -1);
+      if (
+        (dir === 'prev' && compareYearMonth(baseYM.year, baseYM.month, CALENDAR_MIN_YEAR, CALENDAR_MIN_MONTH) <= 0) ||
+        (dir === 'next' && compareYearMonth(baseYM.year, baseYM.month, maxBounds.year, maxBounds.month) >= 0)
+      ) {
+        commitPendingNav();
+        return;
+      }
+      clearSlideTimer();
+      pendingNavRef.current = null;
+      trackCalendarMonthChange({
+        fromYear: baseYM.year,
+        fromMonth: baseYM.month,
+        toYear: targetYM.year,
+        toMonth: targetYM.month,
+      });
+      activeYMRef.current = targetYM;
+      setIsTrackAnimating(false);
+      setTrackOffsetPx(0);
+      setViewportHeight(null);
+      setTransitionDir('none');
+      setSelectedDateStr(null);
+      setYear(targetYM.year);
+      setMonth(targetYM.month);
+      return;
+    }
+
+    if (dir === 'prev' && isPrevDisabled) return;
+    if (dir === 'next' && isNextDisabled) return;
+
+    const toYM = dir === 'next' ? nextYM : prevYM;
+    trackCalendarMonthChange({
+      fromYear: year,
+      fromMonth: month,
+      toYear: toYM.year,
+      toMonth: toYM.month,
+    });
+
+    const reduceMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const viewportEl = viewportRef.current;
+    const width = viewportEl?.clientWidth || 0;
+
+    if (reduceMotion || width <= 0) {
+      activeYMRef.current = toYM;
+      setIsTrackAnimating(false);
+      setTrackOffsetPx(0);
+      setViewportHeight(null);
+      setTransitionDir('none');
+      setSelectedDateStr(null);
+      setYear(toYM.year);
+      setMonth(toYM.month);
+      return;
+    }
+
+    const startH = currPaneRef.current?.offsetHeight || viewportEl.offsetHeight;
+    const targetPaneEl = dir === 'next' ? nextPaneRef.current : prevPaneRef.current;
+    const targetH = targetPaneEl?.offsetHeight || startH;
+    const needsHeightMorph = Boolean(startH && targetH && Math.abs(startH - targetH) > 1);
+
+    pendingNavRef.current = { dir, toYear: toYM.year, toMonth: toYM.month };
+    activeYMRef.current = toYM;
+    setTransitionDir('none');
+    if (needsHeightMorph) {
+      setViewportHeight(startH);
+    }
+
+    const targetX = dir === 'next' ? -width : width;
+    if (fromButton) {
+      // 버튼/키보드 전환은 0에서 시작해 다음 프레임에 트랜지션 실행
+      requestAnimationFrame(() => {
+        setIsTrackAnimating(true);
+        setTrackOffsetPx(targetX);
+        if (needsHeightMorph) setViewportHeight(targetH);
+      });
+    } else {
+      setIsTrackAnimating(true);
+      setTrackOffsetPx(targetX);
+      if (needsHeightMorph) {
+        requestAnimationFrame(() => setViewportHeight(targetH));
+      }
+    }
+
+    clearSlideTimer();
+    slideTimerRef.current = setTimeout(() => {
+      commitPendingNav();
+    }, 300);
   };
 
-  const handleNextMonth = () => {
-    if (isNextDisabled) return;
-    const toYear = month === 12 ? year + 1 : year;
-    const toMonth = month === 12 ? 1 : month + 1;
-    trackCalendarMonthChange({ fromYear: year, fromMonth: month, toYear, toMonth });
-    setTransitionDir('next');
-    setSelectedDateStr(null);
-    setYear(toYear);
-    setMonth(toMonth);
-  };
+  const handlePrevMonth = () => slideToMonth('prev', true);
+  const handleNextMonth = () => slideToMonth('next', true);
 
   const handleGoCurrentMonth = () => {
+    clearSlideTimer();
+    pendingNavRef.current = null;
+    setIsTrackAnimating(false);
+    setTrackOffsetPx(0);
+    setViewportHeight(null);
     if (year !== todayYear || month !== todayMonth) {
       trackCalendarMonthChange({
         fromYear: year,
@@ -219,6 +373,7 @@ export default function CalendarView({
         toMonth: todayMonth,
       });
     }
+    activeYMRef.current = { year: todayYear, month: todayMonth };
     setTransitionDir('reset');
     setSelectedDateStr(null);
     setYear(todayYear);
@@ -228,10 +383,16 @@ export default function CalendarView({
 
   const handleGridPointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (pendingNavRef.current || isTrackAnimating) {
+      commitPendingNav();
+    }
     dragStateRef.current = {
       active: true,
       startX: e.clientX,
       startY: e.clientY,
+      startTime: performance.now(),
+      latchDx: 0,
+      lastOffset: 0,
       horizontalLocked: false,
       didDrag: false,
       pointerId: e.pointerId,
@@ -246,15 +407,18 @@ export default function CalendarView({
     const dy = e.clientY - st.startY;
 
     if (!st.horizontalLocked) {
-      if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
         st.active = false;
-        setDragOffsetX(0);
+        setTrackOffsetPx(0);
         setIsDraggingGrid(false);
         return;
       }
-      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.15) {
         st.horizontalLocked = true;
         st.didDrag = true;
+        st.latchDx = dx;
+        st.startTime = performance.now();
+        setIsTrackAnimating(false);
         setIsDraggingGrid(true);
         try {
           e.currentTarget.setPointerCapture?.(e.pointerId);
@@ -266,21 +430,29 @@ export default function CalendarView({
       }
     }
 
-    // 경계 월에서는 고무줄 저항감 적용
-    const atMinBound = dx > 0 && isPrevDisabled;
-    const atMaxBound = dx < 0 && isNextDisabled;
-    const factor = atMinBound || atMaxBound ? 0.12 : 0.28;
-    const clamped = Math.max(-44, Math.min(44, dx * factor));
-    setDragOffsetX(clamped);
+    const width = viewportRef.current?.clientWidth || 720;
+    const rawOffset = dx - st.latchDx;
+    let nextOffset = rawOffset;
+    if (rawOffset > 0 && isPrevDisabled) {
+      nextOffset = Math.min(56, rawOffset * 0.18);
+    } else if (rawOffset < 0 && isNextDisabled) {
+      nextOffset = Math.max(-56, rawOffset * 0.18);
+    } else {
+      nextOffset = Math.max(-width, Math.min(width, rawOffset));
+    }
+
+    st.lastOffset = nextOffset;
+    setTrackOffsetPx(nextOffset);
   };
 
   const finishGridDrag = (e, cancelled = false) => {
     const st = dragStateRef.current;
     if (!st.active || st.pointerId !== e.pointerId) return;
-    const dx = e.clientX - st.startX;
+    const rawOffset = st.lastOffset;
+    const elapsed = Math.max(16, performance.now() - st.startTime);
+    const velocity = rawOffset / elapsed;
     const shouldSuppress = st.didDrag;
     st.active = false;
-    setDragOffsetX(0);
     setIsDraggingGrid(false);
 
     try {
@@ -298,13 +470,40 @@ export default function CalendarView({
       }, 60);
     }
 
-    if (!cancelled && st.horizontalLocked && Math.abs(dx) >= 48) {
-      if (dx < 0 && !isNextDisabled) {
-        handleNextMonth();
-      } else if (dx > 0 && !isPrevDisabled) {
-        handlePrevMonth();
-      }
+    if (!st.horizontalLocked) {
+      setTrackOffsetPx(0);
+      return;
     }
+
+    const width = viewportRef.current?.clientWidth || 720;
+    const distThreshold = Math.min(120, width * 0.18);
+    const goNext =
+      !cancelled &&
+      !isNextDisabled &&
+      (rawOffset <= -distThreshold || (velocity <= -0.42 && rawOffset <= -24));
+    const goPrev =
+      !cancelled &&
+      !isPrevDisabled &&
+      (rawOffset >= distThreshold || (velocity >= 0.42 && rawOffset >= 24));
+
+    if (goNext) {
+      slideToMonth('next', false);
+    } else if (goPrev) {
+      slideToMonth('prev', false);
+    } else {
+      setIsTrackAnimating(true);
+      setTrackOffsetPx(0);
+      clearSlideTimer();
+      slideTimerRef.current = setTimeout(() => {
+        setIsTrackAnimating(false);
+        slideTimerRef.current = null;
+      }, 300);
+    }
+  };
+
+  const handleTrackTransitionEnd = (e) => {
+    if (e.target !== e.currentTarget || e.propertyName !== 'transform') return;
+    commitPendingNav();
   };
 
   const handleGridClickCapture = (e) => {
@@ -343,6 +542,167 @@ export default function CalendarView({
     if (selectedDayDiff > 0) return `D-${selectedDayDiff}`;
     return `${Math.abs(selectedDayDiff)}일 전`;
   }, [selectedCell, selectedDayDiff]);
+
+  const renderMonthGridWeeks = (paneWeeks, isInteractive) =>
+    paneWeeks.map((week, wIdx) => (
+      <div key={wIdx} className="calendar-view__week-row">
+        {week.map((cell, dIdx) => {
+          if (!cell) {
+            return (
+              <div
+                key={`empty-${wIdx}-${dIdx}`}
+                className="calendar-view__cell calendar-view__cell--empty"
+              />
+            );
+          }
+
+          const isSun = dIdx === 0;
+          const isSat = dIdx === 6;
+          const cellItems = cell.milestones || [];
+          const hasItems = cellItems.length > 0;
+          const isSelected = isInteractive && selectedDateStr === cell.dateStr;
+
+          return (
+            <div
+              key={cell.dateStr}
+              className={[
+                'calendar-view__cell',
+                !cell.isCurrentMonth ? 'calendar-view__cell--other-month' : '',
+                cell.isToday ? 'calendar-view__cell--today' : '',
+                isInteractive && cell.isToday && isTodayPing ? 'calendar-view__cell--today-ping' : '',
+                cell.isPreService ? 'calendar-view__cell--pre-service' : '',
+                hasItems ? 'calendar-view__cell--has-items' : '',
+                isSelected ? 'calendar-view__cell--selected' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={isInteractive ? () => handleCellClick(cell) : undefined}
+            >
+              <div className="calendar-view__cell-header">
+                <span
+                  className={[
+                    'calendar-view__day-num',
+                    isSun ? 'calendar-view__day-num--sun' : '',
+                    isSat ? 'calendar-view__day-num--sat' : '',
+                    cell.isToday ? 'calendar-view__day-num--today' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  {cell.day}
+                </span>
+
+                <div className="calendar-view__cell-badges">
+                  {cell.isToday && (
+                    <span className="calendar-view__today-tag">TODAY</span>
+                  )}
+                  {hasItems && (cellItems.length >= 2 || isSelected) && (
+                    <span
+                      className={`calendar-view__count-pill ${
+                        cellItems.length >= 3 ? 'is-dense' : ''
+                      }`}
+                    >
+                      {cellItems.length}건
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="calendar-view__cell-events">
+                {cell.isPreServiceNotice && (
+                  <div
+                    className="calendar-pre-service-badge"
+                    title="2026년 4월 17일 서비스 개시 이전"
+                  >
+                    서비스 개시 전
+                  </div>
+                )}
+                {cellItems.map((item) => {
+                  const gameConf = gamesConfig?.[item.game] || {};
+                  const gameTheme = gameConf.theme || {};
+                  const color = gameTheme.color || '#818cf8';
+                  const rgb = hexToRgbStr(color);
+                  const iconSrc = gameConf.icon || null;
+                  const timeShort = item.time ? item.time.slice(0, 5) : '';
+                  const isLegendDimmed = Boolean(
+                    activeLegendFilter && !matchesLegendFilter(item, activeLegendFilter)
+                  );
+                  const isLegendHighlighted = Boolean(activeLegendFilter && !isLegendDimmed);
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      tabIndex={isInteractive ? undefined : -1}
+                      className={[
+                        'calendar-chip',
+                        `calendar-chip--${item.category}`,
+                        item.isEnd ? 'calendar-chip--end' : '',
+                        item.isFixed
+                          ? 'calendar-chip--confirmed'
+                          : 'calendar-chip--predicted',
+                        isLegendDimmed ? 'calendar-chip--dimmed' : '',
+                        isLegendHighlighted ? 'calendar-chip--highlighted' : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      style={{
+                        '--chip-color': color,
+                        '--chip-rgb': rgb,
+                      }}
+                      onClick={
+                        isInteractive
+                          ? (e) => {
+                              e.stopPropagation();
+                              setSelectedDateStr(cell.dateStr);
+                              if (onEventClick && item.rawEvent) {
+                                onEventClick(item.rawEvent, item.displayType, 'calendar');
+                              }
+                            }
+                          : undefined
+                      }
+                      title={`[${item.game}] ${item.title}${
+                        timeShort ? ` (${timeShort})` : ''
+                      } — ${item.isFixed ? '확정' : '주기 예상'}`}
+                    >
+                      {/* 게임 아이콘 또는 카테고리 포인트 태그 */}
+                      {item.category === 'broadcast' ? (
+                        <span className="calendar-chip__live-tag">LIVE</span>
+                      ) : item.category === 'offline' ? (
+                        <span className="calendar-chip__offline-tag" aria-hidden="true">
+                          <MapPin size={10} strokeWidth={2.5} />
+                        </span>
+                      ) : iconSrc ? (
+                        <img
+                          src={iconSrc}
+                          alt=""
+                          className="calendar-chip__icon"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="calendar-chip__dot" />
+                      )}
+
+                      {/* 게임 약칭 + 마일스톤 타이틀 */}
+                      <span className="calendar-chip__game">{item.gameShort}</span>
+                      <span className="calendar-chip__label">{item.title}</span>
+
+                      {/* 우측 보조 메타: 방송 시간 또는 예상 태그 */}
+                      {item.category === 'broadcast' && timeShort && (
+                        <span className="calendar-chip__time">{timeShort}</span>
+                      )}
+                      {!item.isFixed && (
+                        <span className="calendar-chip__est">예상</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    ));
 
   return (
     <div
@@ -473,168 +833,50 @@ export default function CalendarView({
         </div>
 
         <div
-          key={`${year}-${String(month).padStart(2, '0')}`}
-          className={`calendar-view__body calendar-view__body--${transitionDir}`}
+          ref={viewportRef}
+          className="calendar-view__viewport"
           style={
-            dragOffsetX !== 0
-              ? { transform: `translate3d(${dragOffsetX}px, 0, 0)`, transition: 'none' }
+            viewportHeight !== null
+              ? { height: `${viewportHeight}px` }
               : undefined
           }
         >
-          {weeks.map((week, wIdx) => (
-            <div key={wIdx} className="calendar-view__week-row">
-              {week.map((cell, dIdx) => {
-                if (!cell) {
-                  return (
-                    <div
-                      key={`empty-${wIdx}-${dIdx}`}
-                      className="calendar-view__cell calendar-view__cell--empty"
-                    />
-                  );
-                }
+          <div
+            className={`calendar-view__track${
+              isTrackAnimating ? ' calendar-view__track--animating' : ''
+            }`}
+            style={{ transform: `translate3d(${trackOffsetPx}px, 0, 0)` }}
+            onTransitionEnd={handleTrackTransitionEnd}
+          >
+            {prevPaneWeeks && (
+              <div
+                ref={prevPaneRef}
+                className="calendar-view__pane calendar-view__pane--prev"
+                aria-hidden="true"
+              >
+                {renderMonthGridWeeks(prevPaneWeeks, false)}
+              </div>
+            )}
 
-                const isSun = dIdx === 0;
-                const isSat = dIdx === 6;
-                const cellItems = cell.milestones || [];
-                const hasItems = cellItems.length > 0;
-                const isSelected = selectedDateStr === cell.dateStr;
-
-                return (
-                  <div
-                    key={cell.dateStr}
-                    className={[
-                      'calendar-view__cell',
-                      !cell.isCurrentMonth ? 'calendar-view__cell--other-month' : '',
-                      cell.isToday ? 'calendar-view__cell--today' : '',
-                      cell.isToday && isTodayPing ? 'calendar-view__cell--today-ping' : '',
-                      cell.isPreService ? 'calendar-view__cell--pre-service' : '',
-                      hasItems ? 'calendar-view__cell--has-items' : '',
-                      isSelected ? 'calendar-view__cell--selected' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => handleCellClick(cell)}
-                  >
-                    <div className="calendar-view__cell-header">
-                      <span
-                        className={[
-                          'calendar-view__day-num',
-                          isSun ? 'calendar-view__day-num--sun' : '',
-                          isSat ? 'calendar-view__day-num--sat' : '',
-                          cell.isToday ? 'calendar-view__day-num--today' : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')}
-                      >
-                        {cell.day}
-                      </span>
-
-                      <div className="calendar-view__cell-badges">
-                        {cell.isToday && (
-                          <span className="calendar-view__today-tag">TODAY</span>
-                        )}
-                        {hasItems && (cellItems.length >= 2 || isSelected) && (
-                          <span
-                            className={`calendar-view__count-pill ${
-                              cellItems.length >= 3 ? 'is-dense' : ''
-                            }`}
-                          >
-                            {cellItems.length}건
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="calendar-view__cell-events">
-                      {cell.isPreServiceNotice && (
-                        <div
-                          className="calendar-pre-service-badge"
-                          title="2026년 4월 17일 서비스 개시 이전"
-                        >
-                          서비스 개시 전
-                        </div>
-                      )}
-                      {cellItems.map((item) => {
-                        const gameConf = gamesConfig?.[item.game] || {};
-                        const gameTheme = gameConf.theme || {};
-                        const color = gameTheme.color || '#818cf8';
-                        const rgb = hexToRgbStr(color);
-                        const iconSrc = gameConf.icon || null;
-                        const timeShort = item.time ? item.time.slice(0, 5) : '';
-                        const isLegendDimmed = Boolean(
-                          activeLegendFilter && !matchesLegendFilter(item, activeLegendFilter)
-                        );
-                        const isLegendHighlighted = Boolean(activeLegendFilter && !isLegendDimmed);
-
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            className={[
-                              'calendar-chip',
-                              `calendar-chip--${item.category}`,
-                              item.isEnd ? 'calendar-chip--end' : '',
-                              item.isFixed
-                                ? 'calendar-chip--confirmed'
-                                : 'calendar-chip--predicted',
-                              isLegendDimmed ? 'calendar-chip--dimmed' : '',
-                              isLegendHighlighted ? 'calendar-chip--highlighted' : '',
-                            ]
-                              .filter(Boolean)
-                              .join(' ')}
-                            style={{
-                              '--chip-color': color,
-                              '--chip-rgb': rgb,
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedDateStr(cell.dateStr);
-                              if (onEventClick && item.rawEvent) {
-                                onEventClick(item.rawEvent, item.displayType, 'calendar');
-                              }
-                            }}
-                            title={`[${item.game}] ${item.title}${
-                              timeShort ? ` (${timeShort})` : ''
-                            } — ${item.isFixed ? '확정' : '주기 예상'}`}
-                          >
-                            {/* 게임 아이콘 또는 카테고리 포인트 태그 */}
-                            {item.category === 'broadcast' ? (
-                              <span className="calendar-chip__live-tag">LIVE</span>
-                            ) : item.category === 'offline' ? (
-                              <span className="calendar-chip__offline-tag" aria-hidden="true">
-                                <MapPin size={10} strokeWidth={2.5} />
-                              </span>
-                            ) : iconSrc ? (
-                              <img
-                                src={iconSrc}
-                                alt=""
-                                className="calendar-chip__icon"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <span className="calendar-chip__dot" />
-                            )}
-
-                            {/* 게임 약칭 + 마일스톤 타이틀 */}
-                            <span className="calendar-chip__game">{item.gameShort}</span>
-                            <span className="calendar-chip__label">{item.title}</span>
-
-                            {/* 우측 보조 메타: 방송 시간 또는 예상 태그 */}
-                            {item.category === 'broadcast' && timeShort && (
-                              <span className="calendar-chip__time">{timeShort}</span>
-                            )}
-                            {!item.isFixed && (
-                              <span className="calendar-chip__est">예상</span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+            <div
+              ref={currPaneRef}
+              className={`calendar-view__pane calendar-view__pane--curr${
+                transitionDir === 'reset' ? ' calendar-view__body--reset' : ''
+              }`}
+            >
+              {renderMonthGridWeeks(weeks, true)}
             </div>
-          ))}
+
+            {nextPaneWeeks && (
+              <div
+                ref={nextPaneRef}
+                className="calendar-view__pane calendar-view__pane--next"
+                aria-hidden="true"
+              >
+                {renderMonthGridWeeks(nextPaneWeeks, false)}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
