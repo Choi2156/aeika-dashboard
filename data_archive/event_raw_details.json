@@ -1817,10 +1817,11 @@
         "태양을 가져온 자",
         "카프카",
         "로빈",
-        "리딤코드"
+        "SUNCHASER",
+        "ZZZ34SUNBRINGER"
       ],
-      "source_url": "https://www.youtube.com/@ZZZ_KO",
-      "updated_at": "2026-11-16T14:53:00+09:00"
+      "source_url": "https://youtu.be/A9v-nLGi_Xc",
+      "updated_at": "2026-11-20T20:52:00+09:00"
     },
     "EVT_AKEF_20261121_0001": {
       "id": "EVT_AKEF_20261121_0001",
@@ -1842,6 +1843,56 @@
       ],
       "source_url": "https://youtube.com/live/vpr1L_5SJ4A",
       "updated_at": "2026-11-16T14:53:00+09:00"
+    },
+    "EVT_ZZZ_20261202_0001": {
+      "id": "EVT_ZZZ_20261202_0001",
+      "game": "젠레스 존 제로",
+      "version": "3.4",
+      "type": "전반업데이트",
+      "title": "3.4 버전 - 「긴 나날의 끝자락」",
+      "date": "2026-12-02",
+      "end_date": "2027-01-21",
+      "time": "",
+      "location": "",
+      "raw_detail": "■ 픽업 일정\n- 버전 내내 (12/2 업데이트 후 ~ 1/21 15:59)\n  - 태양을 가져온 자 (신규)\n  - 로빈 (신규 / 콜라보 / 픽업과 동시에 배포)\n- 전반 (12/2 업데이트 후 ~ 1/12 15:59)\n- 후반 (1/1 13:00 ~ 1/21 15:59)\n  - 카프카 (신규 / 콜라보)\n  - 앨리스 (복각)\n\n■ 신규 스토리 및 이벤트\n- 메인 스토리 시즌3 제5장 - 「긴 나날의 끝자락」\n- 테마 이벤트 - 「연극 같은 꿈에 빠지다」 (스타레일 콜라보)\n\n■ 신규 코스튬 & 에이전트 강화(AS)\n- 코스튬: 태양을 가져온 자 - 맑은 밤의 여유 / 로빈 - 은하의 리듬\n- 에이전트 강화: 귤복복, 비비안\n\n■ 주요 보상 및 소식\n- 콜라보 캐릭터 '로빈' 무료 배포\n- 1월 1일부터 일주일 출석 시 폴리크롬 1,600개 지급\n- 시사회 답례 (유료 상품 구매 적립 보상) 및 각종 버전 이벤트\n- Zenless Zone Zero X DJMAX RESPECT V 콜라보 확정\n\n■ 리딤코드\n- SUNCHASER\n- ZZZ34SUNBRINGER\n\n■ 관련 링크\n- 3.4 버전 사전 예약: https://hoyo.link/tW2iGahe8?s_c=GJD6RZGG2K&utm_share=mainpage\n- 3.4 버전 PV: https://www.youtube.com/watch?v=TXuT5i_4rmE\n- 3.4 특별 방송: https://youtu.be/A9v-nLGi_Xc?si=kOjq_K9uFB0ECVOh",
+      "key_facts": [
+        "12/2",
+        "1/12",
+        "1/21",
+        "태양을 가져온 자",
+        "로빈",
+        "긴 나날의 끝자락",
+        "연극 같은 꿈에 빠지다",
+        "맑은 밤의 여유",
+        "은하의 리듬",
+        "귤복복",
+        "비비안",
+        "폴리크롬 1,600개",
+        "DJMAX RESPECT V"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=TXuT5i_4rmE",
+      "updated_at": "2026-11-20T20:52:00+09:00"
+    },
+    "EVT_ZZZ_20270101_0001": {
+      "id": "EVT_ZZZ_20270101_0001",
+      "game": "젠레스 존 제로",
+      "version": "3.4 후반",
+      "type": "후반업데이트",
+      "title": "3.4 버전 후반부 에이전트 독점 변조",
+      "date": "2027-01-01",
+      "end_date": "2027-01-21",
+      "time": "",
+      "location": "",
+      "raw_detail": "- 후반 (1/1 13:00 ~ 1/21 15:59)\n  - 카프카 (신규 / 콜라보)\n  - 앨리스 (복각)\n- 1월 1일부터 일주일 출석 시 폴리크롬 1,600개 지급",
+      "key_facts": [
+        "1/1 13:00",
+        "1/21 15:59",
+        "카프카",
+        "앨리스",
+        "폴리크롬 1,600개"
+      ],
+      "source_url": "https://www.youtube.com/watch?v=TXuT5i_4rmE",
+      "updated_at": "2026-11-20T20:52:00+09:00"
     }
   }
 }
