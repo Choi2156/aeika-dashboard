@@ -404,6 +404,10 @@
   box-shadow: 0 0 18px rgba(16, 185, 129, 0.15);
 }
 
+.list-view__card--warning {
+  border-left: 3px solid var(--warn-accent);
+}
+
 .list-view__row--date-focused .list-view__card {
   border-color: rgba(110, 231, 183, 0.62) !important;
   box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.28),
@@ -492,6 +496,25 @@
   background: rgba(24, 31, 46, 0.8);
   color: #cbd5e1;
   border: 1px dashed rgba(148, 163, 184, 0.55);
+}
+
+.list-view__warning-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  white-space: nowrap;
+}
+
+.list-view__warning-badge svg {
+  color: var(--warn-accent);
+  flex-shrink: 0;
 }
 
 .list-view__dday-pill,

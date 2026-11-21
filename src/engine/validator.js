@@ -397,6 +397,19 @@ export function validateSchedule(allEvents, gamesConfig = {}, hintsData = { hint
     }
   }
 
+  // ─── [5] 일정 주의 경고(has_warning) 활성 목록 안내 ───────────────
+  for (const e of allEvents) {
+    if (e.has_warning === true || e.has_warning === 'true') {
+      infos.push({
+        type: 'ACTIVE_SCHEDULE_WARNING',
+        game: e.game,
+        version: e.version || e.title,
+        date: e.date,
+        message: `${e.game} ${e.version || e.title} (${e.date}): 일정 주의 경고 표시(has_warning)가 활성화되어 있습니다.`,
+      });
+    }
+  }
+
   const isValid = errors.length === 0;
 
   return {

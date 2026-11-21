@@ -8,6 +8,7 @@ import {
   Clock,
   MapPin,
   ArrowUpRight,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   extractCalendarMilestones,
@@ -668,6 +669,7 @@ export default function CalendarView({
                         item.isFixed
                           ? 'calendar-chip--confirmed'
                           : 'calendar-chip--predicted',
+                        item.hasWarning ? 'calendar-chip--warning' : '',
                         isLegendDimmed ? 'calendar-chip--dimmed' : '',
                         isLegendHighlighted ? 'calendar-chip--highlighted' : '',
                       ]
@@ -690,7 +692,9 @@ export default function CalendarView({
                       }
                       title={`[${item.game}] ${item.title}${
                         timeShort ? ` (${timeShort})` : ''
-                      } — ${item.isFixed ? '확정' : '주기 예상'}`}
+                      } — ${item.isFixed ? '확정' : '주기 예상'}${
+                        item.hasWarning ? ` · [⚠ ${item.warningSummary || '일정 주의'}]` : ''
+                      }`}
                     >
                       {/* 게임 아이콘 또는 카테고리 포인트 태그 */}
                       {item.category === 'broadcast' ? (
@@ -714,12 +718,17 @@ export default function CalendarView({
                       <span className="calendar-chip__game">{item.gameShort}</span>
                       <span className="calendar-chip__label">{item.title}</span>
 
-                      {/* 우측 보조 메타: 방송 시간 또는 예상 태그 */}
+                      {/* 우측 보조 메타: 방송 시간 또는 예상·경고 태그 */}
                       {item.category === 'broadcast' && timeShort && (
                         <span className="calendar-chip__time">{timeShort}</span>
                       )}
                       {!item.isFixed && (
                         <span className="calendar-chip__est">예상</span>
+                      )}
+                      {item.hasWarning && (
+                        <span className="calendar-chip__warn" aria-label="일정 주의">
+                          <AlertTriangle size={10} strokeWidth={2.6} />
+                        </span>
                       )}
                     </button>
                   );
@@ -766,6 +775,7 @@ export default function CalendarView({
                             item.isFixed
                               ? 'calendar-mini-chip--confirmed'
                               : 'calendar-mini-chip--predicted',
+                            item.hasWarning ? 'calendar-mini-chip--warning' : '',
                             isLegendDimmed ? 'calendar-mini-chip--dimmed' : '',
                             isLegendHighlighted ? 'calendar-mini-chip--highlighted' : '',
                           ]
@@ -788,7 +798,9 @@ export default function CalendarView({
                           }
                           title={`[${item.game}] ${item.title}${
                             timeShort ? ` (${timeShort})` : ''
-                          } — ${item.isFixed ? '확정' : '주기 예상'}`}
+                          } — ${item.isFixed ? '확정' : '주기 예상'}${
+                            item.hasWarning ? ` · [⚠ ${item.warningSummary || '일정 주의'}]` : ''
+                          }`}
                         >
                           {iconSrc ? (
                             <img
@@ -803,6 +815,11 @@ export default function CalendarView({
                           <span className="calendar-mini-chip__tag">
                             {miniTag ?? <MapPin size={9} strokeWidth={2.5} aria-hidden="true" />}
                           </span>
+                          {item.hasWarning && (
+                            <span className="calendar-mini-chip__warn" aria-label="일정 주의">
+                              <AlertTriangle size={8} strokeWidth={2.8} />
+                            </span>
+                          )}
                         </button>
                       );
                     })}
@@ -1090,7 +1107,7 @@ export default function CalendarView({
                   type="button"
                   className={`calendar-agenda__card${
                     item.isEnd ? ' calendar-agenda__card--end' : ''
-                  }`}
+                  }${item.hasWarning ? ' calendar-agenda__card--warning' : ''}`}
                   style={{
                     '--chip-color': color,
                     '--chip-rgb': rgb,
@@ -1128,6 +1145,12 @@ export default function CalendarView({
                       {isStartRole && (
                         <span className="calendar-agenda__role-pill is-start">
                           시작일
+                        </span>
+                      )}
+                      {item.hasWarning && (
+                        <span className="calendar-agenda__warning-pill">
+                          <AlertTriangle size={10} strokeWidth={2.5} aria-hidden="true" />
+                          <span>주의</span>
                         </span>
                       )}
                       <span
@@ -1188,6 +1211,13 @@ export default function CalendarView({
                           <span>{locationStr}</span>
                         </span>
                       )}
+                    </div>
+                  )}
+
+                  {item.hasWarning && item.warningSummary && (
+                    <div className="calendar-agenda__warning-note">
+                      <AlertTriangle size={11} strokeWidth={2.4} aria-hidden="true" />
+                      <span>{item.warningSummary}</span>
                     </div>
                   )}
                 </button>

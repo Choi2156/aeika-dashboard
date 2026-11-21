@@ -732,6 +732,25 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.live-banner-warning-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  flex-shrink: 0;
+}
+
+.live-banner-warning-pill svg {
+  color: var(--warn-accent);
+  flex-shrink: 0;
+}
+
 .live-banner-period-pill {
   font-family: var(--font-mono);
   font-size: 0.66rem;

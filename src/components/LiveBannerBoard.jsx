@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Volume2, Info, Clock, Sparkles, AlertTriangle } from 'lucide-react';
 import {
   getCleanSummaryText,
   formatEventTypeLabel,
   cleanEventDisplayTitle,
+  hasScheduleWarning,
 } from '../utils/eventTextParser';
 import {
   getTodayStrKST,
@@ -393,6 +394,13 @@ export default function LiveBannerBoard({ events, gamesConfig, activeGames, onEv
                     {typeLabel}
                     {!isFixed && ' · 예상'}
                   </span>
+
+                  {hasScheduleWarning(ev) && (
+                    <span className="live-banner-warning-pill">
+                      <AlertTriangle size={11} strokeWidth={2.5} aria-hidden="true" />
+                      <span>일정 주의</span>
+                    </span>
+                  )}
 
                   <div
                     className="live-banner-badge"

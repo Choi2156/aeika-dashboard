@@ -371,6 +371,24 @@
   border: 1px solid var(--border-primary);
 }
 
+.badge-status--warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: var(--warn-text);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+}
+
+.badge-status--warning svg {
+  color: var(--warn-accent);
+  flex-shrink: 0;
+}
+
 .badge-dday {
   display: inline-flex;
   align-items: center;
@@ -458,6 +476,12 @@
   border-left: 3px solid var(--accent-indigo);
 }
 
+.detail-bullet-card--warning {
+  background: var(--warn-card-bg);
+  border-color: var(--warn-border);
+  border-left: 3px solid var(--warn-accent);
+}
+
 .detail-bullet-card--text {
   display: block;
   padding: 10px 12px;
@@ -531,6 +555,18 @@
   border-color: var(--border-primary);
 }
 
+.detail-section-chip--warning {
+  gap: 4px;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  border-color: var(--warn-border);
+}
+
+.detail-section-chip--warning svg {
+  color: var(--warn-accent);
+  flex-shrink: 0;
+}
+
 [data-theme="light"] .detail-section-chip--pickup {
   background: #d1fae5;
   color: #065f46;
@@ -582,6 +618,11 @@
   word-break: keep-all;
   overflow-wrap: anywhere;
   min-width: 0;
+}
+
+.detail-card-value--warning {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .detail-card-paragraph {

@@ -87,6 +87,31 @@ function fitText(ctx, text, maxWidth) {
   return s + '…';
 }
 
+function drawCanvasWarningBadge(ctx, x, y, size = 18) {
+  ctx.save();
+  drawRoundedRect(ctx, x, y, size, size, Math.max(3, size * 0.25));
+  ctx.fillStyle = 'rgba(11, 12, 16, 0.92)';
+  ctx.fill();
+  ctx.lineWidth = 1.4;
+  ctx.strokeStyle = 'rgba(251, 191, 36, 0.85)';
+  ctx.stroke();
+
+  const cx = x + size / 2;
+  const pad = Math.max(2.5, size * 0.18);
+  ctx.beginPath();
+  ctx.moveTo(cx, y + pad);
+  ctx.lineTo(x + size - pad, y + size - pad - 0.5);
+  ctx.lineTo(x + pad, y + size - pad - 0.5);
+  ctx.closePath();
+  ctx.fillStyle = '#fbbf24';
+  ctx.fill();
+
+  ctx.fillStyle = '#0b0c10';
+  ctx.fillRect(cx - 0.9, y + pad + size * 0.24, 1.8, Math.max(2.5, size * 0.28));
+  ctx.fillRect(cx - 0.9, y + size - pad - Math.max(2.4, size * 0.2), 1.8, 1.8);
+  ctx.restore();
+}
+
 function getMiniCategoryLabel(item) {
   if (item.category === 'update') return '업뎃';
   if (item.category === 'half') return '후반';
@@ -145,11 +170,21 @@ function drawCanvasMilestoneChip(
       tx += ctx.measureText(fallbackLabel).width;
     }
 
-    const rightReserve = !item.isFixed ? 44 : 8;
+    const warnReserve = item.hasWarning ? 24 : 0;
+    const rightReserve = (!item.isFixed ? 44 : 8) + warnReserve;
     ctx.font = `800 ${fontSize}px ${fontSans}`;
     ctx.fillStyle = '#0b0c10';
     const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
     ctx.fillText(fitted, tx, cy + chipH / 2);
+
+    if (item.hasWarning) {
+      drawCanvasWarningBadge(
+        ctx,
+        cx + cw - (!item.isFixed ? 64 : 24),
+        cy + (chipH - 18) / 2,
+        18
+      );
+    }
 
     if (!item.isFixed) {
       drawRoundedRect(ctx, cx + cw - 40, cy + (chipH - 18) / 2, 34, 18, 4);
@@ -190,11 +225,21 @@ function drawCanvasMilestoneChip(
       tx += ctx.measureText(fallbackLabel).width;
     }
 
-    const rightReserve = !item.isFixed ? 42 : 8;
+    const warnReserve = item.hasWarning ? 24 : 0;
+    const rightReserve = (!item.isFixed ? 42 : 8) + warnReserve;
     ctx.font = `700 ${fontSize}px ${fontSans}`;
     ctx.fillStyle = '#f8fafc';
     const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
     ctx.fillText(fitted, tx, cy + chipH / 2);
+
+    if (item.hasWarning) {
+      drawCanvasWarningBadge(
+        ctx,
+        cx + cw - (!item.isFixed ? 62 : 24),
+        cy + (chipH - 18) / 2,
+        18
+      );
+    }
 
     if (!item.isFixed) {
       drawRoundedRect(ctx, cx + cw - 38, cy + (chipH - 18) / 2, 32, 18, 4);
@@ -244,11 +289,21 @@ function drawCanvasMilestoneChip(
     }
 
     const timeShort = item.time ? item.time.slice(0, 5) : '';
-    const rightReserve = !item.isFixed ? 40 : timeShort ? 46 : 8;
+    const warnReserve = item.hasWarning ? 24 : 0;
+    const rightReserve = (!item.isFixed ? 40 : timeShort ? 46 : 8) + warnReserve;
     ctx.font = `700 ${fontSize}px ${fontSans}`;
     ctx.fillStyle = '#fef9c3';
     const fitted = fitText(ctx, item.title, cx + cw - tx - rightReserve);
     ctx.fillText(fitted, tx, cy + chipH / 2);
+
+    if (item.hasWarning) {
+      drawCanvasWarningBadge(
+        ctx,
+        cx + cw - (!item.isFixed ? 60 : timeShort ? 66 : 24),
+        cy + (chipH - 18) / 2,
+        18
+      );
+    }
 
     if (!item.isFixed) {
       drawRoundedRect(ctx, cx + cw - 38, cy + (chipH - 18) / 2, 32, 18, 4);
@@ -300,10 +355,15 @@ function drawCanvasMilestoneChip(
       tx += ctx.measureText(fallbackLabel).width;
     }
 
+    const warnReserve = item.hasWarning ? 24 : 0;
     ctx.font = `700 ${fontSize}px ${fontSans}`;
     ctx.fillStyle = item.isEnd ? '#cbd5e1' : '#ede9fe';
-    const fitted = fitText(ctx, item.title, cx + cw - tx - 8);
+    const fitted = fitText(ctx, item.title, cx + cw - tx - (8 + warnReserve));
     ctx.fillText(fitted, tx, cy + chipH / 2);
+
+    if (item.hasWarning) {
+      drawCanvasWarningBadge(ctx, cx + cw - 24, cy + (chipH - 18) / 2, 18);
+    }
   }
 
   ctx.restore();
@@ -410,6 +470,10 @@ function drawCanvasCompactTray(
         const tw = ctx.measureText(shortTxt).width;
         ctx.fillText(shortTxt, px + (pillW - tw) / 2, y + pillH / 2);
       }
+    }
+
+    if (item.hasWarning) {
+      drawCanvasWarningBadge(ctx, px + pillW - 15, y + 2, 13);
     }
 
     ctx.restore();
@@ -551,9 +615,12 @@ function renderCalendarToCanvas(canvas, year, month, cells, numWeeks, lastUpdate
   }
 
   // 업데이트 기준일 표기
+  const hasAnyWarning = cells.some((c) => c?.milestones?.some((m) => m.hasWarning));
   ctx.font = `600 18px ${fontMono}`;
   ctx.fillStyle = '#94a3b8';
-  const updText = `최신 업데이트 기준: ${lastUpdated}  |  실선: 확정 / 점선: 예상`;
+  const updText = `최신 업데이트 기준: ${lastUpdated}  |  실선: 확정 / 점선: 예상${
+    hasAnyWarning ? '  |  ⚠ 일정 주의' : ''
+  }`;
   const updW = ctx.measureText(updText).width;
   ctx.fillText(updText, W - marginX - 28 - updW, 126);
 

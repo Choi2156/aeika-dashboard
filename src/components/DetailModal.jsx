@@ -1,10 +1,20 @@
 import { useMemo, useState, useEffect } from 'react';
-import { MapPin, Ticket, ExternalLink, Clock, Calendar as CalendarIcon, X, Maximize2 } from 'lucide-react';
+import {
+  MapPin,
+  Ticket,
+  ExternalLink,
+  Clock,
+  Calendar as CalendarIcon,
+  X,
+  Maximize2,
+  AlertTriangle,
+} from 'lucide-react';
 import { trackOutboundLink } from '../utils/analytics';
 import {
   parseStructuredDetail,
   formatEventTypeLabel,
   cleanEventDisplayTitle,
+  hasScheduleWarning,
 } from '../utils/eventTextParser';
 import { getTodayStrKST, diffDays, parseDateStr, getKoreanDayName } from '../utils/dateKST';
 import ModalShell from './common/ModalShell';
@@ -121,7 +131,24 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
     : gameConfig?.defaultImg || null;
 
   const isConfirmed = event.is_fixed === true || event.is_fixed === 'true';
+  const hasWarning = hasScheduleWarning(event);
   const structuredBlocks = parseStructuredDetail(event.details || event.detail);
+  const warningBlocks = structuredBlocks.filter((b) => b.type === 'warning');
+  const otherBlocks = structuredBlocks.filter((b) => b.type !== 'warning');
+  const effectiveWarningBlocks =
+    hasWarning && warningBlocks.length === 0
+      ? [
+          {
+            type: 'warning',
+            category: '일정 주의',
+            content:
+              (event.warning_note && event.warning_note.trim()) ||
+              '세부 일정 또는 종료일이 추후 공식 공지에 따라 변동될 수 있습니다.',
+            tone: 'warning',
+          },
+        ]
+      : warningBlocks;
+  const orderedBlocks = [...effectiveWarningBlocks, ...otherBlocks];
   const versionBadgeText = formatVersionBadge(event.game, event.version, events);
   const typeBadgeText = formatEventTypeLabel(event.type || displayTypeName);
   const ddayBadge = computeLiveDDayBadge(event, todayStr);
@@ -163,6 +190,13 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
 
                 {!isConfirmed && (
                   <span className="badge-status--predicted">예상</span>
+                )}
+
+                {hasWarning && (
+                  <span className="badge-status--warning">
+                    <AlertTriangle size={11} strokeWidth={2.5} aria-hidden="true" />
+                    <span>일정 주의</span>
+                  </span>
                 )}
 
                 {ddayBadge && (
@@ -248,9 +282,23 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
           )}
 
           {/* ── Structured Detail Bullet Cards ── */}
-          {structuredBlocks.length > 0 && (
+          {orderedBlocks.length > 0 && (
             <div className="modal-detail-block detail-structured-grid">
-              {structuredBlocks.map((block, idx) => {
+              {orderedBlocks.map((block, idx) => {
+                if (block.type === 'warning') {
+                  return (
+                    <div key={idx} className="detail-bullet-card detail-bullet-card--warning" role="note">
+                      <span className="detail-section-chip detail-section-chip--warning">
+                        <AlertTriangle size={11} strokeWidth={2.5} aria-hidden="true" />
+                        <span>{block.category || '일정 주의'}</span>
+                      </span>
+                      <span className="detail-card-value detail-card-value--warning">
+                        {block.content}
+                      </span>
+                    </div>
+                  );
+                }
+
                 if (block.type === 'kv') {
                   return (
                     <div key={idx} className="detail-bullet-card">

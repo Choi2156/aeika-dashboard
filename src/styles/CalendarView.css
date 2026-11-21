@@ -755,6 +755,30 @@
   color: #f8fafc;
 }
 
+.calendar-chip__warn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 15px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: var(--warn-bg);
+  color: var(--warn-accent);
+  border: 1px solid var(--warn-border);
+  margin-left: auto;
+}
+
+.calendar-chip__est + .calendar-chip__warn {
+  margin-left: 0;
+}
+
+.calendar-chip--update .calendar-chip__warn {
+  background: var(--warn-solid-bg);
+  color: var(--warn-solid-icon);
+  border: 1px solid var(--warn-solid-border);
+}
+
 /* ── Compact Icon Tray & Overflow Pill (4+ Dense Days) ───── */
 .calendar-view__compact-tray {
   display: flex;
@@ -766,6 +790,7 @@
 }
 
 .calendar-mini-chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -880,6 +905,28 @@
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: -0.02em;
+}
+
+.calendar-mini-chip__warn {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--warn-bg);
+  color: var(--warn-accent);
+  border: 1px solid var(--warn-border);
+  pointer-events: none;
+}
+
+.calendar-mini-chip--update .calendar-mini-chip__warn {
+  background: var(--warn-solid-bg);
+  color: var(--warn-solid-icon);
+  border-color: var(--warn-solid-border);
 }
 
 .calendar-view__compact-tray--tight .calendar-mini-chip {
@@ -1066,6 +1113,10 @@
   border-left-color: #f59e0b;
 }
 
+.calendar-agenda__card--warning {
+  border-left-color: var(--warn-accent);
+}
+
 .calendar-agenda__card:hover {
   border-color: rgba(var(--chip-rgb), 0.75);
   border-left-color: var(--chip-color);
@@ -1145,6 +1196,24 @@
   background: rgba(56, 189, 248, 0.2);
   border: 1px solid rgba(56, 189, 248, 0.45);
   color: #7dd3fc;
+}
+
+.calendar-agenda__warning-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+}
+
+.calendar-agenda__warning-pill svg {
+  color: var(--warn-accent);
+  flex-shrink: 0;
 }
 
 .calendar-agenda__status {
@@ -1269,6 +1338,33 @@
 .calendar-agenda__meta-chip.is-end {
   color: #fcd34d;
   font-weight: 700;
+}
+
+.calendar-agenda__warning-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--warn-card-bg);
+  border: 1px solid var(--warn-border);
+  border-left: 2.5px solid var(--warn-accent);
+  color: var(--warn-text);
+  font-size: 0.67rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow: hidden;
+}
+
+.calendar-agenda__warning-note svg {
+  color: var(--warn-accent);
+  flex-shrink: 0;
+}
+
+.calendar-agenda__warning-note span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── Light Mode Overrides ─────────────────────────────────── */
@@ -1589,6 +1685,12 @@
     display: none;
   }
 
+  .calendar-chip__warn {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+  }
+
   .calendar-chip__game {
     font-size: 0.56rem;
     min-width: 0;
@@ -1677,6 +1779,12 @@
     letter-spacing: -0.03em;
     text-align: center;
     flex: 1;
+  }
+
+  .calendar-chip__warn {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
   }
 
   .calendar-pre-service-badge {

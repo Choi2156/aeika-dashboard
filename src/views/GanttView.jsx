@@ -8,6 +8,7 @@ import {
   MapPin,
   Maximize2,
   Minimize2,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   getTodayDateKST,
@@ -22,6 +23,8 @@ import {
   formatEventTypeLabel,
   cleanEventDisplayTitle,
   formatEventVersion,
+  hasScheduleWarning,
+  extractWarningSummary,
 } from '../utils/eventTextParser';
 import { trackChannelClick, trackOutboundLink } from '../utils/analytics';
 import '../styles/GanttView.css';
@@ -652,6 +655,7 @@ export default function GanttView({
       const colorDark = getGameColorDark(gameName);
       const rgb = hexToRgb(color);
       const isFixed = ev.is_fixed === true;
+      const hasWarning = hasScheduleWarning(ev);
       const displayType = formatEventTypeLabel(ev.type);
       const isStream = ev.type === '공식방송';
       const isHalfUpdate = ev.type === '후반업데이트';
@@ -689,7 +693,7 @@ export default function GanttView({
             key={ev.id || `${gameName}-offline-${ev.start_date}`}
             className={`gantt-bar gantt-bar-offline${
               isCompactSinglePin ? ' gantt-bar--compact-pin' : ''
-            }`}
+            }${hasWarning ? ' gantt-bar--warning' : ''}`}
             style={{
               left: `${offlineLeft}px`,
               width: `${offlineBarWidth}px`,
@@ -711,6 +715,11 @@ export default function GanttView({
             {...hoverHandlers}
           >
             <span className="gantt-bar-label">
+              {hasWarning && (
+                <span className="gantt-warning-badge gantt-warning-badge--tint" aria-label="일정 주의">
+                  <AlertTriangle size={isCompactScale ? 8 : 10} strokeWidth={2.6} />
+                </span>
+              )}
               <MapPin size={isCompactScale ? 10 : 11} style={{ flexShrink: 0, color }} />
               {!isCompactSinglePin && (
                 <span className="gantt-bar-label__text">{cleanOfflineTitle}</span>
@@ -735,7 +744,7 @@ export default function GanttView({
             key={ev.id || `${gameName}-stream-${ev.start_date}`}
             className={`gantt-bar-stream ${
               isFixed ? 'gantt-bar-stream--confirmed' : 'gantt-bar-stream--predicted'
-            }`}
+            }${hasWarning ? ' gantt-bar-stream--warning' : ''}`}
             style={{
               left: `${bar.left}px`,
               top: `${laneIndex * lanePitch + (isCompactScale ? 1 : isMobile ? 2 : 3)}px`,
@@ -759,6 +768,11 @@ export default function GanttView({
               <Radio size={isCompactScale ? 9 : 10} className="gantt-live-icon" />
               <span className="gantt-live-badge">{badgeLabel}</span>
             </div>
+            {hasWarning && (
+              <span className="gantt-warning-badge gantt-warning-badge--tint" aria-label="일정 주의">
+                <AlertTriangle size={isCompactScale ? 8 : 10} strokeWidth={2.6} />
+              </span>
+            )}
             <span className="gantt-stream-label">
               {streamText}
               {!isCompactScale && ev.time && <span className="gantt-stream-time">{ev.time}</span>}
@@ -782,11 +796,11 @@ export default function GanttView({
 
       const textLabel = isSystemType ? shortTypeLabel : cleanEventDisplayTitle(ev.title, gameName);
 
-      const barClassName = !isFixed
+      const barClassName = `${!isFixed
         ? 'gantt-bar gantt-bar-predicted'
         : isHalfUpdate
         ? 'gantt-bar gantt-bar-confirmed gantt-bar-confirmed-half'
-        : 'gantt-bar gantt-bar-confirmed gantt-bar-main';
+        : 'gantt-bar gantt-bar-confirmed gantt-bar-main'}${hasWarning ? ' gantt-bar--warning' : ''}`;
 
       const barInlineStyle = !isFixed
         ? {
@@ -829,6 +843,16 @@ export default function GanttView({
         >
           <span className="gantt-bar-label">
             {!isFixed && <span className="gantt-predicted-pill">예상</span>}
+            {hasWarning && (
+              <span
+                className={`gantt-warning-badge${
+                  isFixed ? ' gantt-warning-badge--solid' : ' gantt-warning-badge--tint'
+                }`}
+                aria-label="일정 주의"
+              >
+                <AlertTriangle size={isCompactScale ? 8 : 10} strokeWidth={2.6} />
+              </span>
+            )}
             {verTag && <span className="gantt-bar-ver-pill">{verTag}</span>}
             <span className="gantt-bar-label__text">{textLabel}</span>
           </span>
@@ -899,6 +923,11 @@ export default function GanttView({
       : ev.location
       ? `장소: ${ev.location}`
       : '';
+    const hasWarning = hasScheduleWarning(ev);
+    const warningText = hasWarning
+      ? extractWarningSummary(rawDetailSource, ev.warning_note, 110)?.text ||
+        '세부 일정 또는 종료일이 변동될 수 있습니다.'
+      : '';
 
     return {
       gameName,
@@ -906,6 +935,8 @@ export default function GanttView({
       verTag,
       typeLabel,
       isFixed: ev.is_fixed === true,
+      hasWarning,
+      warningText,
       cleanTitle,
       dateRangeText,
       dDayLabel,
@@ -1297,7 +1328,7 @@ export default function GanttView({
         <div
           className={`gantt-hover-tooltip ${
             tooltipDetails.showBelow ? 'is-below' : 'is-above'
-          }`}
+          }${tooltipDetails.hasWarning ? ' gantt-hover-tooltip--warning' : ''}`}
           style={{
             left: `${tooltipDetails.x}px`,
             top: `${tooltipDetails.y}px`,
@@ -1317,6 +1348,12 @@ export default function GanttView({
               <span className="gantt-hover-tooltip__ver">{tooltipDetails.verTag}</span>
             )}
             <span className="gantt-hover-tooltip__type">{tooltipDetails.typeLabel}</span>
+            {tooltipDetails.hasWarning && (
+              <span className="gantt-hover-tooltip__warning-pill">
+                <AlertTriangle size={10} strokeWidth={2.5} aria-hidden="true" />
+                <span>일정 주의</span>
+              </span>
+            )}
             {!tooltipDetails.isFixed && (
               <span className="gantt-hover-tooltip__status is-predicted">예상</span>
             )}
@@ -1330,6 +1367,13 @@ export default function GanttView({
               {tooltipDetails.dDayLabel}
             </span>
           </div>
+
+          {tooltipDetails.hasWarning && tooltipDetails.warningText && (
+            <div className="gantt-hover-tooltip__warning-callout">
+              <AlertTriangle size={12} strokeWidth={2.4} aria-hidden="true" />
+              <span>{tooltipDetails.warningText}</span>
+            </div>
+          )}
 
           {tooltipDetails.summaryText && (
             <p className="gantt-hover-tooltip__summary">{tooltipDetails.summaryText}</p>

@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { History, ChevronDown, RotateCcw, Search, X } from 'lucide-react';
+import { History, ChevronDown, RotateCcw, Search, X, AlertTriangle } from 'lucide-react';
 import {
   getCleanSummaryText,
   cleanEventDisplayTitle,
   formatEventVersion,
+  hasScheduleWarning,
+  extractWarningSummary,
 } from '../utils/eventTextParser';
 import {
   getTodayStrKST,
@@ -444,6 +446,10 @@ export default function ListView({
             const typeModifier = TYPE_BADGE_MODIFIERS[event.type] || 'update';
             const imgSrc = getImageSrc(event);
             const gameTheme = getGameTheme(event.game);
+            const hasWarning = hasScheduleWarning(event);
+            const warningInfo = hasWarning
+              ? extractWarningSummary(event.details || event.detail, event.warning_note, 90)
+              : null;
             const cleanDetail = getCleanSummaryText(event.details || event.detail, 130);
             const statusPill = getCardStatusPill(event, todayStr);
             const versionLabel = formatEventVersion(event.version);
@@ -531,6 +537,7 @@ export default function ListView({
                       isToday ? 'list-view__card--today' : '',
                       event.type === '공식방송' ? 'list-view__card--stream' : '',
                       event.type === '오프라인이벤트' ? 'list-view__card--offline' : '',
+                      hasWarning ? 'list-view__card--warning' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')}
@@ -592,6 +599,16 @@ export default function ListView({
                         {!event.is_fixed && (
                           <span className="list-view__status-badge list-view__status-badge--predicted">
                             예상
+                          </span>
+                        )}
+
+                        {hasWarning && (
+                          <span
+                            className="list-view__warning-badge"
+                            title={warningInfo?.text || '일정 변동 주의'}
+                          >
+                            <AlertTriangle size={11} strokeWidth={2.5} aria-hidden="true" />
+                            <span>일정 주의</span>
                           </span>
                         )}
 

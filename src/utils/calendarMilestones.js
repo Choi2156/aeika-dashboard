@@ -4,6 +4,8 @@
  * 클릭 시 DetailModal 연동을 위해 원본 이벤트(rawEvent) 참조를 함께 보존합니다.
  */
 
+import { hasScheduleWarning, extractWarningSummary } from './eventTextParser';
+
 export const SERVICE_START_DATE = '2026-04-17';
 export const PRE_SERVICE_NOTICE_DATE = '2026-04-16';
 export const CALENDAR_MIN_YEAR = 2026;
@@ -99,6 +101,11 @@ export function extractCalendarMilestones(events = [], activeGames = null) {
     const t = e.type || '';
     const title = e.title || '';
     const isFixed = e.is_fixed === true;
+    const hasWarning = hasScheduleWarning(e);
+    const warningInfo = hasWarning
+      ? extractWarningSummary(e.details || e.detail, e.warning_note, 84)
+      : null;
+    const warningSummary = warningInfo?.text || '';
     const sDate = e.date;
     const eDate = e.end_date || sDate;
     const gShort = SHORT_GAME_NAMES[g] || g;
@@ -115,6 +122,8 @@ export function extractCalendarMilestones(events = [], activeGames = null) {
         gameShort: gShort,
         shortGame: gShort,
         isFixed,
+        hasWarning,
+        warningSummary,
         category: 'update',
         categoryLabel: '업데이트',
         badgeLabel: isFixed ? '확정' : '예상',
@@ -137,6 +146,8 @@ export function extractCalendarMilestones(events = [], activeGames = null) {
         gameShort: gShort,
         shortGame: gShort,
         isFixed,
+        hasWarning,
+        warningSummary,
         category: 'half',
         categoryLabel: '후반 픽업',
         badgeLabel: isFixed ? '확정' : '예상',
@@ -158,6 +169,8 @@ export function extractCalendarMilestones(events = [], activeGames = null) {
         gameShort: gShort,
         shortGame: gShort,
         isFixed,
+        hasWarning,
+        warningSummary,
         category: 'broadcast',
         categoryLabel: '특별 방송',
         badgeLabel: isFixed ? '확정' : '예상',
@@ -182,6 +195,8 @@ export function extractCalendarMilestones(events = [], activeGames = null) {
           gameShort: gShort,
           shortGame: gShort,
           isFixed: true,
+          hasWarning,
+          warningSummary,
           category: 'offline',
           categoryLabel: '오프라인',
           badgeLabel: '이벤트',
@@ -201,6 +216,8 @@ export function extractCalendarMilestones(events = [], activeGames = null) {
           gameShort: gShort,
           shortGame: gShort,
           isFixed: true,
+          hasWarning,
+          warningSummary,
           category: 'offline',
           categoryLabel: '오프라인',
           badgeLabel: '이벤트',
@@ -219,6 +236,8 @@ export function extractCalendarMilestones(events = [], activeGames = null) {
           gameShort: gShort,
           shortGame: gShort,
           isFixed: true,
+          hasWarning,
+          warningSummary,
           category: 'offline',
           categoryLabel: '오프라인',
           badgeLabel: '종료',

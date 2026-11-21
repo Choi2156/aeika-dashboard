@@ -49,6 +49,16 @@
   --badge-predicted-text: #cbd5e1;
   --badge-predicted-border: rgba(148, 163, 184, 0.45);
 
+  /* 5-B. Schedule Warning Semantic Tokens */
+  --warn-accent: #fbbf24;
+  --warn-border: rgba(245, 158, 11, 0.52);
+  --warn-bg: rgba(245, 158, 11, 0.16);
+  --warn-card-bg: rgba(245, 158, 11, 0.09);
+  --warn-text: #fde68a;
+  --warn-solid-bg: rgba(15, 17, 23, 0.88);
+  --warn-solid-border: rgba(251, 191, 36, 0.72);
+  --warn-solid-icon: #fbbf24;
+
   /* 6. Candidate A Squircle Geometry Scale */
   --radius-sm: 6px;
   --radius-md: 11px;
@@ -145,6 +155,16 @@
   --badge-predicted-bg: #e7edf5;
   --badge-predicted-text: #334155;
   --badge-predicted-border: #94a3b8;
+
+  /* Light Theme Schedule Warning Semantic Tokens */
+  --warn-accent: #d97706;
+  --warn-border: rgba(217, 119, 6, 0.48);
+  --warn-bg: #fef3c7;
+  --warn-card-bg: #fffbeb;
+  --warn-text: #92400e;
+  --warn-solid-bg: rgba(15, 23, 42, 0.9);
+  --warn-solid-border: rgba(251, 191, 36, 0.78);
+  --warn-solid-icon: #fbbf24;
 
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 8px 20px -4px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);

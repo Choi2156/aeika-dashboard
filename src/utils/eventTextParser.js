@@ -97,7 +97,20 @@ const CATEGORY_COLOR_HINT_MAP = {
   슬레이트: 'note',
   회색: 'note',
   기본: 'note',
+
+  warning: 'warning',
+  caution: 'warning',
+  alert: 'warning',
+  경고: 'warning',
+  주의: 'warning',
 };
+
+/**
+ * 이벤트의 일정 주의 경고(has_warning) 활성화 여부를 정규화해 반환합니다.
+ */
+export function hasScheduleWarning(event) {
+  return event?.has_warning === true || event?.has_warning === 'true';
+}
 
 const AUTO_TONE_PALETTE = ['pickup', 'rerun', 'story', 'event', 'rose', 'indigo', 'schedule'];
 
@@ -367,15 +380,40 @@ export function parseDetailLines(detail) {
     const text = cleanDetailLine(raw);
     if (!text) continue;
 
-    // "※ ..." 또는 "참고: ...", "유의: ..." (선택적 색상 힌트 포함) 모두 note 카드로 통일 파싱
-    const noteKeyMatch = text.match(/^(참고|유의|안내|주의)(?:\s*\([^)]+\))?\s*:\s*(.+)$/);
+    // "※ ..." 또는 "참고: ...", "유의: ...", "경고: ...", "참고(경고): ..." 분기 파싱
+    const warningKeyMatch = text.match(/^경고(?:\s*\(([^)]+)\))?\s*:\s*(.+)$/);
+    const noteKeyMatch = text.match(/^(참고|유의|안내|주의)(?:\s*\(([^)]+)\))?\s*:\s*(.+)$/);
+    const noteHintTone = noteKeyMatch?.[2]
+      ? CATEGORY_COLOR_HINT_MAP[noteKeyMatch[2].trim().toLowerCase()]
+      : null;
+
+    if (warningKeyMatch || noteHintTone === 'warning') {
+      expectGroupItems = false;
+      const warnCat = warningKeyMatch ? '경고' : noteKeyMatch[1];
+      const warnContent = (warningKeyMatch ? warningKeyMatch[2] : noteKeyMatch[3]).trim();
+      items.push({
+        text,
+        category: warnCat,
+        content: warnContent,
+        tone: 'warning',
+        isIndented: false,
+        isNote: false,
+        isWarning: true,
+        isHeader: false,
+        toString() {
+          return this.text;
+        },
+      });
+      continue;
+    }
+
     const isNote = rawTrimmed.startsWith('※') || Boolean(noteKeyMatch);
 
     if (isNote) {
       expectGroupItems = false;
       const noteCat = noteKeyMatch ? noteKeyMatch[1] : '참고';
       const noteContent = noteKeyMatch
-        ? noteKeyMatch[2].trim()
+        ? noteKeyMatch[3].trim()
         : text.replace(/^※\s*(?:참고\s*:\s*)?/, '').trim();
       items.push({
         text,
@@ -384,6 +422,7 @@ export function parseDetailLines(detail) {
         tone: 'note',
         isIndented: false,
         isNote: true,
+        isWarning: false,
         isHeader: false,
         toString() {
           return this.text;
@@ -408,6 +447,7 @@ export function parseDetailLines(detail) {
       tone,
       isIndented,
       isNote: false,
+      isWarning: tone === 'warning',
       isHeader,
       toString() {
         return this.text;
@@ -442,6 +482,14 @@ export function parseStructuredDetail(detail) {
           };
         }
         const tone = resolveCategoryTone(label, preferredTone);
+        if (item.type === 'warning' || tone === 'warning') {
+          return {
+            type: 'warning',
+            category: label || '일정 주의',
+            content: String(item.text || item.content || '').trim(),
+            tone: 'warning',
+          };
+        }
         if (tone === 'note' || /^(?:참고|유의|안내)$/.test(label)) {
           return {
             type: 'note',
@@ -474,6 +522,20 @@ export function parseStructuredDetail(detail) {
   let currentGroup = null;
 
   for (const line of lines) {
+    if (line.isWarning || line.tone === 'warning') {
+      if (currentGroup) {
+        blocks.push(currentGroup);
+        currentGroup = null;
+      }
+      blocks.push({
+        type: 'warning',
+        category: line.category || '일정 주의',
+        content: line.content,
+        tone: 'warning',
+      });
+      continue;
+    }
+
     if (line.isNote) {
       if (currentGroup) {
         blocks.push(currentGroup);
@@ -558,16 +620,21 @@ export function getCleanSummaryText(detail, maxLength = 100) {
       .filter((item) => item && typeof item === 'object')
       .map((item) => {
         const rawLabel = String(item.label || item.category || '').trim();
-        const category = rawLabel.replace(/\s*\([^)]+\)\s*$/, '').trim();
-        const isNote = /^(?:참고|유의|안내|주의)$/.test(category);
+        const { category, explicitTone } = stripColorHint(rawLabel);
+        const preferredTone = String(item.color || item.tone || explicitTone || '').toLowerCase();
+        const isWarning =
+          item.type === 'warning' ||
+          CATEGORY_COLOR_HINT_MAP[preferredTone] === 'warning' ||
+          /^경고$/.test(category);
+        const isNote = !isWarning && /^(?:참고|유의|안내|주의)$/.test(category);
         const content = Array.isArray(item.items)
           ? item.items.filter(Boolean).join(', ')
           : String(item.text || item.content || '').trim();
-        return { category, content, text: content, isNote, isHeader: false };
+        return { category, content, text: content, isNote, isWarning, isHeader: false };
       })
-      .filter((l) => !l.isNote && Boolean(l.text || l.content));
+      .filter((l) => !l.isNote && !l.isWarning && Boolean(l.text || l.content));
   } else {
-    lines = parseDetailLines(detail).filter((l) => !l.isNote && !l.isHeader);
+    lines = parseDetailLines(detail).filter((l) => !l.isNote && !l.isWarning && !l.isHeader);
   }
   if (lines.length === 0) return '';
 
@@ -603,6 +670,39 @@ export function getCleanSummaryText(detail, maxLength = 100) {
   const joined = cleanedSegments.join(' · ');
   if (joined.length <= maxLength) return joined;
   return `${joined.slice(0, maxLength).trim()}…`;
+}
+
+/**
+ * 상세 설명(detail/details)에서 `(경고)`/`(주의)`/`경고:` 경고 블록을 추출해 요약 객체를 반환합니다.
+ * 없을 경우 fallbackNote를 사용해 일정 경고 툴팁·미리보기용 1줄 문구를 생성합니다.
+ */
+export function extractWarningSummary(detail, fallbackNote = '', maxLength = 96) {
+  const blocks = parseStructuredDetail(detail);
+  const warningBlock = blocks.find((b) => b.type === 'warning' && b.content);
+
+  let category = '';
+  let content = '';
+  if (warningBlock) {
+    category = warningBlock.category || '일정 주의';
+    content = String(warningBlock.content).replace(URL_REGEX, '').replace(/\s{2,}/g, ' ').trim();
+  } else if (typeof fallbackNote === 'string' && fallbackNote.trim()) {
+    category = '일정 주의';
+    content = fallbackNote.trim();
+  } else {
+    return null;
+  }
+
+  const fullText = category ? `${category}: ${content}` : content;
+  const text =
+    fullText.length <= maxLength
+      ? fullText
+      : `${fullText.slice(0, maxLength).trim()}…`;
+
+  return {
+    category,
+    content,
+    text,
+  };
 }
 
 /**
