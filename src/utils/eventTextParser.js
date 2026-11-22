@@ -11,6 +11,28 @@ const LEADING_EMOJI_REGEX =
 // 불릿 기호(✦, ♦, ▪, ■, ▶ 등)를 제외한 실제 배너 장식용 이모지/기호만 매칭
 const PICTOGRAPH_EMOJI_REGEX =
   /^[\u{1F300}-\u{1FAFF}⚡✨❄🔥🎉🎊🎭🎟🎨📍🍕🚂☕🎵]/u;
+const GAME_TITLE_COLON_PREFIX_REGEX = /(?:^|[\s〈《『「\[])(?:붕괴|명일방주|명조)$/;
+const GAME_TITLE_COLON_SUFFIX_REGEX = /^(?:스타레일|엔드필드|워더링\s*웨이브|넥서스)/;
+const DELIMITER_PAIRS = [
+  ['(', ')'],
+  ['[', ']'],
+  ['〈', '〉'],
+  ['《', '》'],
+  ['『', '』'],
+  ['「', '」'],
+];
+
+function hasUnbalancedDelimiter(text = '') {
+  for (const [open, close] of DELIMITER_PAIRS) {
+    let balance = 0;
+    for (const ch of text) {
+      if (ch === open) balance += 1;
+      else if (ch === close) balance -= 1;
+    }
+    if (balance !== 0) return true;
+  }
+  return false;
+}
 const URL_REGEX = /https?:\/\/[^\s)]+/gi;
 const REDUNDANT_PHASE_BRACKET_REGEX =
   /\s*(?:\[(?:한정\/)?(?:전반|후반|신규|복각|콜라보\/픽업|콜라보\/배포)\]|\((?:신규\/|복각\/)?(?:전반|후반)\))/g;
@@ -199,7 +221,8 @@ function extractCategoryAndContent(cleanedText, rawTrimmed, hasBulletPrefix = fa
   if (!cleanedText) return { category: '', explicitTone: null, content: '', isHeader: false };
 
   // 1. 이모지 섹션 헤더 (예: "🎂 2주년 기념 보상", "🎟️ [티켓 예매 안내]", "📍 세미 팝업 오프라인 이벤트")
-  if (LEADING_EMOJI_REGEX.test(rawTrimmed) && !rawTrimmed.includes(':')) {
+  // ✦ 같은 장식 불릿 기호는 이모지 헤더로 오인하지 않도록 제외
+  if (!hasBulletPrefix && PICTOGRAPH_EMOJI_REGEX.test(rawTrimmed) && !rawTrimmed.includes(':')) {
     const noEmoji = rawTrimmed.replace(LEADING_EMOJI_REGEX, '').trim();
     const bracketOnly = noEmoji.match(/^\[([^\]]+)\]$/)?.[1];
     if (bracketOnly || noEmoji.length <= 22) {
@@ -258,15 +281,21 @@ function extractCategoryAndContent(cleanedText, rawTrimmed, hasBulletPrefix = fa
     const explicitTone = colorStripped.explicitTone;
     let content = colonMatch[2].trim();
 
-    // 불릿/구조화 라인이 아닌 일반 서술문에서 너무 긴 앞 절을 강제로 배지로 자르지 않고 평문 보존
+    // 불릿/구조화 라인이 아닌 일반 서술문, 불균형 괄호/게임명 콜론("〈붕괴: 스타레일〉", "명조: 워더링 웨이브"),
+    // 또는 이모지 배너 제목 줄은 배지로 자르지 않고 평문 보존
     const isDateScheduleKey = /^\d{1,2}월\s*\d{1,2}일/.test(rawCat);
+    const isBrokenTitleColon =
+      hasUnbalancedDelimiter(rawCatBeforeColor) ||
+      (GAME_TITLE_COLON_PREFIX_REGEX.test(rawCatBeforeColor) &&
+        GAME_TITLE_COLON_SUFFIX_REGEX.test(content)) ||
+      (!hasBulletPrefix && PICTOGRAPH_EMOJI_REGEX.test(rawTrimmed));
     const looksLikeProseClause =
       !hasBulletPrefix &&
       !explicitTone &&
       !isDateScheduleKey &&
       (rawCat.length > 16 || /(?:\s및\s|,)/.test(rawCat));
 
-    if (looksLikeProseClause) {
+    if (isBrokenTitleColon || looksLikeProseClause) {
       return { category: '', explicitTone: null, content: cleanedText, isHeader: false };
     }
 
@@ -360,7 +389,6 @@ export function parseDetailLines(detail) {
       idx === 0 &&
       hasStructuredBullets &&
       PICTOGRAPH_EMOJI_REGEX.test(rawTrimmed) &&
-      !rawTrimmed.includes(':') &&
       (rawTrimmed.includes('[') || rawTrimmed.includes('콜라보') || rawTrimmed.includes('안내')) &&
       !rawTrimmed.startsWith('🎂') &&
       !rawTrimmed.startsWith('🎨') &&
@@ -459,13 +487,56 @@ export function parseDetailLines(detail) {
 }
 
 /**
+ * 구조화 블록 후처리: 빈 그룹 카드를 제거하고 인접한 평문(text) 블록을 1개 박스로 병합합니다.
+ */
+function finalizeStructuredBlocks(blocks = []) {
+  const result = [];
+  for (const block of blocks) {
+    if (!block) continue;
+    if (block.type === 'group') {
+      if (!Array.isArray(block.items) || block.items.length === 0) continue;
+      result.push(block);
+      continue;
+    }
+
+    if (block.type === 'text') {
+      const parts = Array.isArray(block.paragraphs)
+        ? block.paragraphs.map((p) => String(p || '').trim()).filter(Boolean)
+        : String(block.content || '')
+            .split(/\r?\n+/)
+            .map((p) => p.trim())
+            .filter(Boolean);
+      if (parts.length === 0) continue;
+
+      const prev = result[result.length - 1];
+      if (prev && prev.type === 'text') {
+        prev.paragraphs = [...prev.paragraphs, ...parts];
+        prev.content = prev.paragraphs.join('\n');
+      } else {
+        result.push({
+          type: 'text',
+          content: parts.join('\n'),
+          paragraphs: parts,
+          tone: block.tone || 'default',
+        });
+      }
+      continue;
+    }
+
+    if (!block.content) continue;
+    result.push(block);
+  }
+  return result;
+}
+
+/**
  * DetailModal 전용 구조화 카드 섹션 빌더
  * 헤더 + 하위 들여쓰기 항목들을 하나의 깔끔한 그룹 카드로 묶어 반환합니다.
  */
 export function parseStructuredDetail(detail) {
   // 선택적 JSON 구조화 배열(event.details)을 바로 사용할 수 있도록 직접 매핑 지원
   if (Array.isArray(detail)) {
-    return detail
+    const mapped = detail
       .filter((item) => item && typeof item === 'object')
       .map((item) => {
         const rawLabel = String(item.label || item.category || '').trim();
@@ -511,8 +582,8 @@ export function parseStructuredDetail(detail) {
           content: String(item.text || item.content || '').trim(),
           tone: 'default',
         };
-      })
-      .filter((b) => (b.type === 'group' ? b.items.length > 0 : Boolean(b.content)));
+      });
+    return finalizeStructuredBlocks(mapped);
   }
 
   const lines = parseDetailLines(detail);
@@ -606,7 +677,7 @@ export function parseStructuredDetail(detail) {
     blocks.push(currentGroup);
   }
 
-  return blocks;
+  return finalizeStructuredBlocks(blocks);
 }
 
 /**

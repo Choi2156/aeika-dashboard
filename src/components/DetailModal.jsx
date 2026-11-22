@@ -358,9 +358,20 @@ export default function DetailModal({ event, events, displayTypeName, gamesConfi
                   );
                 }
 
+                const paragraphs =
+                  Array.isArray(block.paragraphs) && block.paragraphs.length > 0
+                    ? block.paragraphs
+                    : String(block.content || '')
+                        .split(/\r?\n+/)
+                        .filter(Boolean);
+
                 return (
                   <div key={idx} className="detail-bullet-card detail-bullet-card--text">
-                    <p className="detail-card-paragraph">{block.content}</p>
+                    {paragraphs.map((paragraph, pIdx) => (
+                      <p key={pIdx} className="detail-card-paragraph">
+                        {paragraph}
+                      </p>
+                    ))}
                   </div>
                 );
               })}

@@ -483,7 +483,9 @@
 }
 
 .detail-bullet-card--text {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   padding: 10px 12px;
 }
 
@@ -630,6 +632,8 @@
   font-size: 0.77rem;
   color: var(--text-secondary);
   line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .detail-group-header {
