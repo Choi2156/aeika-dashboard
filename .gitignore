@@ -1,5 +1,6 @@
 node_modules/
 .DS_Store
+Thumbs.db
 *.local
 .env
 .env.*
@@ -12,9 +13,12 @@ lerna-debug.log*
 .shadow-configs/
 .agents/
 .gemini/
+__pycache__/
+*.py[cod]
 scripts/youtube_sync/token.json
 scripts/youtube_sync/credentials.json
 scripts/youtube_sync/config.json
 
-# GA4 성과 분석 보고서 및 분석 산출 자료 (로컬 전용 보관 · 퍼블릭 저장소 업로드 제외)
+# GA4 성과 분석 보고서·포트폴리오 보고서 및 분석 산출 자료 (로컬 전용 보관 · 퍼블릭 저장소 업로드 제외)
 docs/reports/
+docs/portfolio/
